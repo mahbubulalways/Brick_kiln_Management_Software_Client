@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Noto_Sans_Bengali } from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const notoBengali = Noto_Sans_Bengali({
+  subsets: ["bengali"],
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -23,9 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="bn">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        cz-shortcut-listen="true"
+        className={`${notoBengali.className} antialiased no-scrollbar`}
       >
         {children}
       </body>

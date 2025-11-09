@@ -1,0 +1,33 @@
+import Link from "next/link";
+
+const CalculationsCard = () => {
+  const cards = [
+    {
+      title: "মোট বিক্রি (ভ্যাট সহ)",
+      amount: "৳ 0",
+      color: "bg-[#007bcd]",
+      path: "/dashboard/invoice",
+    },
+    { title: "নগদ বিক্রি", amount: "৳ 0", color: "bg-[#159947]", path: "/" },
+    { title: "বাকি বিক্রি", amount: "৳ 0", color: "bg-[#c43bda]", path: "/" },
+    { title: "মোট পেমেন্ট", amount: "৳ 0", color: "bg-[#f26b1a]", path: "/" },
+    { title: "বাকি জমা", amount: "৳ 0", color: "bg-[#10a98b]", path: "/" },
+    { title: "মোট ক্যাশ", amount: "৳ 0", color: "bg-[#6463e0]", path: "/" },
+  ];
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-6 gap-1 pt-3">
+      {cards.map((card, index) => (
+        <Link
+          href={card.path}
+          key={index}
+          className={`${card.color} text-white rounded-md p-4 flex flex-col justify-center items-start shadow-md w-full`}
+        >
+          <p className="font-medium mb-1">{card.title}</p>
+          <p className="text-4xl font-semibold">{card.amount}</p>
+        </Link>
+      ))}
+    </div>
+  );
+};
+
+export default CalculationsCard;
