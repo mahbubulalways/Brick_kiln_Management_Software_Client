@@ -13,6 +13,7 @@ type TCustomInputLabel = {
   register: UseFormRegister<any>;
   readonly?: boolean;
   cls?: string;
+  errMsg?: string;
   value?: string | number | null;
 };
 
@@ -26,14 +27,8 @@ const CustomInputLabel = ({
   required,
   type = "text",
   cls = "",
-  value,
+  errMsg,
 }: TCustomInputLabel) => {
-  // Safely normalize value
-  const safeValue =
-    value === null || value === undefined || Number.isNaN(value)
-      ? ""
-      : value.toString();
-
   return (
     <div className="w-full">
       <Label className="pb-1 lg:pb-0.5 flex items-center text-sm font-medium text-gray-600">
@@ -46,7 +41,7 @@ const CustomInputLabel = ({
         type={type}
         readOnly={readonly}
         placeholder={placeholder}
-        {...register(name)}
+        {...register(name, required ? { required: errMsg } : {})}
         className={`w-full h-8 rounded border border-gray-300 shadow-none placeholder:text-sm ${cls}`}
       />
 

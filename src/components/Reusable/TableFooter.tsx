@@ -10,8 +10,7 @@ import { ChevronDown } from "lucide-react";
 
 interface TableFooterProps {
   title: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filtered: any[];
+  length: number;
   currentPage: number;
   setRowsPerPage: (num: number) => void;
   setCurrentPage: (page: number) => void;
@@ -20,7 +19,7 @@ interface TableFooterProps {
 
 const TableFooter = ({
   title,
-  filtered,
+  length,
   currentPage,
   setRowsPerPage,
   setCurrentPage,
@@ -29,12 +28,12 @@ const TableFooter = ({
   const rowsPerPageOptions = [2, 20, 50, 100];
 
   return (
-    <div className="flex justify-between items-center p-3   text-gray-600 bg-gray-50 border-t rounded-b-md">
+    <div className="flex justify-between items-center p-3   text-gray-600 bg-gray-50 border-t rounded-b-md ">
       <span>
-        মোট {title} <strong>{filtered.length}</strong> টি
+        মোট {title} <strong>{length}</strong> টি
       </span>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 cursor-pointer">
         {/* Current Page */}
         <span className="border px-2 py-1 rounded bg-green-50 border-green-200 text-gray-700 font-medium">
           {currentPage}
@@ -43,13 +42,13 @@ const TableFooter = ({
         {/* Rows per page dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1   font-medium text-gray-700 hover:bg-gray-50 transition">
+            <button className="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1   font-medium text-gray-700 hover:bg-gray-50 transition cursor-pointer">
               {rowsPerPage} {title} / পেজ <ChevronDown className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end">
-            {rowsPerPageOptions.map((num) => (
+            {rowsPerPageOptions?.map((num) => (
               <DropdownMenuItem
                 key={num}
                 onClick={() => {

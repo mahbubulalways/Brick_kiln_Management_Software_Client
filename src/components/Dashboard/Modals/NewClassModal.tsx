@@ -1,28 +1,54 @@
 "use client";
-
+import { FaCircleCheck } from "react-icons/fa6";
 import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
 import CustomModal from "@/components/Reusable/CustomModal";
 import CustomSelect from "@/components/Reusable/CustomSelect";
+import { showToast } from "@/components/Toast/CustomToast";
+import { useCreateClassAndRateMutation } from "@/redux/features/classAndRate.features";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { MdOutlineError } from "react-icons/md";
+import { TClassAndRate } from "@/types/types";
 
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-type TClass = {
-  classType: string;
-  className: string;
-  rate: string;
-};
-
 const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
-  const { register, handleSubmit, control, reset } = useForm<TClass>({
+  const [mutateAsync, { isLoading }] = useCreateClassAndRateMutation();
+  const { register, handleSubmit, control, reset } = useForm<TClassAndRate>({
     defaultValues: {},
   });
 
-  const onSubmit: SubmitHandler<TClass> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<TClassAndRate> = async (data) => {
+    data.rate = Number(data.rate);
+    try {
+      const result = await mutateAsync(data).unwrap();
+      if (result?.success) {
+        onClose();
+        return showToast({
+          title: result?.message,
+          type: "success",
+          options: {
+            duration: 4000,
+            icon: <FaCircleCheck className="h-5 w-5" />,
+          },
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      //
+      return showToast({
+        title:
+          error?.data?.message ||
+          "দুঃখিত! সার্ভারে ত্রুটি হয়েছে, পরে চেষ্টা করুন",
+        type: "error",
+        options: {
+          duration: 4000,
+          icon: <MdOutlineError className="h-5 w-5" />,
+        },
+      });
+    }
   };
 
   return (
@@ -38,7 +64,7 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
             name="classType"
             label="শ্রেণির ধরণ"
             placeholder=""
-            control={control} // ✅ instead of register
+            control={control}
             options={["ইট", "আধলা", "অন্যান্য"]}
           />
 
@@ -69,8 +95,9 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
           <button
             type="submit"
             className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
+            disabled={isLoading}
           >
-            অ্যাড করুন
+            {isLoading ? "অ্যাড হচ্ছে..." : "অ্যাড করুন"}
           </button>
         </div>
       </form>

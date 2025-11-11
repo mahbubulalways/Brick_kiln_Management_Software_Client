@@ -33,7 +33,7 @@ export function DatePicker({
           <Button
             variant="outline"
             id="date"
-            className="rounded border border-gray-300 justify-between font-normal cursor-pointer py-1 h-auto hover:bg-white focus:ring-2 ring-gray-400 shadow-sm"
+            className="rounded border border-gray-300 justify-between font-normal cursor-pointer py-1 h-auto hover:bg-white focus:ring-2 ring-gray-400 "
           >
             {formattedDate}
             <ChevronDownIcon className="ml-2 h-3 w-3 text-gray-500" />

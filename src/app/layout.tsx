@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Noto_Sans_Bengali } from "next/font/google";
+import Providers from "@/components/Providers/Providers";
+import { Toaster } from "sonner";
 
 const notoBengali = Noto_Sans_Bengali({
   subsets: ["bengali"],
@@ -23,7 +25,8 @@ export default function RootLayout({
         cz-shortcut-listen="true"
         className={`${notoBengali.className} antialiased no-scrollbar`}
       >
-        {children}
+        <Toaster position="top-center" />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

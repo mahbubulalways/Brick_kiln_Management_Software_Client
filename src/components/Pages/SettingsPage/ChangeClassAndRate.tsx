@@ -1,43 +1,34 @@
 import { useState } from "react";
-import { Pencil, Trash2, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { Pencil, Trash2 } from "lucide-react";
 import NewClassModal from "@/components/Dashboard/Modals/NewClassModal";
+import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
+import { TClassAndRate } from "@/types/types";
+import TableHead from "@/components/Reusable/TableHead";
+import TableData from "@/components/Reusable/TableData";
+import TableFooter from "@/components/Reusable/TableFooter";
+import CustomLoader from "@/components/Reusable/CustomLoader";
+import EditClassAndRateModal from "@/components/Dashboard/Modals/EditModals/EditClassAndRateModal";
 
 const ChangeClassAndRate = () => {
-  const initialData = [
-    { id: 1, name: "১ নং", type: "ইট", rate: 10 },
-    { id: 2, name: "পিকেট", type: "ইট", rate: 10 },
-    { id: 3, name: "২ নং (ক)", type: "ইট", rate: 8.5 },
-    { id: 4, name: "২ নং (খ)", type: "ইট", rate: 6.5 },
-    { id: 5, name: "৩ নং ছাল্ট", type: "ইট", rate: 4.5 },
-    { id: 6, name: "৩ নং গরিয়া", type: "ইট", rate: 6.5 },
-    { id: 7, name: "এলোট", type: "ইট", rate: 0 },
-    { id: 8, name: "১ নং আদলা", type: "আধলা", rate: 10.5 },
-    { id: 9, name: "৩ নং আদলা", type: "আধলা", rate: 4 },
-    { id: 10, name: "রাবিস", type: "অন্যান্য", rate: 500 },
-    { id: 11, name: "খোয়া", type: "অন্যান্য", rate: 120 },
-  ];
-
-  const [data, setData] = useState(initialData);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
+  const [classId, setClassId] = useState<number>();
+  // Load data
+  const { isLoading, data: fetchedData } =
+    useGetAllClassAndRateQuery(undefined);
+  const classAndRates = fetchedData?.data || [];
 
   // Pagination logic
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
+  const paginatedData = classAndRates?.slice(
+    startIndex,
+    startIndex + rowsPerPage
+  );
 
   // Delete function
-  const handleDelete = (id: number) => {
-    if (confirm("আপনি কি নিশ্চিত যে এই শ্রেণিটি মুছে ফেলতে চান?")) {
-      setData(data.filter((row) => row.id !== id));
-    }
-  };
+  const handleDelete = (id: number) => {};
 
   return (
     <div className="bg-white">
@@ -57,75 +48,80 @@ const ChangeClassAndRate = () => {
         <table className="min-w-full  border-collapse">
           <thead>
             <tr className="bg-[#039A63] text-white text-center">
-              <th className="p-2 border">#</th>
-              <th className="p-2 border">শ্রেণির নাম</th>
-              <th className="p-2 border">শ্রেণির ধরণ</th>
-              <th className="p-2 border">রেট</th>
-              <th className="p-2 border">বাটন</th>
+              <TableHead th="#" />
+              <TableHead th="শ্রেণির নাম" />
+              <TableHead th="শ্রেণির ধরণ" />
+              <TableHead th="রেট" />
+              <TableHead th="বাটন" />
             </tr>
           </thead>
           <tbody className="text-center">
-            {paginatedData.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                <td className="border p-2">{row.id}</td>
-                <td className="border p-2">{row.name}</td>
-                <td className="border p-2">{row.type}</td>
-                <td className="border p-2">৳ {row.rate}</td>
-                <td className="border p-2">
-                  <div className="flex justify-center gap-3">
-                    <button className="text-blue-600 hover:text-blue-800 transition">
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-800 transition"
-                      onClick={() => handleDelete(row.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+            {isLoading ? (
+              <tr>
+                <td colSpan={5}>
+                  <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ))}
+            ) : !paginatedData?.length ? (
+              <tr>
+                <td colSpan={5} className="py-8 text-gray-600">
+                  কোনো ডাটা পাওয়া যায়নি
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((row: TClassAndRate, index: number) => (
+                <tr
+                  key={row?.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <TableData td={index + 1} />
+                  <TableData td={row?.className} />
+                  <TableData td={row?.classType} />
+                  <TableData td={`৳ ${row?.rate}`} />
+                  <td className="border p-2">
+                    <div className="flex justify-center gap-3">
+                      <button
+                        onClick={() => {
+                          setIsOpenEditModal(true);
+                          setClassId(row?.id as number);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 transition"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="text-red-600 hover:text-red-800 transition"
+                        onClick={() => handleDelete(row?.id as number)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Footer */}
-      <div className="flex justify-between rounded-b-md items-center p-2   text-gray-600 bg-white shadow">
-        <span>মোট শ্রেণি {data.length} টি</span>
-        <div className="flex items-center space-x-3">
-          <span className="border px-2 py-1 rounded bg-green-50 border-green-200">
-            {currentPage}
-          </span>
+      <TableFooter
+        currentPage={currentPage}
+        length={paginatedData?.length}
+        rowsPerPage={rowsPerPage}
+        setCurrentPage={setCurrentPage}
+        setRowsPerPage={setRowsPerPage}
+        title="শ্রেণি"
+      />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1   font-medium text-gray-700 hover:bg-gray-50 transition">
-                {rowsPerPage} শ্রেণি / পেজ <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-44 rounded-md border bg-white shadow-md"
-            >
-              {[5, 10, 15, 20].map((num) => (
-                <DropdownMenuItem
-                  key={num}
-                  onSelect={() => {
-                    setRowsPerPage(num);
-                    setCurrentPage(1);
-                  }}
-                  className="cursor-pointer px-4 py-2   text-gray-700 hover:bg-gray-100"
-                >
-                  {num} শ্রেণি / পেজ
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
       {isOpen && (
         <NewClassModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      )}
+      {isOpenEditModal && (
+        <EditClassAndRateModal
+          isOpen={isOpenEditModal}
+          onClose={() => setIsOpenEditModal(false)}
+          id={classId!}
+        />
       )}
     </div>
   );

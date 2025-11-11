@@ -21,7 +21,6 @@ type TCustomSelectProps = {
   disabled?: boolean;
   defaultValue?: string;
 };
-
 const CustomSelect = ({
   name,
   label,
@@ -44,7 +43,7 @@ const CustomSelect = ({
         name={name}
         control={control}
         rules={{ required }}
-        defaultValue={defaultValue || ""}
+        defaultValue={defaultValue}
         render={({ field }) => (
           <Select
             onValueChange={field.onChange}
@@ -65,7 +64,7 @@ const CustomSelect = ({
             </SelectTrigger>
 
             <SelectContent>
-              {options.map((option) => (
+              {options?.map((option) => (
                 <SelectItem
                   className="cursor-pointer"
                   key={option}

@@ -1,268 +1,475 @@
 "use client";
 
-import { useState } from "react";
-import { SubmitHandler, useForm, useFieldArray } from "react-hook-form";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import { DatePicker } from "@/components/Others/DatePicker";
 import { Plus, Trash } from "lucide-react";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import SmsSwitch from "@/components/Reusable/SmsSwitch";
+import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
+import CustomSelect from "@/components/Reusable/CustomSelect";
+import { TChallanCreate, TClassAndRate } from "@/types/types";
+import {
+  useCreateInvoiceMutation,
+  useGetInvoiceSerialQuery,
+  useGetSingleInvoiceQuery,
+} from "@/redux/features/invoice.features";
+import { showToast } from "@/components/Toast/CustomToast";
+import { MdOutlineError } from "react-icons/md";
+import { FaCircleCheck } from "react-icons/fa6";
 
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
+  setInvoiceId: Dispatch<SetStateAction<number | undefined>>;
+  invoiceId: number;
 };
 
-type TChalanItem = {
-  category: string;
-  rate: number;
-  quantity: number;
-  price: number;
-};
+const UpdateChalanModal = ({
+  isOpen,
+  onClose,
+  invoiceId,
+  setInvoiceId,
+}: TCustomModal) => {
+  const [deliveryDate, setDeliveryDate] = useState<Date>(new Date());
+  const [challanDate, setChallanDate] = useState<Date>(new Date());
+  const [duePayDate, setDuepayDate] = useState<Date>(new Date());
 
-type TKhatiyan = {
-  serial: string;
-  name: string;
-  address: string;
-  chalanType: string;
-  deliveryDate: Date | null;
-  note: string;
-  items: TChalanItem[];
-};
+  // FETCH SINGLE INVOICE
+  const { data: invoice, isLoading: invoiceLoading } = useGetSingleInvoiceQuery(
+    invoiceId,
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-const UpdateChalanModal = ({ isOpen, onClose }: TCustomModal) => {
-  const { register, control, handleSubmit, reset, watch } = useForm<TKhatiyan>({
+  // GET INVOICE SERIAL FOR INVOICE NO
+  const { data: invoiceSerial, isLoading: serialLoading } =
+    useGetInvoiceSerialQuery({ refetchOnMountOrArgChange: true });
+
+  // GET CLASS AND RATE FOR DROPDOWN
+  const { isLoading: classRateLoading, data: fetchedData } =
+    useGetAllClassAndRateQuery(undefined);
+  const classAndRate = fetchedData?.data || [];
+
+  // CREATE NEW INVOICE
+  const [mutateAsync, { isLoading: createInvoiceLoading }] =
+    useCreateInvoiceMutation();
+  const classOptions = classAndRate?.map(
+    (cls: TClassAndRate) => cls?.className
+  );
+
+  // REACT HOOK FORM
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<TChallanCreate>({
     defaultValues: {
-      serial: "",
-      name: "",
-      address: "",
-      chalanType: "",
-      deliveryDate: null,
-      note: "",
-      items: [{ category: "", rate: 0, quantity: 0, price: 0 }],
+      invoiceItems: {
+        items: [{ class: "", rate: 0, quantity: 0, price: 0 }],
+      },
     },
   });
 
+  // ✅ FIX: Reset form when invoice data is loaded
+  useEffect(() => {
+    if (invoice?.data) {
+      reset({
+        customer: {
+          phoneNumber: invoice.data.customer?.phoneNumber || "",
+          name: invoice.data.customer?.name || "",
+          address: invoice.data.customer?.address || "",
+        },
+        invoice: {
+          note: invoice.data.note || "",
+          serial: invoice.data.serial || "",
+          discount: invoice.data.discount || 0,
+          carRent: invoice.data.carRent || 0,
+          due: invoice.data.due || 0,
+          cash: invoice.data.cash || 0,
+          chalanType: invoice.data.chalanType || "",
+        },
+        invoiceItems: {
+          items:
+            invoice.data.items && invoice.data.items.length > 0
+              ? invoice.data.items
+              : [{ class: "", rate: 0, quantity: 0, price: 0 }],
+        },
+      });
+
+      // ✅ Sync dates with DB values if available
+      if (invoice.data.deliveryDate)
+        setDeliveryDate(new Date(invoice.data.deliveryDate));
+      if (invoice.data.challanDate)
+        setChallanDate(new Date(invoice.data.challanDate));
+      if (invoice.data.duePaymentDate)
+        setDuepayDate(new Date(invoice.data.duePaymentDate));
+    }
+  }, [invoice, reset]);
+
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "items",
+    name: "invoiceItems.items",
   });
 
-  const onSubmit: SubmitHandler<TKhatiyan> = (data) => {
-    console.log(data);
-    reset();
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const watchItems = watch("invoiceItems.items");
+  const carRent = watch("invoice.carRent");
+  const discount = watch("invoice.discount");
+  const cash = watch("invoice.cash");
+
+  // Update price instantly whenever rate or quantity changes
+  watchItems?.forEach((item, index) => {
+    const selectedClassName = item?.class;
+    const rateFromClass =
+      classAndRate?.find(
+        (cls: TClassAndRate) => cls?.className === selectedClassName
+      )?.rate || 0;
+
+    const quantity = Number(item?.quantity) || 0;
+    const price = rateFromClass * quantity;
+
+    if (Number(item?.rate) !== rateFromClass) {
+      setValue(`invoiceItems.items.${index}.rate`, rateFromClass);
+    }
+
+    if (Number(item?.price) !== price) {
+      setValue(`invoiceItems.items.${index}.price`, price);
+    }
+  });
+
+  const totalProductPrice = watchItems?.reduce(
+    (acc, current) => acc + Number(current?.price),
+    0
+  );
+  const totalPrice = totalProductPrice + Number(carRent) - Number(discount);
+  const safeCash = Math.min(cash, totalPrice);
+  const due = totalPrice - safeCash;
+
+  // HANDLE CALCULATIONS
+  useEffect(() => {
+    const safeDue = Math.max(due, 0);
+    setValue("invoice.productPrice", totalProductPrice);
+    setValue("invoice.totalPrice", totalPrice);
+    setValue("invoice.due", safeDue);
+  }, [due, setValue, totalPrice, totalProductPrice]);
+
+  //* FORM SUBMIT
+  const onSubmit: SubmitHandler<TChallanCreate> = async (data) => {
+    const allValid = watchItems.every((item) =>
+      Object.values(item).every((value) => value !== 0 && value !== "")
+    );
+    if (allValid === false) {
+      return showToast({
+        title: "আইটেমের শ্রেণি/পরিমাণ/রেট ঠিক করে দিন",
+        type: "error",
+        options: {
+          duration: 4000,
+          icon: <MdOutlineError className="h-5 w-5" />,
+        },
+      });
+    }
+    data.invoice.deliveryDate = deliveryDate;
+    data.invoice.challanDate = challanDate;
+    data.invoice.duePaymentDate = duePayDate;
+    data.invoice.serial = Number(data.invoice.serial);
+    data.invoice.carRent = Number(data.invoice.carRent);
+    data.invoice.cash = Number(data.invoice.cash);
+    data.invoice.discount = Number(data.invoice.discount);
+    data.invoice.totalPrice = Number(data.invoice.totalPrice);
+    data.invoice.due = Number(data.invoice.due);
+
+    try {
+      const result = await mutateAsync(data).unwrap();
+      if (result?.success) {
+        onClose();
+        reset();
+        return showToast({
+          title: result?.message,
+          type: "success",
+          options: {
+            duration: 4000,
+            icon: <FaCircleCheck className="h-5 w-5" />,
+          },
+        });
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      showToast({
+        title: error?.data?.message,
+        type: "error",
+        options: {
+          duration: 4000,
+          icon: <MdOutlineError className="h-5 w-5" />,
+        },
+      });
+    }
+  };
+
+  const handleClose = () => {
     onClose();
+    setInvoiceId(0);
   };
 
   return (
     <CustomModalBottom
       isOpen={isOpen}
       onClose={onClose}
-      title="নতুন চালান 😍"
-      width="w-4xl h-[85vh] lg:h-[80vh] overflow-y-auto pb-5 no-scrollbar"
+      title="আপডেট চালান 🧐"
+      width="w-4xl h-[85vh] lg:h-[85vh] overflow-y-auto pb-5 no-scrollbar"
     >
-      {/* Header Buttons */}
-      <div className="flex flex-col lg:flex-row justify-between gap-4 mb-4 h-">
-        {/* Buttons */}
-        <div className="flex items-stretch sm:items-center gap-2 w-full lg:w-auto">
-          <button className="bg-[#039A63] text-white px-4 sm:px-6 py-2 rounded   font-medium hover:bg-[#028a58] transition flex items-center justify-center gap-2 w-full sm:w-auto">
-            নতুন কাস্টমার
-          </button>
-          <button className="text-orange-500 border border-orange-500 px-3 py-2 rounded   hover:bg-orange-400 hover:text-white transition w-full sm:w-auto text-center">
-            পুরাতন কাস্টমার
-          </button>
-        </div>
-
-        {/* Serial & Date */}
-        <div className="flex  items-stretch sm:items-center gap-3 w-full lg:w-auto">
-          <div className="flex items-center border-2 border-gray-300 rounded-md px-2 py-1 w-full sm:w-auto">
-            <label className="  text-gray-700 whitespace-nowrap mr-2">
-              চালান নম্বর:
-            </label>
-            <input
-              type="text"
-              className="outline-none w-full sm:w-20 pl-2 text-gray-800"
-              placeholder="000"
-              {...register("serial")}
-            />
-          </div>
-          <div className="w-full sm:w-auto">
-            <DatePicker />
-          </div>
-        </div>
-      </div>
-
-      {/* Main Form */}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-          <CustomInputLabel
-            name="name"
-            label="ফোন নম্বর"
-            placeholder="ফোন নম্বর"
-            register={register}
-            type="text"
-          />
-          <CustomInputLabel
-            name="name"
-            label="কাস্টমারের নাম"
-            placeholder="কাস্টমারের নাম"
-            register={register}
-            type="text"
-          />
-          <CustomInputLabel
-            name="address"
-            label="কাস্টমারের ঠিকানা"
-            placeholder="কাস্টমারের ঠিকানা"
-            register={register}
-            type="text"
-          />
-          <CustomInputLabel
-            name="chalanType"
-            label="চালানের ধরণ"
-            placeholder="চালানের ধরণ"
-            register={register}
-            type="text"
-          />
-          <CustomInputLabel
-            name="chalanType"
-            label="ডেলিভারি তারিখ"
-            placeholder="চালানের ধরণ"
-            register={register}
-            type="text"
-          />
-          <CustomInputLabel
-            name="note"
-            label="নোট"
-            placeholder="নোট"
-            register={register}
-            type="text"
-          />
-        </div>
-
-        {/* Items Table */}
-        <div className="mb-4">
-          {fields.map((item, index) => (
-            <div
-              key={item.id}
-              className="flex items-center gap-2 bg-gray-50 rounded-md p-2"
-            >
-              <button
-                type="button"
-                className="flex items-center justify-center p-1 mt-4  rounded bg-gray-200 border border-gray-300 text-green-500 hover:bg-green-50 cursor-pointer"
-                onClick={() =>
-                  append({ category: "", rate: 0, quantity: 0, price: 0 })
-                }
-              >
-                <Plus size={20} />
+      {classRateLoading || serialLoading ? (
+        <></>
+      ) : (
+        <div>
+          <div className="flex flex-col lg:flex-row justify-between gap-4 mb-4">
+            <div className="flex items-stretch sm:items-center gap-2 w-full lg:w-auto">
+              <button className="bg-[#039A63] text-white px-4 sm:px-6 py-2 rounded font-medium hover:bg-[#028a58] transition flex items-center justify-center gap-2 w-full sm:w-auto">
+                নতুন কাস্টমার
               </button>
+              <button className="text-orange-500 border border-orange-500 px-3 py-2 rounded hover:bg-orange-400 hover:text-white transition w-full sm:w-auto text-center">
+                পুরাতন কাস্টমার
+              </button>
+            </div>
+
+            <div className="flex items-stretch sm:items-center gap-3 w-full lg:w-auto">
+              <div className="flex items-center border-2 border-gray-300 rounded-md px-2 py-1 w-full sm:w-auto bg-gray-100">
+                <label className="text-gray-700 whitespace-nowrap mr-2">
+                  চালান নম্বর:
+                </label>
+                <input
+                  type="text"
+                  className="outline-none w-full sm:w-20 pl-2 text-gray-800"
+                  placeholder="000"
+                  {...register("invoice.serial")}
+                  readOnly
+                />
+              </div>
+              <div className="w-full sm:w-auto">
+                <DatePicker date={challanDate} setDate={setChallanDate} />
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               <CustomInputLabel
-                name={`items.${index}.category`}
-                label="শ্রেণি"
-                placeholder="শ্রেণি"
+                name="customer.phoneNumber"
+                label="ফোন নম্বর"
+                placeholder="ফোন নম্বর"
+                register={register}
+                type="text"
+                readonly
+              />
+              <CustomInputLabel
+                name="customer.name"
+                label="কাস্টমারের নাম"
+                placeholder="কাস্টমারের নাম"
+                register={register}
+                type="text"
+                readonly
+              />
+              <CustomInputLabel
+                name="customer.address"
+                label="কাস্টমারের ঠিকানা"
+                placeholder="কাস্টমারের ঠিকানা"
+                register={register}
+                type="text"
+                readonly
+              />
+              <CustomSelect
+                name="invoice.chalanType"
+                label="চালানের ধরণ"
+                placeholder=""
+                defaultValue={invoice?.data?.chalanType}
+                control={control}
+                options={["রেগুলার চালান", "অগ্রিম চালান"]}
+              />
+              <div>
+                <Label className="flex items-center text-sm font-medium text-gray-600">
+                  ডেলিভারি তারিখ
+                </Label>
+                <DatePicker setDate={setDeliveryDate} date={deliveryDate} />
+              </div>
+              <CustomInputLabel
+                name="invoice.note"
+                label="নোট"
+                placeholder="নোট"
                 register={register}
                 type="text"
               />
-              <CustomInputLabel
-                name={`items.${index}.rate`}
-                label="রেট"
-                placeholder="0"
-                register={register}
-                type="number"
-              />
-              <CustomInputLabel
-                name={`items.${index}.quantity`}
-                label="পরিমাণ"
-                placeholder="0"
-                register={register}
-                type="number"
-              />
-              <CustomInputLabel
-                name={`items.${index}.price`}
-                label="মূল্য"
-                placeholder="0"
-                register={register}
-                type="number"
-              />
-              <button
-                type="button"
-                disabled={fields.length === 1}
-                className={`flex items-center justify-center cursor-pointer  p-1 mt-4 rounded ${
-                  fields.length === 1
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-red-100 text-red-500 hover:bg-red-200"
-                }`}
-                onClick={() => remove(index)}
+            </div>
+
+            <div className="mb-4 flex flex-col gap-2">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="flex items-center gap-2 bg-gray-50 rounded-md p-2"
+                >
+                  <CustomSelect
+                    name={`invoiceItems.items.${index}.class`}
+                    label="শ্রেণি"
+                    placeholder="শ্রেণি"
+                    control={control}
+                    options={classOptions || []}
+                  />
+                  <CustomInputLabel
+                    name={`invoiceItems.items.${index}.rate`}
+                    label="রেট"
+                    placeholder="0"
+                    register={register}
+                    type="text"
+                    required
+                  />
+                  <CustomInputLabel
+                    name={`invoiceItems.items.${index}.quantity`}
+                    label="পরিমাণ"
+                    placeholder="0"
+                    register={register}
+                    type="number"
+                    required
+                  />
+                  <CustomInputLabel
+                    name={`invoiceItems.items.${index}.price`}
+                    label="মূল্য"
+                    placeholder="0"
+                    register={register}
+                    type="number"
+                    readonly={true}
+                    required
+                  />
+
+                  <div className="flex flex-col gap-1 mt-4">
+                    <button
+                      type="button"
+                      className="flex items-center justify-center p-1 rounded bg-green-100 text-green-600 hover:bg-green-200"
+                      onClick={() =>
+                        append({ class: "", rate: 0, quantity: 0, price: 0 })
+                      }
+                    >
+                      <Plus size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={fields.length === 1}
+                      className={`flex items-center justify-center p-1 rounded ${
+                        fields.length === 1
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                          : "bg-red-100 text-red-500 hover:bg-red-200"
+                      }`}
+                      onClick={() => remove(index)}
+                    >
+                      <Trash size={18} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {due ? (
+                <div className="hidden lg:flex flex-col items-center justify-center h-auto">
+                  <h1 className="text-orange-600 text-sm text-center">
+                    বাকি পরিশোধের তারিখ লিখুন
+                  </h1>
+                  <div className="w-max mx-auto py-2">
+                    <DatePicker date={duePayDate} setDate={setDuepayDate} />
+                  </div>
+                  <SmsSwitch
+                    showBorder={false}
+                    showLabel={false}
+                    title="কাস্টমারকে এসএমএস দিন"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <h1>HERE WILL BE SOMETHING</h1>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <CustomInputLabel
+                  name="invoice.productPrice"
+                  label="মূল্য"
+                  placeholder="0"
+                  register={register}
+                  type="number"
+                  readonly
+                  required
+                />
+                <CustomInputLabel
+                  name="invoice.discount"
+                  label="ছাড়"
+                  placeholder="0"
+                  register={register}
+                  type="number"
+                  required
+                />
+                <CustomInputLabel
+                  name="invoice.carRent"
+                  label="গাড়ি ভাড়া"
+                  placeholder="৳ 0"
+                  register={register}
+                  type="number"
+                  required
+                />
+                <CustomInputLabel
+                  name="invoice.totalPrice"
+                  label="মোট"
+                  placeholder="৳ 0"
+                  register={register}
+                  type="number"
+                  readonly
+                  required
+                />
+                <CustomInputLabel
+                  name="invoice.cash"
+                  label="নগদ"
+                  placeholder="৳ 0"
+                  register={register}
+                  type="number"
+                />
+                <CustomInputLabel
+                  name="invoice.due"
+                  label="বাকি"
+                  placeholder="৳ 0"
+                  register={register}
+                  type="number"
+                  readonly
+                />
+              </div>
+
+              <div className="block lg:hidden">
+                <p className="text-xs text-gray-600 pb-1">এসএমএস</p>
+                <p className="bg-gray-200 py-2 px-4 rounded w-full">SMS Off</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5 pt-5">
+              <div
+                onClick={() => reset()}
+                className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5 text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer text-center"
               >
-                <Trash size={20} />
+                ক্লিয়ার
+              </div>
+              <button
+                type="submit"
+                className="text-[14px] bg-[#039A63] px-8 py-1.5 text-white font-medium rounded cursor-pointer"
+                disabled={createInvoiceLoading}
+              >
+                {createInvoiceLoading ? "সেভ হচ্ছে..." : "সেভ করুন"}
               </button>
             </div>
-          ))}
+          </form>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className="bg-red-100 hidden lg:block">DEMO</div>
-          <div className="grid grid-cols-2 gap-2">
-            <CustomInputLabel
-              name={`da`}
-              label="মূল্য"
-              placeholder="0"
-              register={register}
-              type="number"
-            />
-            <CustomInputLabel
-              name={`da`}
-              label="ছাড়"
-              placeholder="0"
-              register={register}
-              type="number"
-            />
-            <CustomInputLabel
-              name={`da`}
-              label="গাড়ি ভাড়া"
-              placeholder="৳ 0"
-              register={register}
-              type="number"
-            />
-            <CustomInputLabel
-              name={`da`}
-              label="মোট"
-              placeholder="৳ 0"
-              register={register}
-              type="number"
-            />
-            <CustomInputLabel
-              name={`da`}
-              label="নগদ"
-              placeholder="৳ 0"
-              register={register}
-              type="number"
-            />
-            <CustomInputLabel
-              name={`da`}
-              label="বাকি"
-              placeholder="৳ 0"
-              register={register}
-              type="number"
-            />
-          </div>
-
-          <div className="block lg:hidden">
-            <p className="text-xs text-gray-600 pb-1">এসএমএস</p>
-            <p className="bg-gray-200 py-2 px-4   rounded w-full">SMS Off</p>
-          </div>
-        </div>
-        {/* Footer Buttons */}
-        <div className="grid grid-cols-2 gap-5 pt-5">
-          <div
-            onClick={() => reset()}
-            className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5 text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer text-center"
-          >
-            ক্লিয়ার
-          </div>
-          <button className="text-[14px] bg-[#039A63] px-8 py-1.5 text-white font-medium rounded cursor-pointer">
-            অ্যাড করুন
-          </button>
-        </div>
-      </form>
+      )}
     </CustomModalBottom>
   );
 };

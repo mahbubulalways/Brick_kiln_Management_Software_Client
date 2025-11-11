@@ -19,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useGetAllInvoicesQuery } from "@/redux/features/invoice.features";
 import {
   MoreVertical,
   Printer,
@@ -93,19 +94,68 @@ const data: SaleRow[] = [
     due: 0,
   },
 ];
+export interface ICustomer {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  address: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
+
+export interface IChallanItem {
+  id: number;
+  challanId: number;
+  class: string;
+  quantity: number;
+  rate: number;
+  price: number;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
+
+export interface IChallan {
+  id: number;
+  serial: number;
+  chalanType: string;
+  challanDate: string; // ISO date string
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  createdBy: string;
+  customerId: number;
+  customer: ICustomer;
+  items: IChallanItem[];
+  productPrice: number;
+  discount: number;
+  totalPrice: number;
+  cash: number;
+  due: number;
+  duePaymentDate: string; // ISO date string
+  deliveryDate: string; // ISO date string
+  note?: string;
+  carRent: number;
+}
 
 const SalesTable = () => {
   const [search, setSearch] = useState("");
+  const [date, setDate] = useState<Date>(new Date());
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [openReportModal, setOpenReportModal] = useState<boolean>(false);
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
+  const [invoiceId, setInvoiceId] = useState<number>();
   const [openChalanDetailsModal, setOpenChalanDetailsModal] =
     useState<boolean>(false);
-  const filtered = data.filter((row) =>
-    row.customer.toLowerCase().includes(search.toLowerCase())
+
+  // FETCH ALL INVOICES
+  const { isLoading: fetchInvoiceLoadig, data: invoices } =
+    useGetAllInvoicesQuery(undefined);
+
+  const totalInvoices = invoices?.data || [];
+  const filtered = totalInvoices.filter((row: IChallan) =>
+    row?.customer?.name?.toLowerCase()?.includes(search?.toLowerCase())
   );
 
   // const totalPages = Math.ceil(filtered.length / rowsPerPage);
@@ -114,7 +164,6 @@ const SalesTable = () => {
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
-
   return (
     <div className="bg-white rounded-md shadow border border-gray-200 overflow-hidden">
       <div className="flex justify-between items-center p-3 border-b bg-gray-50 gap-5">
@@ -128,7 +177,7 @@ const SalesTable = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <DatePicker />
+          <DatePicker date={date} setDate={setDate} />
           <button
             onClick={() => setOpenReportModal(true)}
             className="cursor-pointer"
@@ -160,101 +209,249 @@ const SalesTable = () => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {paginatedData.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                <TableData td={row.id} />
-                <TableData td={row.customer} />
-                <TableData td={row.address} cls="hidden lg:table-cell" />
-                <TableData td={row.category} />
-                <TableData td={row.quantity.toLocaleString()} />
-                <TableData td={row.rate} cls="hidden lg:table-cell" />
-                <TableData
-                  td={`৳ ${row.price.toLocaleString()}`}
-                  cls="hidden lg:table-cell"
-                />
-                <TableData
-                  td={`৳ ${row.total.toLocaleString()}`}
-                  cls="text-green-600 font-medium hidden lg:table-cell"
-                />
-                <TableData
-                  td={`৳ ${row.discount}`}
-                  cls="text-orange-500 hidden lg:table-cell"
-                />
-                <TableData
-                  td={`৳ ${row.fare}`}
-                  cls="text-blue-600 hidden lg:table-cell"
-                />
-                <TableData
-                  td={`৳ ${row.grandTotal.toLocaleString()}`}
-                  cls="text-green-600 font-medium"
-                />
-                <TableData
-                  td={`৳ ${row.cash.toLocaleString()}`}
-                  cls="text-green-600 font-medium hidden lg:table-cell"
-                />
-                <TableData
-                  td={`৳ ${row.due.toLocaleString()}`}
-                  cls={`border p-2 ${
-                    row.due > 0 ? "text-red-500 font-medium" : "text-green-600"
-                  } hidden lg:table-cell`}
-                />
+            {paginatedData?.map((row: IChallan, idx: number) =>
+              row.items.length > 1 ? (
+                row.items.map((item: IChallanItem, index: number) => (
+                  <tr
+                    key={`${row.id}-${item.id}`}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    {index === 0 && (
+                      <>
+                        <TableData td={index + 1} rowSpan={row.items.length} />
+                        <TableData
+                          td={row?.customer?.name}
+                          rowSpan={row.items.length}
+                        />
+                        <TableData
+                          td={row?.customer?.address}
+                          cls="hidden lg:table-cell"
+                          rowSpan={row.items.length}
+                        />
+                      </>
+                    )}
 
-                <td className="border p-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 rounded hover:bg-gray-100 transition">
-                        <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="rounded-md border bg-white shadow-md"
-                    >
-                      <DropdownMenuItem
-                        onClick={() => setOpenUpdateModal(true)}
+                    <TableData td={item.class} />
+                    <TableData td={item.quantity.toLocaleString()} />
+                    <TableData td={item.rate} cls="hidden lg:table-cell" />
+                    <TableData
+                      td={`৳ ${item.price.toLocaleString()}`}
+                      cls="hidden lg:table-cell"
+                    />
+
+                    {index === 0 && (
+                      <>
+                        <TableData
+                          td={`৳ ${row.productPrice}`}
+                          cls="text-orange-500 hidden lg:table-cell"
+                          rowSpan={row.items.length}
+                        />
+                        <TableData
+                          td={`৳ ${row.discount}`}
+                          cls="text-orange-500 hidden lg:table-cell"
+                          rowSpan={row.items.length}
+                        />
+                        <TableData
+                          td={`৳ ${row.carRent}`}
+                          cls="text-blue-600 hidden lg:table-cell"
+                          rowSpan={row.items.length}
+                        />
+                        <TableData
+                          td={`৳ ${row.totalPrice}`}
+                          cls="text-green-600 font-medium"
+                          rowSpan={row.items.length}
+                        />
+
+                        <TableData
+                          td={`৳ ${row.cash}`}
+                          cls="text-green-600 font-medium hidden lg:table-cell"
+                          rowSpan={row.items.length}
+                        />
+                        <TableData
+                          td={`৳ ${row.due}`}
+                          cls={`border p-2 ${
+                            row.due > 0
+                              ? "text-red-500 font-medium"
+                              : "text-green-600"
+                          } hidden lg:table-cell`}
+                          rowSpan={row.items.length}
+                        />
+                        <td className="border p-2" rowSpan={row.items.length}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="p-1.5 rounded hover:bg-gray-100 transition">
+                                <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="rounded-md border bg-white shadow-md"
+                            >
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setOpenUpdateModal(true);
+                                  setInvoiceId(row?.id);
+                                }}
+                              >
+                                <CustomDropDownMenuItem
+                                  Icon={BsPencilSquare}
+                                  title="আপডেট করুন"
+                                />
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setOpenPrintModal(true)}
+                              >
+                                <CustomDropDownMenuItem
+                                  Icon={Printer}
+                                  title="প্রিন্ট চালান "
+                                />
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <CustomDropDownMenuItem
+                                  Icon={Truck}
+                                  title="ডেলিভারি দিন"
+                                />
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setOpenChalanDetailsModal(true)}
+                              >
+                                <CustomDropDownMenuItem
+                                  Icon={Notebook}
+                                  title="চালান বিস্তারিত"
+                                />
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <CustomDropDownMenuItem
+                                  Icon={User}
+                                  title="প্রোফাইলে যান"
+                                />
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <CustomDropDownMenuItem
+                                  Icon={Trash}
+                                  title="ডিলিট করুন"
+                                />
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr
+                  key={row?.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <TableData td={idx + 1} />
+                  <TableData td={row?.customer?.name} />
+                  <TableData
+                    td={row?.customer?.address}
+                    cls="hidden lg:table-cell"
+                  />
+                  <TableData td={row.items[0]?.class} />
+                  <TableData td={row.items[0]?.quantity.toLocaleString()} />
+                  <TableData
+                    td={row.items[0]?.rate}
+                    cls="hidden lg:table-cell"
+                  />
+                  <TableData
+                    td={`৳ ${row.items[0]?.price.toLocaleString()}`}
+                    cls="hidden lg:table-cell"
+                  />
+
+                  <TableData
+                    td={`৳ ${row?.productPrice}`}
+                    cls="text-orange-500 hidden lg:table-cell"
+                  />
+                  <TableData
+                    td={`৳ ${row?.discount}`}
+                    cls="text-orange-500 hidden lg:table-cell"
+                  />
+                  <TableData
+                    td={`৳ ${row?.carRent}`}
+                    cls="text-blue-600 hidden lg:table-cell"
+                  />
+                  <TableData
+                    td={`৳ ${row.totalPrice}`}
+                    cls="text-green-600 font-medium"
+                  />
+
+                  <TableData
+                    td={`৳ ${row?.cash}`}
+                    cls="text-green-600 font-medium hidden lg:table-cell"
+                  />
+                  <TableData
+                    td={`৳ ${row?.due}`}
+                    cls={`border p-2 ${
+                      row.due > 0
+                        ? "text-red-500 font-medium"
+                        : "text-green-600"
+                    } hidden lg:table-cell`}
+                  />
+                  <td className="border p-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1.5 rounded hover:bg-gray-100 transition">
+                          <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="rounded-md border bg-white shadow-md"
                       >
-                        <CustomDropDownMenuItem
-                          Icon={BsPencilSquare}
-                          title="আপডেট করুন"
-                        />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setOpenPrintModal(true)}>
-                        <CustomDropDownMenuItem
-                          Icon={Printer}
-                          title="প্রিন্ট চালান "
-                        />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <CustomDropDownMenuItem
-                          Icon={Truck}
-                          title="ডেলিভারি দিন"
-                        />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setOpenChalanDetailsModal(true)}
-                      >
-                        <CustomDropDownMenuItem
-                          Icon={Notebook}
-                          title="চালান বিস্তারিত"
-                        />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <CustomDropDownMenuItem
-                          Icon={User}
-                          title="প্রোফাইলে যান"
-                        />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <CustomDropDownMenuItem
-                          Icon={Trash}
-                          title="ডিলিট করুন"
-                        />
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </td>
-              </tr>
-            ))}
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setOpenUpdateModal(true);
+                            setInvoiceId(row?.id);
+                          }}
+                        >
+                          <CustomDropDownMenuItem
+                            Icon={BsPencilSquare}
+                            title="আপডেট করুন"
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setOpenPrintModal(true)}
+                        >
+                          <CustomDropDownMenuItem
+                            Icon={Printer}
+                            title="প্রিন্ট চালান "
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <CustomDropDownMenuItem
+                            Icon={Truck}
+                            title="ডেলিভারি দিন"
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setOpenChalanDetailsModal(true)}
+                        >
+                          <CustomDropDownMenuItem
+                            Icon={Notebook}
+                            title="চালান বিস্তারিত"
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <CustomDropDownMenuItem
+                            Icon={User}
+                            title="প্রোফাইলে যান"
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <CustomDropDownMenuItem
+                            Icon={Trash}
+                            title="ডিলিট করুন"
+                          />
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       </div>
@@ -262,7 +459,7 @@ const SalesTable = () => {
       {/* Footer */}
       <TableFooter
         currentPage={currentPage}
-        filtered={filtered}
+        length={filtered?.length}
         rowsPerPage={rowsPerPage}
         setCurrentPage={setCurrentPage}
         setRowsPerPage={setRowsPerPage}
@@ -282,6 +479,8 @@ const SalesTable = () => {
         <UpdateChalanModal
           isOpen={openUpdateModal}
           onClose={() => setOpenUpdateModal(false)}
+          invoiceId={invoiceId!}
+          setInvoiceId={setInvoiceId!}
         />
       )}
       {openPrintModal && (
