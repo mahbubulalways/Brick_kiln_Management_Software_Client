@@ -13,17 +13,24 @@ import {
 export function DatePicker({
   setDate,
   date,
+  readonly,
 }: {
-  setDate: React.Dispatch<React.SetStateAction<Date>>;
-  date: Date;
+  setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  date?: Date;
+  readonly?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
 
   // Format date as day/month/year
   const formattedDate = date
-    ? `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}/${date.getFullYear()}`
+    ? (() => {
+        const jsDate = new Date(date);
+        return `${jsDate.getDate().toString().padStart(2, "0")}/${(
+          jsDate.getMonth() + 1
+        )
+          .toString()
+          .padStart(2, "0")}/${jsDate.getFullYear()}`;
+      })()
     : "Select date";
 
   return (
@@ -34,6 +41,7 @@ export function DatePicker({
             variant="outline"
             id="date"
             className="rounded border border-gray-300 justify-between font-normal cursor-pointer py-1 h-auto hover:bg-white focus:ring-2 ring-gray-400 "
+            disabled={readonly}
           >
             {formattedDate}
             <ChevronDownIcon className="ml-2 h-3 w-3 text-gray-500" />

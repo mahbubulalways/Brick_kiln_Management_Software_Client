@@ -35,7 +35,7 @@ const CustomNormalModal = ({
         </div> */}
 
         {/* Body */}
-        <div className="p-3">{children}</div>
+        <div className="p-3 max-h-[90vh] overflow-scroll">{children}</div>
       </div>
     </div>
   );

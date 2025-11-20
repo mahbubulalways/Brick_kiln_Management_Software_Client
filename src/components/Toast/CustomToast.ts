@@ -28,7 +28,7 @@ export const showToast = ({ title, type, options = {} }: TToast) => {
           ? "#039A63"
           : type === "error"
           ? "#ef4444"
-          : "#3b82f6",
+          : "#DA851D",
       color: "white",
       padding: "14px 20px",
       borderRadius: "12px",

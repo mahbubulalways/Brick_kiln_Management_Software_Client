@@ -58,7 +58,7 @@ const ShowSidebarItems = ({
               >
                 <div className="flex items-center space-x-2 text-gray-700 transition">
                   <Icon className="text-lg" />
-                  <span>{item.title}</span>
+                  <span className="text-[16px]">{item.title}</span>
                 </div>
                 {isOpen ? (
                   <MdKeyboardArrowDown className="text-lg" />
@@ -88,7 +88,7 @@ const ShowSidebarItems = ({
                         className={`flex items-center space-x-2 p-2`}
                       >
                         <ChildIcon className="text-base" />
-                        <span>{child.title}</span>
+                        <span className="text-[16px]">{child.title}</span>
                       </Link>
                     </li>
                   );
@@ -115,7 +115,7 @@ const ShowSidebarItems = ({
     `}
             >
               <Icon className="text-lg" />
-              <span>{item.title}</span>
+              <span className="text-[16px]">{item.title}</span>
             </Link>
           </div>
         )}

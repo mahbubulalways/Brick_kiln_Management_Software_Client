@@ -19,108 +19,50 @@ import NewPaymentModal from "@/components/Dashboard/Modals/NewPaymentModal";
 import TableHead from "@/components/Reusable/TableHead";
 import CustomButtonFixed from "@/components/Reusable/CustomButtonFixed";
 import TableData from "@/components/Reusable/TableData";
+import { useGetTodayHaveDueQuery } from "@/redux/features/dueCollection.features";
+import { IChallanForDataShow, ICustomer } from "@/types/types";
+import CustomLoader from "@/components/Reusable/CustomLoader";
 
-interface PaymentRow {
-  id: number;
-  creditor: string;
-  description: string;
-  quantity: number;
-  totalBill: number;
-  debit: number;
-  credit: number;
-  balance: number;
-}
-
-const data: PaymentRow[] = [
-  {
-    id: 29,
-    creditor: "harun",
-    description: "bank",
-    quantity: 0,
-    totalBill: 0,
-    debit: 0,
-    credit: 5000,
-    balance: -5000,
-  },
-  {
-    id: 30,
-    creditor: "sona",
-    description: "wood",
-    quantity: 50,
-    totalBill: 5000,
-    debit: 0,
-    credit: 0,
-    balance: 5000,
-  },
-  {
-    id: 31,
-    creditor: "saiful",
-    description: "nn",
-    quantity: 0,
-    totalBill: 0,
-    debit: 5000,
-    credit: 5000,
-    balance: 0,
-  },
-  {
-    id: 32,
-    creditor: "sona",
-    description: "wood",
-    quantity: 0,
-    totalBill: 0,
-    debit: 0,
-    credit: 5000,
-    balance: 0,
-  },
-  {
-    id: 33,
-    creditor: "harun",
-    description: "mia",
-    quantity: 0,
-    totalBill: 0,
-    debit: 5000,
-    credit: 5000,
-    balance: 0,
-  },
-  {
-    id: 34,
-    creditor: "harun",
-    description: "mia",
-    quantity: 0,
-    totalBill: 0,
-    debit: 1200,
-    credit: 1200,
-    balance: 0,
-  },
-];
+type PaymentRow = {
+  challans: IChallanForDataShow[];
+} & ICustomer;
 
 const TodayWillPayPage = () => {
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const isoDate = date ? date.toISOString() : "";
 
-  const filtered = data.filter((row) =>
-    row.creditor.toLowerCase().includes(search.toLowerCase())
+  const { data: dues, isLoading } = useGetTodayHaveDueQuery(isoDate, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const filtered = dues?.data?.filter((row: PaymentRow) =>
+    row.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalCredit = filtered.reduce((sum, r) => sum + r.credit, 0);
+  const totalCredit = filtered?.reduce(
+    (sum: number, r: PaymentRow) => sum + (r?.totalPurchased - r?.totalPaid),
+    0
+  );
 
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
-
+  console.log(filtered);
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
         <div className="flex items-center gap-2 w-auto lg:w-full">
           <span className=" text-orange-500 px-3 py-1 rounded   border border-orange-300 font-medium hidden lg:block">
-            মোট জমা দেবেঃ {totalCredit.toLocaleString()} টাকা
+            মোট জমা দেবেঃ {totalCredit} টাকা
           </span>
         </div>
 
         <div className="flex items-center lg:justify-end gap-2 w-full">
           <CustomSearchInput search={search} setSearch={setSearch} />
-          <DatePicker />
+          <DatePicker setDate={setDate} date={date} />
           <button onClick={reactToPrintFn}>
             <CustomButtonFixed title="প্রিন্ট করুন" />
           </button>
@@ -144,90 +86,79 @@ const TodayWillPayPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
-                <TableData td={row.id} />
-                <TableData td={row.creditor} />
-                <TableData td={row.description} />
-                <TableData td={row.quantity} />
-                <TableData td={row.quantity} />
-                <TableData td={row.quantity} />
-                <TableData td={row.quantity} />
-                <TableData td={row.quantity} />
-
-                <td className="border p-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 rounded hover:bg-gray-100 transition">
-                        <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-36 rounded-md border bg-white shadow-md"
-                    >
-                      <DropdownMenuLabel className="px-3 py-1 text-gray-500 text-xs">
-                        Actions
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
-                        <Eye className="w-4 h-4 text-green-600" /> বিস্তারিত
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
-                        <Pencil className="w-4 h-4 text-blue-600" /> সম্পাদনা
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100 text-red-600">
-                        <Trash2 className="w-4 h-4" /> মুছুন
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {isLoading ? (
+              <tr>
+                <td colSpan={9}>
+                  <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ))}
+            ) : !filtered?.length ? (
+              <tr>
+                <td colSpan={9} className="py-8 text-gray-600">
+                  {dues?.message}
+                </td>
+              </tr>
+            ) : (
+              filtered?.map((row: PaymentRow) => (
+                <tr key={row.id} className="hover:bg-gray-50">
+                  <TableData td={row?.id} />
+                  <TableData td={row?.name} />
+                  <TableData td={row?.address} />
+                  <TableData
+                    td={row?.challans?.reduce((accChallan, challan) => {
+                      const itemsSum =
+                        challan.items?.reduce(
+                          (accItem, curr) =>
+                            accItem +
+                            ((curr.quantity ?? 0) - (curr.delivered ?? 0)),
+                          0
+                        ) ?? 0;
+                      return accChallan + itemsSum;
+                    }, 0)}
+                  />
+
+                  <TableData td={row?.totalPurchased - row?.totalPaid} />
+                  <TableData td={row?.phoneNumber} />
+                  <TableData td={row?.challans?.[0]?.note ?? "-"} />
+
+                  <TableData td={"2425"} />
+
+                  <td className="border p-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1.5 rounded hover:bg-gray-100 transition">
+                          <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-36 rounded-md border bg-white shadow-md"
+                      >
+                        <DropdownMenuLabel className="px-3 py-1 text-gray-500 text-xs">
+                          Actions
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
+                          <Eye className="w-4 h-4 text-green-600" /> বিস্তারিত
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
+                          <Pencil className="w-4 h-4 text-blue-600" /> সম্পাদনা
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100 text-red-600">
+                          <Trash2 className="w-4 h-4" /> মুছুন
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Footer */}
-      <div className="flex justify-between items-center p-3   text-gray-600 bg-gray-50 border-t">
-        <span>
-          মোট পেমেন্ট {filtered.length} টি | মোট পেমেন্ট{" "}
-          <span className="text-green-700 font-medium">
-            {totalCredit.toLocaleString()} টাকা
-          </span>
-        </span>
 
-        <div className="flex items-center space-x-3">
-          <span className="border px-2 py-1 rounded bg-green-50 border-green-200">
-            {currentPage}
-          </span>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1   font-medium text-gray-700 hover:bg-gray-50 transition">
-                {rowsPerPage} পেমেন্ট / পেজ <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-44 rounded-md border bg-white shadow-md"
-            >
-              {[10, 20, 30, 50, 100].map((num) => (
-                <DropdownMenuItem
-                  key={num}
-                  onSelect={() => {
-                    setRowsPerPage(num);
-                    setCurrentPage(1);
-                  }}
-                  className="cursor-pointer px-4 py-2   text-gray-700 hover:bg-gray-100"
-                >
-                  {num} পেমেন্ট / পেজ
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
       {isOpen && (
         <NewPaymentModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       )}

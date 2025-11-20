@@ -28,12 +28,13 @@ const CustomInputLabel = ({
   type = "text",
   cls = "",
   errMsg,
+  value,
 }: TCustomInputLabel) => {
   return (
     <div className="w-full">
       <Label className="pb-1 lg:pb-0.5 flex items-center text-sm font-medium text-gray-600">
         {label}
-        {required && <span className="text-red-600">*</span>}
+        {/* {required && <span className="text-red-600">*</span>} */}
       </Label>
 
       <Input

@@ -64,10 +64,10 @@ const CustomSelect = ({
             </SelectTrigger>
 
             <SelectContent>
-              {options?.map((option) => (
+              {options?.map((option, index) => (
                 <SelectItem
                   className="cursor-pointer"
-                  key={option}
+                  key={index + 10}
                   value={option}
                 >
                   {option}

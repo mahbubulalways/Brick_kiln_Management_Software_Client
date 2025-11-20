@@ -30,22 +30,67 @@ const invoiceApi = baseApi.injectEndpoints({
       providesTags: ["Invoice"],
     }),
 
-    // GET SINGLE CLASS AND RATE
+    // GET ITEMS WITH INVOICE
+    getItemsWithInvoices: builder.query({
+      query: (date: { startDate: string; endDate: string }) => ({
+        url: `/invoice/items?startDate=${date.startDate}&endDate=${date.endDate}`,
+        method: "GET",
+      }),
+      providesTags: ["Invoice"],
+    }),
+
+    // GET SINGLE INVOICE
     getSingleInvoice: builder.query({
       query: (id: number) => ({
         url: `/invoice/single-invoice/${id}`,
         method: "GET",
       }),
     }),
+    // GET SINGLE INVOICE ITEMS
+    getSingleInvoiceItems: builder.query({
+      query: (payload: { invoiceId: number; ids: string }) => ({
+        url: `/invoice/single-invoice-items/${payload?.invoiceId}?ids=${payload?.ids}`,
+        method: "GET",
+      }),
+      providesTags: ["InvoiceItem"],
+    }),
 
-    // UPDATE CLASS AND RATE
-    updateClassAndRate: builder.mutation({
+    // UPDATE INVOICE
+    updateInvoice: builder.mutation({
       query: (payload) => ({
-        url: `/class/update-class-and-rate/${payload.id}`,
+        url: `/invoice/update-invoice/${payload.id}`,
         method: "PATCH",
         body: payload.payload,
       }),
-      invalidatesTags: ["ClassAndRate"],
+      invalidatesTags: ["Invoice"],
+    }),
+
+    // UPDATE INVOICE DELIVERY DATE
+    updateInvoiceDeliveryDate: builder.mutation({
+      query: (payload) => ({
+        url: `/invoice/update-invoice-delivery-date/${payload.id}`,
+        method: "PATCH",
+        body: payload.payload,
+      }),
+      invalidatesTags: ["Invoice"],
+    }),
+    // UPDATE INVOICE ITEM DELIVERY DAE
+    updateInvoiceItemDeliveryDate: builder.mutation({
+      query: (payload) => ({
+        url: `/invoice/update-item-delivery-date/${payload.id}`,
+        method: "PATCH",
+        body: payload.payload,
+      }),
+      invalidatesTags: ["InvoiceItem"],
+    }),
+
+    //  DELETE INVOICE
+    deleteInvoice: builder.mutation({
+      query: (id: number) => ({
+        url: `/invoice/delete-invoice/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Invoice"],
     }),
   }),
 });
@@ -55,4 +100,11 @@ export const {
   useGetInvoiceSerialQuery,
   useGetAllInvoicesQuery,
   useGetSingleInvoiceQuery,
+  useUpdateInvoiceMutation,
+  useDeleteInvoiceMutation,
+  useGetItemsWithInvoicesQuery,
+  useGetSingleInvoiceItemsQuery,
+  useUpdateInvoiceDeliveryDateMutation,
+  useUpdateInvoiceItemDeliveryDateMutation,
+  useLazyGetSingleInvoiceQuery,
 } = invoiceApi;

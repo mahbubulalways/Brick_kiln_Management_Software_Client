@@ -5,25 +5,90 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Eye, Pencil, Trash2 } from "lucide-react";
+import { Calendar, MoreVertical, Truck, User } from "lucide-react";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
-import CustomSearchInput from "@/components/Reusable/CustomSearchInput";
 import { DatePicker } from "@/components/Others/DatePicker";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
-import NewPaymentModal from "@/components/Dashboard/Modals/NewPaymentModal";
-import NewPaymentSection from "../../PaymentPage/NewPaymentSection";
 import TableHead from "@/components/Reusable/TableHead";
 import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
+import { useGetTodaysDeliveryQuery } from "@/redux/features/delivery.features";
+import moment from "moment";
+import TableData from "@/components/Reusable/TableData";
+import CustomLoader from "@/components/Reusable/CustomLoader";
+import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
+import TableFooter from "@/components/Reusable/TableFooter";
+import DeliveryReportModal, {
+  TItems,
+} from "@/components/Dashboard/Modals/ReportModal/DeliveryReportModal";
+import { groupAndSumByClass } from "@/utils/getDeliveryReportData";
+import DeliveryPrintModal from "@/components/Dashboard/PrintModal/DeliveryPrint/DeliveryPrintModal";
+export type TInvoiceCustomer = {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  address: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TDeliveryInvoice = {
+  id: number;
+  customer: TInvoiceCustomer;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TDeliveryShow = {
+  id: number;
+  carNo: string;
+  class: string;
+  deliveryDate: string;
+  nextDeliveryDate: string;
+  deliveryNo: number;
+  quantity: number;
+  deliveryReceived: number;
+  deliveryRemaining: number;
+  driverName: string;
+  driverPhoneNumber: string;
+  invoiceId: number;
+  invoice: TDeliveryInvoice;
+  isDeleted: boolean;
+  createdAt: string;
+};
 
 const TodaysDeliveryPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
+  const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
+  const [deliveryId, setDeliveryId] = useState<number>(0);
+  const isoDate = date ? date.toISOString() : "";
 
+  const { data, isLoading } = useGetTodaysDeliveryQuery(isoDate, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const deliveries = data?.data || [];
+
+  const paginatedData = deliveries?.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const items = deliveries?.map((delivery: TDeliveryShow) => {
+    return {
+      class: delivery?.class,
+      delivered: delivery?.deliveryReceived,
+    };
+  });
+
+  const result: TItems[] = groupAndSumByClass(items);
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
@@ -32,8 +97,8 @@ const TodaysDeliveryPage = () => {
         </button>
 
         <div className="flex items-center gap-2 ">
-          <DatePicker />
-          <button>
+          <DatePicker setDate={setDate} date={date} />
+          <button onClick={() => setOpenDeliveryReport(true)}>
             <CustomReportButton />
           </button>
         </div>
@@ -46,121 +111,136 @@ const TodaysDeliveryPage = () => {
             <tr>
               <TableHead th={"#"} />
               <TableHead th={"চালান নং"} />
-              <TableHead th={"ঠিকানা"} />
+              <TableHead th={"কাস্টমার"} />
+              <TableHead th={"ঠিকানা"} cls="hidden lg:table-cell" />
               <TableHead th={"শ্রেণি"} />
-              <TableHead th={"ক্রয়"} />
-              <TableHead th={"ডে.বাকি"} />
-              <TableHead th={"ড্রাইভার"} />
+              <TableHead th={"ক্রয়"} cls="hidden lg:table-cell" />
+              <TableHead th={"ডেলিভারি"} />
+              <TableHead th={"ডে.বাকি"} cls="hidden lg:table-cell" />
+              <TableHead th={"ড্রাইভার"} cls="hidden lg:table-cell" />
               <TableHead th={"মোট ডেলিভারি"} />
-              <TableHead th={"তারিখ ও সময়"} />
+              <TableHead th={"তারিখ ও সময়"} cls="hidden lg:table-cell" />
               <TableHead th={"বাটন"} />
             </tr>
           </thead>
-          {/* <tbody>
-            {filtered.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
-                <td className="border p-2">{row.id}</td>
-                <td className="border p-2">{row.creditor}</td>
-                <td className="border p-2">{row.description}</td>
-                <td className="border p-2">{row.quantity}</td>
-                <td className="border p-2">
-                  ৳ {row.totalBill.toLocaleString()}
-                </td>
-                <td className="border p-2 text-red-500">
-                  {row.debit > 0 ? `৳ ${row.debit.toLocaleString()}` : "৳ 0"}
-                </td>
-                <td className="border p-2 text-green-600">
-                  ৳ {row.credit.toLocaleString()}
-                </td>
-                <td className="border p-2 text-green-600">
-                  ৳ {row.credit.toLocaleString()}
-                </td>
-                <td
-                  className={`border p-2 ${
-                    row.balance < 0
-                      ? "text-red-500"
-                      : row.balance > 0
-                      ? "text-green-600"
-                      : "text-gray-600"
-                  }`}
-                >
-                  ৳ {row.balance.toLocaleString()}
-                </td>
-                <td className="border p-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="text-gray-600 hover:text-green-700">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-36 rounded-md border bg-white shadow-md"
-                    >
-                      <DropdownMenuLabel className="px-3 py-1 text-gray-500 text-xs">
-                        Actions
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
-                        <Eye className="w-4 h-4 text-green-600" /> বিস্তারিত
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
-                        <Pencil className="w-4 h-4 text-blue-600" /> সম্পাদনা
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100 text-red-600">
-                        <Trash2 className="w-4 h-4" /> মুছুন
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+          <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan={11}>
+                  <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ))}
-          </tbody> */}
+            ) : !paginatedData?.length ? (
+              <tr>
+                <td colSpan={13} className="py-8 text-gray-600">
+                  {data?.message}
+                </td>
+              </tr>
+            ) : (
+              paginatedData?.map((row: TDeliveryShow) => (
+                <tr key={row.id} className="hover:bg-gray-50">
+                  <TableData td={row?.id} />
+                  <TableData td={row?.invoiceId} />
+                  <TableData td={row?.invoice?.customer?.name} />
+                  <TableData
+                    td={row?.invoice?.customer?.address}
+                    cls="hidden lg:table-cell"
+                  />
+                  <TableData td={row?.class} />
+                  <TableData td={row?.quantity} cls="hidden lg:table-cell" />
+                  <TableData td={row?.deliveryReceived} />
+                  <TableData
+                    td={row?.deliveryRemaining}
+                    cls="hidden lg:table-cell"
+                  />
+                  <TableData td={row?.driverName} cls="hidden lg:table-cell" />
+                  <TableData td={row?.deliveryReceived} />
+                  <TableData
+                    cls="hidden lg:table-cell"
+                    td={`${moment(row?.deliveryDate).format(
+                      "DD/MM/YYYY"
+                    )} ${moment(row?.deliveryDate).format("LT")}`}
+                  />
+
+                  <td className="border p-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1.5 rounded hover:bg-gray-100 transition">
+                          <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="rounded-md border bg-white shadow-md"
+                      >
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setOpenPrintModal(true);
+                            setDeliveryId(row?.id);
+                          }}
+                        >
+                          <CustomDropDownMenuItem
+                            Icon={Calendar}
+                            title="প্রিন্ট ডেলিভারি"
+                          />
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem>
+                          <CustomDropDownMenuItem
+                            Icon={Truck}
+                            title="ডেলিভারি বিস্তারিত"
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <CustomDropDownMenuItem
+                            Icon={User}
+                            title="প্রোফাইলে যান"
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <CustomDropDownMenuItem
+                            Icon={User}
+                            title="ডিলিট করুন"
+                          />
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
         </table>
       </div>
 
-      {/* Footer */}
-      {/* <div className="flex justify-between items-center p-3   text-gray-600 bg-gray-50 border-t">
-        <span>
-          মোট পেমেন্ট {filtered.length} টি | মোট পেমেন্ট{" "}
-          <span className="text-green-700 font-medium">
-            {totalCredit.toLocaleString()} টাকা
-          </span>
-        </span>
-
-        <div className="flex items-center space-x-3">
-          <span className="border px-2 py-1 rounded bg-green-50 border-green-200">
-            {currentPage}
-          </span>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1   font-medium text-gray-700 hover:bg-gray-50 transition">
-                {rowsPerPage} পেমেন্ট / পেজ <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-44 rounded-md border bg-white shadow-md"
-            >
-              {[10, 20, 30, 50, 100].map((num) => (
-                <DropdownMenuItem
-                  key={num}
-                  onSelect={() => {
-                    setRowsPerPage(num);
-                    setCurrentPage(1);
-                  }}
-                  className="cursor-pointer px-4 py-2   text-gray-700 hover:bg-gray-100"
-                >
-                  {num} পেমেন্ট / পেজ
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div> */}
+      <TableFooter
+        currentPage={currentPage}
+        length={deliveries?.length}
+        rowsPerPage={rowsPerPage}
+        setCurrentPage={setCurrentPage}
+        setRowsPerPage={setRowsPerPage}
+        title=""
+      />
       {isOpen && (
         <NewDeliveryModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      )}
+
+      {openDeliveryReport && (
+        <DeliveryReportModal
+          isOpen={openDeliveryReport}
+          items={result}
+          onClose={() => setOpenDeliveryReport(false)}
+          title="আজকের ডেলিভারি রিপোর্ট"
+        />
+      )}
+
+      {openPrintModal && (
+        <DeliveryPrintModal
+          isOpen={openPrintModal}
+          onClose={() => setOpenPrintModal(false)}
+          deliveryId={deliveryId}
+          setDeliveryId={setDeliveryId}
+        />
       )}
     </div>
   );

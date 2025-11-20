@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
@@ -10,33 +10,32 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import SmsSwitch from "@/components/Reusable/SmsSwitch";
 import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
 import CustomSelect from "@/components/Reusable/CustomSelect";
-import { TChallanCreate, TClassAndRate } from "@/types/types";
 import {
-  useCreateInvoiceMutation,
-  useGetInvoiceSerialQuery,
+  TChallanCreate,
+  TClassAndRate,
+  TCustomInvoiceModal,
+} from "@/types/types";
+import {
   useGetSingleInvoiceQuery,
+  useUpdateInvoiceMutation,
 } from "@/redux/features/invoice.features";
 import { showToast } from "@/components/Toast/CustomToast";
 import { MdOutlineError } from "react-icons/md";
 import { FaCircleCheck } from "react-icons/fa6";
-
-type TCustomModal = {
-  isOpen: boolean;
-  onClose: () => void;
-  setInvoiceId: Dispatch<SetStateAction<number | undefined>>;
-  invoiceId: number;
-};
+import CustomLoader from "@/components/Reusable/CustomLoader";
 
 const UpdateChalanModal = ({
   isOpen,
   onClose,
   invoiceId,
   setInvoiceId,
-}: TCustomModal) => {
-  const [deliveryDate, setDeliveryDate] = useState<Date>(new Date());
-  const [challanDate, setChallanDate] = useState<Date>(new Date());
-  const [duePayDate, setDuepayDate] = useState<Date>(new Date());
-
+}: TCustomInvoiceModal) => {
+  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
+    new Date()
+  );
+  const [challanDate, setChallanDate] = useState<Date | undefined>(new Date());
+  const [duePayDate, setDuepayDate] = useState<Date | undefined>(new Date());
+  const [sendSms, setSendSms] = useState<boolean>(false);
   // FETCH SINGLE INVOICE
   const { data: invoice, isLoading: invoiceLoading } = useGetSingleInvoiceQuery(
     invoiceId,
@@ -45,38 +44,28 @@ const UpdateChalanModal = ({
     }
   );
 
-  // GET INVOICE SERIAL FOR INVOICE NO
-  const { data: invoiceSerial, isLoading: serialLoading } =
-    useGetInvoiceSerialQuery({ refetchOnMountOrArgChange: true });
-
   // GET CLASS AND RATE FOR DROPDOWN
   const { isLoading: classRateLoading, data: fetchedData } =
     useGetAllClassAndRateQuery(undefined);
   const classAndRate = fetchedData?.data || [];
 
-  // CREATE NEW INVOICE
+  // UPDATE INVOICE
   const [mutateAsync, { isLoading: createInvoiceLoading }] =
-    useCreateInvoiceMutation();
+    useUpdateInvoiceMutation();
+
   const classOptions = classAndRate?.map(
     (cls: TClassAndRate) => cls?.className
   );
 
   // REACT HOOK FORM
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<TChallanCreate>({
-    defaultValues: {
-      invoiceItems: {
-        items: [{ class: "", rate: 0, quantity: 0, price: 0 }],
+  const { register, handleSubmit, reset, control, watch, setValue } =
+    useForm<TChallanCreate>({
+      defaultValues: {
+        invoiceItems: {
+          items: [{ class: "", rate: 0, quantity: 0, price: 0 }],
+        },
       },
-    },
-  });
+    });
 
   // ✅ FIX: Reset form when invoice data is loaded
   useEffect(() => {
@@ -95,6 +84,9 @@ const UpdateChalanModal = ({
           due: invoice.data.due || 0,
           cash: invoice.data.cash || 0,
           chalanType: invoice.data.chalanType || "",
+          challanDate: invoice.data.challanDate || "",
+          deliveryDate: invoice.data.deliveryDate || "",
+          duePaymentDate: invoice.data.duePaymentDate || "",
         },
         invoiceItems: {
           items:
@@ -164,8 +156,14 @@ const UpdateChalanModal = ({
   //* FORM SUBMIT
   const onSubmit: SubmitHandler<TChallanCreate> = async (data) => {
     const allValid = watchItems.every((item) =>
-      Object.values(item).every((value) => value !== 0 && value !== "")
+      Object.entries(item)
+        .filter(([key]) => key !== "delivered")
+        .every(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ([_, value]) => value !== null && value !== undefined && value !== ""
+        )
     );
+
     if (allValid === false) {
       return showToast({
         title: "আইটেমের শ্রেণি/পরিমাণ/রেট ঠিক করে দিন",
@@ -176,9 +174,9 @@ const UpdateChalanModal = ({
         },
       });
     }
-    data.invoice.deliveryDate = deliveryDate;
-    data.invoice.challanDate = challanDate;
-    data.invoice.duePaymentDate = duePayDate;
+    data.invoice.deliveryDate = deliveryDate as Date;
+    data.invoice.challanDate = challanDate as Date;
+    data.invoice.duePaymentDate = duePayDate as Date;
     data.invoice.serial = Number(data.invoice.serial);
     data.invoice.carRent = Number(data.invoice.carRent);
     data.invoice.cash = Number(data.invoice.cash);
@@ -186,8 +184,16 @@ const UpdateChalanModal = ({
     data.invoice.totalPrice = Number(data.invoice.totalPrice);
     data.invoice.due = Number(data.invoice.due);
 
+    const updatedData = {
+      payload: {
+        invoice: data.invoice,
+        invoiceItems: data.invoiceItems.items,
+      },
+      id: invoiceId,
+    };
     try {
-      const result = await mutateAsync(data).unwrap();
+      const result = await mutateAsync(updatedData).unwrap();
+      console.log(result);
       if (result?.success) {
         onClose();
         reset();
@@ -216,17 +222,20 @@ const UpdateChalanModal = ({
   const handleClose = () => {
     onClose();
     setInvoiceId(0);
+    reset();
   };
 
   return (
     <CustomModalBottom
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="আপডেট চালান 🧐"
       width="w-4xl h-[85vh] lg:h-[85vh] overflow-y-auto pb-5 no-scrollbar"
     >
-      {classRateLoading || serialLoading ? (
-        <></>
+      {classRateLoading || invoiceLoading ? (
+        <>
+          <CustomLoader cls="h-[60vh]" />
+        </>
       ) : (
         <div>
           <div className="flex flex-col lg:flex-row justify-between gap-4 mb-4">
@@ -386,6 +395,8 @@ const UpdateChalanModal = ({
                     showBorder={false}
                     showLabel={false}
                     title="কাস্টমারকে এসএমএস দিন"
+                    setSendSms={setSendSms}
+                    sendSms={sendSms}
                   />
                 </div>
               ) : (

@@ -7,6 +7,7 @@ export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_BACKEND_API as string,
     // credentials: "include",
+
     prepareHeaders: (headers) => {
       // const token = getToken();
       // if (token) {
@@ -17,6 +18,12 @@ export const baseApi = createApi({
     },
   }),
 
-  tagTypes: ["ClassAndRate", "Invoice"],
+  tagTypes: [
+    "ClassAndRate",
+    "Invoice",
+    "InvoiceItem",
+    "Delivery",
+    "DueCollection",
+  ],
   endpoints: () => ({}),
 });

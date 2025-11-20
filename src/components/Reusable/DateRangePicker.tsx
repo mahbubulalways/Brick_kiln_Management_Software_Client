@@ -56,15 +56,17 @@ export default function DateRangePicker({ onChange }: DateRangePickerProps) {
     <div className="w-max">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <button className="w-full flex justify-between gap-2 cursor-pointer items-center px-2 py-1   text-gray-500 border border-gray-300 rounded focus:ring-2 ring-gray-300">
+          <button className="w-full flex justify-between gap-2 cursor-pointer items-center px-2 py-1   text-gray-500 border border-gray-300 rounded focus:ring-2 ring-gray-300 text-sm">
             <span>{formattedDate}</span>
             <CalendarIcon className="h-4 w-4 text-gray-400" />
           </button>
         </PopoverTrigger>
 
-        <PopoverContent className="flex gap-2 w-auto p-4" align="center">
+        <PopoverContent className="flex gap-2 w-auto p-4 " align="center">
           <div>
-            <p className="text-xs text-gray-500 mb-2">শুরু তারিখ</p>
+            <p className=" text-[2px] lg:text-xs text-gray-500 mb-2">
+              শুরু তারিখ
+            </p>
             <Calendar
               mode="single"
               selected={startDate}
@@ -80,7 +82,7 @@ export default function DateRangePicker({ onChange }: DateRangePickerProps) {
               captionLayout="dropdown"
               onSelect={(date) => {
                 handleSelect("end", date);
-                setOpen(false); // close after end date chosen
+                setOpen(false);
               }}
             />
           </div>

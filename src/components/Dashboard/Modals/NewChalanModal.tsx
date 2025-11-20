@@ -18,15 +18,19 @@ import {
 import { showToast } from "@/components/Toast/CustomToast";
 import { MdOutlineError } from "react-icons/md";
 import { FaCircleCheck } from "react-icons/fa6";
+import { RiErrorWarningFill } from "react-icons/ri";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
 };
 
 const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
-  const [deliveryDate, setDeliveryDate] = useState<Date>(new Date());
-  const [challanDate, setChallanDate] = useState<Date>(new Date());
-  const [duePayDate, setDuepayDate] = useState<Date>(new Date());
+  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
+    new Date()
+  );
+  const [challanDate, setChallanDate] = useState<Date | undefined>(new Date());
+  const [duePayDate, setDuepayDate] = useState<Date | undefined>();
+  const [sendSms, setSendSms] = useState<boolean>(false);
 
   // GET INVOICE SERIAL FOR INVOICE NO
   const { data: invoiceSerial, isLoading: serialLoading } =
@@ -115,7 +119,6 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
     const allValid = watchItems.every((item) =>
       Object.values(item).every((value) => value !== 0 && value !== "")
     );
-    console.log(allValid);
     if (allValid === false) {
       return showToast({
         title: "আইটেমের শ্রেণি/পরিমাণ/রেট ঠিক করে দিন",
@@ -126,16 +129,25 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
         },
       });
     }
-    data.invoice.deliveryDate = deliveryDate;
-    data.invoice.challanDate = challanDate;
-    data.invoice.duePaymentDate = duePayDate;
+    data.invoice.deliveryDate = deliveryDate as Date;
+    data.invoice.challanDate = challanDate as Date;
+    data.invoice.duePaymentDate = duePayDate as Date;
     data.invoice.serial = Number(data.invoice.serial);
     data.invoice.carRent = Number(data.invoice.carRent);
     data.invoice.cash = Number(data.invoice.cash);
     data.invoice.discount = Number(data.invoice.discount);
     data.invoice.totalPrice = Number(data.invoice.totalPrice);
     data.invoice.due = Number(data.invoice.due);
-
+    if (data.invoice.due && !duePayDate) {
+      return showToast({
+        title: "বাকি পরিশোধের তারিখ সেট করুন",
+        type: "info",
+        options: {
+          duration: 4000,
+          icon: <RiErrorWarningFill className="h-5 w-5" />,
+        },
+      });
+    }
     try {
       const result = await mutateAsync(data).unwrap();
       if (result?.success) {
@@ -341,6 +353,8 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                     <DatePicker date={duePayDate} setDate={setDuepayDate} />
                   </div>
                   <SmsSwitch
+                    sendSms={sendSms}
+                    setSendSms={setSendSms}
                     showBorder={false}
                     showLabel={false}
                     title="কাস্টমারকে এসএমএস দিন"

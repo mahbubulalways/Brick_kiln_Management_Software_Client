@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Noto_Sans_Bengali } from "next/font/google";
+import { Baloo_Da_2 } from "next/font/google";
 import Providers from "@/components/Providers/Providers";
 import { Toaster } from "sonner";
 
-const notoBengali = Noto_Sans_Bengali({
-  subsets: ["bengali"],
-  weight: ["400", "500", "700"],
+const balooDa = Baloo_Da_2({
+  subsets: ["bengali", "latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -16,16 +16,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="bn">
       <body
         cz-shortcut-listen="true"
-        className={`${notoBengali.className} antialiased no-scrollbar`}
+        className={`${balooDa.className} antialiased no-scrollbar`}
       >
-        <Toaster position="top-center" />
+        <Toaster position="top-center" richColors />
         <Providers>{children}</Providers>
       </body>
     </html>

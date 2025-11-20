@@ -7,14 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ChevronDown,
-  Eye,
-  MessageSquare,
-  Pencil,
-  User,
-  Wallet2Icon,
-} from "lucide-react";
+import { Eye, MessageSquare, Pencil, User, Wallet2Icon } from "lucide-react";
 import CustomSearchInput from "@/components/Reusable/CustomSearchInput";
 import { useReactToPrint } from "react-to-print";
 import NewPaymentModal from "@/components/Dashboard/Modals/NewPaymentModal";
@@ -23,100 +16,56 @@ import CustomButtonFixed from "@/components/Reusable/CustomButtonFixed";
 import DateRangePicker from "@/components/Reusable/DateRangePicker";
 import TableData from "@/components/Reusable/TableData";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
+import { useGetAllDueListQuery } from "@/redux/features/dueCollection.features";
+import { IChallanForDataShow, ICustomer } from "@/types/types";
+import moment from "moment";
 
-interface PaymentRow {
-  id: number;
-  creditor: string;
-  description: string;
-  quantity: number;
-  totalBill: number;
-  debit: number;
-  credit: number;
-  balance: number;
-}
-
-const data: PaymentRow[] = [
-  {
-    id: 29,
-    creditor: "harun",
-    description: "bank",
-    quantity: 0,
-    totalBill: 0,
-    debit: 0,
-    credit: 5000,
-    balance: -5000,
-  },
-  {
-    id: 30,
-    creditor: "sona",
-    description: "wood",
-    quantity: 50,
-    totalBill: 5000,
-    debit: 0,
-    credit: 0,
-    balance: 5000,
-  },
-  {
-    id: 31,
-    creditor: "saiful",
-    description: "nn",
-    quantity: 0,
-    totalBill: 0,
-    debit: 5000,
-    credit: 5000,
-    balance: 0,
-  },
-  {
-    id: 32,
-    creditor: "sona",
-    description: "wood",
-    quantity: 0,
-    totalBill: 0,
-    debit: 0,
-    credit: 5000,
-    balance: 0,
-  },
-  {
-    id: 33,
-    creditor: "harun",
-    description: "mia",
-    quantity: 0,
-    totalBill: 0,
-    debit: 5000,
-    credit: 5000,
-    balance: 0,
-  },
-  {
-    id: 34,
-    creditor: "harun",
-    description: "mia",
-    quantity: 0,
-    totalBill: 0,
-    debit: 1200,
-    credit: 1200,
-    balance: 0,
-  },
-];
+type PaymentRow = {
+  challans: IChallanForDataShow[];
+} & ICustomer;
 
 const AllDueListPage = () => {
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [currentPage, setCurrentPage] = useState(1);
-  const [dateRange, setDateRange] = useState<{
-    startDate?: Date;
-    endDate?: Date;
-  }>({});
+  const [filterRange, setFilterRange] = useState<{
+    startDate: Date | undefined;
+    endDate: Date | undefined;
+  }>({
+    startDate: undefined,
+    endDate: undefined,
+  });
+
+  const handleDateRangeChange = (range: {
+    startDate: Date | undefined;
+    endDate: Date | undefined;
+  }) => {
+    setFilterRange(range);
+  };
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const filtered = data.filter((row) =>
-    row.creditor.toLowerCase().includes(search.toLowerCase())
+
+  const info = {
+    startDate: filterRange.startDate ? filterRange.startDate.toISOString() : "",
+    endDate: filterRange.endDate ? filterRange.endDate.toISOString() : "",
+  };
+
+  const { data: dues, isLoading } = useGetAllDueListQuery(info, {
+    // skip: !filterRange.startDate || !filterRange.endDate, // optional safety
+    refetchOnMountOrArgChange: true,
+  });
+  console.log(dues);
+  const filtered = dues?.data?.filter((row: PaymentRow) =>
+    row?.name?.toLowerCase()?.includes(search?.toLowerCase())
   );
 
-  const totalCredit = filtered.reduce((sum, r) => sum + r.credit, 0);
+  const totalCredit = filtered?.reduce(
+    (sum: number, r: PaymentRow) => sum + (r?.totalPurchased - r?.totalPaid),
+    0
+  );
 
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
 
-  console.log(dateRange);
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       <div className="flex justify-between items-center w-full pt-2 lg:pt-0 gap-5">
@@ -125,14 +74,14 @@ const AllDueListPage = () => {
             <CustomButtonFixed title="বর্তমান সিজন" />
           </button>
           <span className=" text-orange-500 px-3 py-1 rounded   border border-orange-300 font-medium hidden lg:block ">
-            মোট বাকিঃ {totalCredit.toLocaleString()} টাকা
+            মোট বাকিঃ {totalCredit?.toLocaleString()} টাকা
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           <CustomSearchInput search={search} setSearch={setSearch} />
           <div className="shrink-0 ">
-            <DateRangePicker onChange={(date) => setDateRange(date)} />
+            <DateRangePicker onChange={handleDateRangeChange} />
           </div>
           <button className="w-full" onClick={reactToPrintFn}>
             <CustomButtonFixed title="প্রিন্ট করুন" />
@@ -158,21 +107,32 @@ const AllDueListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
-                <TableData td={row.id} />
-                <TableData td={row.creditor} />
-                <TableData td={row.quantity} />
-                <TableData td={row.quantity} cls="text-orange-500" />
-                <TableData td={row.quantity} cls="bg-red-50 text-orange-800" />
-                <TableData td={row.quantity} />
-                <TableData td={`৳ ${row.totalBill.toLocaleString()}`} />
+            {filtered?.map((row: PaymentRow) => (
+              <tr key={row?.id} className="hover:bg-gray-50">
+                <TableData td={row?.id} />
+                <TableData td={row?.name} />
+                <TableData td={row?.address} />
                 <TableData
-                  td={`${
-                    row.debit > 0 ? `৳ ${row.debit.toLocaleString()}` : "৳ 0"
-                  }`}
+                  td={row?.challans?.reduce((accChallan, challan) => {
+                    const itemsSum =
+                      challan.items?.reduce(
+                        (accItem, curr) =>
+                          accItem +
+                          ((curr.quantity ?? 0) - (curr.delivered ?? 0)),
+                        0
+                      ) ?? 0;
+                    return accChallan + itemsSum;
+                  }, 0)}
+                  cls="text-orange-500"
                 />
-                <TableData td={`৳ ${row.totalBill.toLocaleString()}`} />
+                <TableData td={row?.totalPurchased - row?.totalPaid} />
+                <TableData
+                  td={moment(row?.nextPaymentDate).format("DD-MM-YYYY")}
+                />
+
+                <TableData td={row?.phoneNumber} />
+                <TableData td={row?.challans?.[0]?.note ?? "-"} />
+                <TableData td={"2020"} />
 
                 <td className="border p-2">
                   <DropdownMenu>
@@ -215,46 +175,6 @@ const AllDueListPage = () => {
         </table>
       </div>
 
-      {/* Footer */}
-      <div className="flex justify-between items-center p-3   text-gray-600 bg-gray-50 border-t">
-        <span>
-          মোট বাকি {filtered.length} টি | মোট বাকি{" "}
-          <span className="text-green-700 font-medium">
-            {totalCredit.toLocaleString()} টাকা
-          </span>
-        </span>
-
-        <div className="flex items-center space-x-3">
-          <span className="border px-2 py-1 rounded bg-green-50 border-green-200">
-            {currentPage}
-          </span>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1   font-medium text-gray-700 hover:bg-gray-50 transition">
-                {rowsPerPage} বাকি / পেজ <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-44 rounded-md border bg-white shadow-md"
-            >
-              {[10, 20, 30, 50, 100].map((num) => (
-                <DropdownMenuItem
-                  key={num}
-                  onSelect={() => {
-                    setRowsPerPage(num);
-                    setCurrentPage(1);
-                  }}
-                  className="cursor-pointer px-4 py-2   text-gray-700 hover:bg-gray-100"
-                >
-                  {num} বাকি / পেজ
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
       {isOpen && (
         <NewPaymentModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       )}
