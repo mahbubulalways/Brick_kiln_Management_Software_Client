@@ -1,6 +1,7 @@
 "use client";
 
 import ChalanDetailsModal from "@/components/Dashboard/Modals/ChalanDetailsModal";
+import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
 import SellingModal from "@/components/Dashboard/Modals/SellingModal";
 import ChalanPrintModal from "@/components/Dashboard/PrintModal/ChalanPrint/ChalanPrintModal";
 import PrintThermalInvoice from "@/components/Dashboard/PrintModal/PrintThermalInvoice";
@@ -29,6 +30,8 @@ const AllInvoice = () => {
   const [openReportModal, setOpenReportModal] = useState<boolean>(false);
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openThermalModal, setOpenThermalModal] = useState<boolean>(false);
+  const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
+    useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [invoiceId, setInvoiceId] = useState<number>();
@@ -225,7 +228,12 @@ const AllInvoice = () => {
                                   />
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setIsDeliveryModalOpen(true);
+                                    setInvoiceId(row?.id);
+                                  }}
+                                >
                                   <CustomDropDownMenuItem
                                     Icon={Truck}
                                     title="ডেলিভারি দিন"
@@ -339,7 +347,12 @@ const AllInvoice = () => {
                               title="প্রিন্ট চালান"
                             />
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setIsDeliveryModalOpen(true);
+                              setInvoiceId(row?.id);
+                            }}
+                          >
                             <CustomDropDownMenuItem
                               Icon={Truck}
                               title="ডেলিভারি দিন"
@@ -415,6 +428,13 @@ const AllInvoice = () => {
           setInvoiceId={setInvoiceId}
           isOpen={openThermalModal}
           onClose={() => setOpenThermalModal(false)}
+        />
+      )}
+      {isDeliveryModalOpen && (
+        <NewDeliveryModal
+          isOpen={isDeliveryModalOpen}
+          onClose={() => setIsDeliveryModalOpen(false)}
+          invoiceId={invoiceId}
         />
       )}
     </div>

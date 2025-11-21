@@ -100,6 +100,7 @@ const PaymentPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [date, setDate] = useState<Date | undefined>();
   const filtered = data.filter((row) =>
     row.creditor.toLowerCase().includes(search.toLowerCase())
   );
@@ -134,7 +135,7 @@ const PaymentPage = () => {
 
         <div className="flex items-center gap-2 w-full">
           <CustomSearchInput search={search} setSearch={setSearch} />
-          <DatePicker />
+          <DatePicker setDate={setDate} date={date} />
           <button>
             <CustomReportButton />
           </button>

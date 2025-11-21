@@ -19,7 +19,7 @@ export type TPaymentRecord = {
 const NewPaymentSection = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [ledger, setLedger] = useState<string>("");
-  const { register, handleSubmit } = useForm<TPaymentRecord>({
+  const { register, handleSubmit, control } = useForm<TPaymentRecord>({
     defaultValues: {},
   });
 
@@ -54,7 +54,7 @@ const NewPaymentSection = () => {
           name="paymentType"
           label="পেমেন্টের ধরণ"
           placeholder=""
-          register={register}
+          control={control}
           options={["রেগুলার পেমেন্ট", "অগ্রিম পেমেন্ট", "বাকি পেমেন্ট"]}
         />
         <CustomInputLabel
