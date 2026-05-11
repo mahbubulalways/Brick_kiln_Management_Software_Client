@@ -22,7 +22,7 @@ const CustomModalBottom = ({
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/40 transition-opacity duration-300">
       <div
         className={`modal-container bg-white relative rounded-t-2xl md:rounded-md shadow-lg ${width}
-        } `}
+        `}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
