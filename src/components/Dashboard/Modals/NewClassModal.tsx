@@ -8,6 +8,7 @@ import { useCreateClassAndRateMutation } from "@/redux/features/classAndRate.fea
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineError } from "react-icons/md";
 import { TClassAndRate } from "@/types/types";
+import CustomInput from "@/components/Reusable/CustomInput";
 
 type TCustomModal = {
   isOpen: boolean;
@@ -37,7 +38,7 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      //
+      console.log(error);
       return showToast({
         title:
           error?.data?.message ||
@@ -63,23 +64,36 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
           <CustomSelect
             name="classType"
             label="শ্রেণির ধরণ"
-            placeholder=""
+            placeholder="শ্রেণির ধরণ"
             control={control}
-            options={["ইট", "আধলা", "অন্যান্য"]}
+            options={[
+              {
+                label: "ইট",
+                value: "ইট",
+              },
+              {
+                label: "আধলা",
+                value: "আধলা",
+              },
+              {
+                label: "অন্যান্য",
+                value: "অন্যান্য",
+              },
+            ]}
           />
 
-          <CustomInputLabel
+          <CustomInput
             name="className"
             label="শ্রেণির নাম"
-            placeholder=""
+            placeholder="শ্রেণির নাম"
             register={register}
             type="text"
           />
 
-          <CustomInputLabel
+          <CustomInput
             name="rate"
             label="রেট"
-            placeholder="৳"
+            placeholder="রেট (৳)"
             register={register}
             type="text"
           />

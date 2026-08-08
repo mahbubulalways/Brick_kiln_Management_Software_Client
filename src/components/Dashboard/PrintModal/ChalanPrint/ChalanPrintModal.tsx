@@ -6,7 +6,6 @@ import { IChallanForDataShow, TCustomInvoiceModal } from "@/types/types";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import moment from "moment";
-import "moment/locale/bn";
 const ChalanPrintModal = ({
   isOpen,
   onClose,
@@ -18,6 +17,8 @@ const ChalanPrintModal = ({
   });
 
   const invoice: IChallanForDataShow = data?.data || {};
+
+  console.log(invoice);
   const handleClose = () => {
     setInvoiceId(0);
     onClose();
@@ -198,7 +199,9 @@ const ChalanPrintModal = ({
                     <div className="border border-red-500 rounded text-center py-2 mt-3">
                       <p className="text-red-600 font-semibold text-sm">
                         পরিশোধের তারিখঃ{" "}
-                        {moment(invoice?.duePaymentDate).format("L")}
+                        {moment(
+                          invoice?.duePaymentDate || invoice?.challanDate,
+                        ).format("L")}
                       </p>
                     </div>
                   </div>

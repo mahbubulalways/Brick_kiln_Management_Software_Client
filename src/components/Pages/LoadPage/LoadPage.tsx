@@ -104,10 +104,11 @@ const LoadPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState("");
   const filtered = data.filter((row) =>
-    row.creditor.toLowerCase().includes(search.toLowerCase())
+    row.creditor.toLowerCase().includes(search.toLowerCase()),
   );
 
   const totalCredit = filtered.reduce((sum, r) => sum + r.credit, 0);
@@ -131,7 +132,7 @@ const LoadPage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <DatePicker />
+          <DatePicker setDate={setDate} />
           <CustomSelect2
             options={["1 নম্বর রাউন্ড", "2 নম্বর রাউন্ড", "3 নম্বর রাউন্ড"]}
             placeholder="1 নম্বর রাউন্ড"

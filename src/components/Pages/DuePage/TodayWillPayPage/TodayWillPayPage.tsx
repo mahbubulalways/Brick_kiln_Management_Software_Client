@@ -22,6 +22,7 @@ import TableData from "@/components/Reusable/TableData";
 import { useGetTodayHaveDueQuery } from "@/redux/features/dueCollection.features";
 import { IChallanForDataShow, ICustomer } from "@/types/types";
 import CustomLoader from "@/components/Reusable/CustomLoader";
+import TableFooter from "@/components/Reusable/TableFooter";
 
 type PaymentRow = {
   challans: IChallanForDataShow[];
@@ -40,12 +41,12 @@ const TodayWillPayPage = () => {
   });
 
   const filtered = dues?.data?.filter((row: PaymentRow) =>
-    row.name.toLowerCase().includes(search.toLowerCase())
+    row.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   const totalCredit = filtered?.reduce(
     (sum: number, r: PaymentRow) => sum + (r?.totalPurchased - r?.totalPaid),
-    0
+    0,
   );
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -111,7 +112,7 @@ const TodayWillPayPage = () => {
                           (accItem, curr) =>
                             accItem +
                             ((curr.quantity ?? 0) - (curr.delivered ?? 0)),
-                          0
+                          0,
                         ) ?? 0;
                       return accChallan + itemsSum;
                     }, 0)}
@@ -156,7 +157,14 @@ const TodayWillPayPage = () => {
           </tbody>
         </table>
       </div>
-
+      <TableFooter
+        currentPage={currentPage}
+        length={2}
+        rowsPerPage={rowsPerPage}
+        setCurrentPage={setCurrentPage}
+        setRowsPerPage={setRowsPerPage}
+        title={"বাকি"}
+      />
       {/* Footer */}
 
       {isOpen && (

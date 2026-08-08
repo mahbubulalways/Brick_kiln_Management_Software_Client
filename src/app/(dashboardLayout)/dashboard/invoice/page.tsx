@@ -7,6 +7,7 @@ import UpdateChalanModal from "@/components/Dashboard/Modals/UpdateChalanModal";
 import ChalanPrintModal from "@/components/Dashboard/PrintModal/ChalanPrint/ChalanPrintModal";
 import PrintThermalInvoice from "@/components/Dashboard/PrintModal/PrintThermalInvoice";
 import { DatePicker } from "@/components/Others/DatePicker";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
@@ -67,7 +68,7 @@ const SalesTable = () => {
     const totalInvoices = invoices?.data || [];
     const dateFiltered = manageInvoiceDateFiltering<IChallanForDataShow>(
       totalInvoices,
-      { start: date! }
+      { start: date! },
     );
 
     return dateFiltered;
@@ -75,12 +76,12 @@ const SalesTable = () => {
 
   // INVOICE RELATED FILTER
   const filtered = filteredInvoices.filter((row: IChallanForDataShow) =>
-    row?.customer?.name?.toLowerCase()?.includes(search?.toLowerCase())
+    row?.customer?.name?.toLowerCase()?.includes(search?.toLowerCase()),
   );
 
   const paginatedData = filtered.slice(
     (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
+    currentPage * rowsPerPage,
   );
 
   //  DELETE INVOICE PART
@@ -122,7 +123,7 @@ const SalesTable = () => {
   };
 
   return (
-    <div className="bg-white rounded-md shadow border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-md shadow border border-gray-200 ">
       <div className="flex justify-between items-center p-3 border-b bg-gray-50 gap-5">
         <div className="flex items-center gap-2 ">
           <button onClick={() => setIsOpen(true)}>
@@ -134,7 +135,7 @@ const SalesTable = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <DatePicker date={date} setDate={setDate} />
+          <CustomDatePickerState value={date} onChange={setDate} />
           <button
             onClick={() => setOpenReportModal(true)}
             className="cursor-pointer"
@@ -479,7 +480,7 @@ const SalesTable = () => {
                       </DropdownMenu>
                     </td>
                   </tr>
-                )
+                ),
               )
             )}
           </tbody>

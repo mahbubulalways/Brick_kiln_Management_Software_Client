@@ -32,12 +32,12 @@ const SmsSwitch = ({
       <div
         className={`${
           showBorder ? "border" : ""
-        } border-gray-300 rounded px-4 py-1.5 flex items-center justify-between gap-3 bg-white w-full`}
+        } border-gray-300 rounded px-4 py-1.5 flex items-center justify-center gap-3 bg-white w-full`}
       >
         <span
           className={`${
             enabled ? "text-green-600" : "text-gray-600"
-          } text-[14px]`}
+          } text-[16px]`}
         >
           {title}
         </span>

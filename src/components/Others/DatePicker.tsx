@@ -31,7 +31,7 @@ export function DatePicker({
           .toString()
           .padStart(2, "0")}/${jsDate.getFullYear()}`;
       })()
-    : "Select date";
+    : "তারিখ নির্বাচন";
 
   return (
     <div className="flex flex-col gap-2 ">

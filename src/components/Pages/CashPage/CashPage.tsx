@@ -87,15 +87,16 @@ const CashPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const filtered = data.filter((row) =>
-    row.customer.toLowerCase().includes(search.toLowerCase())
+    row.customer.toLowerCase().includes(search.toLowerCase()),
   );
 
   // const totalPages = Math.ceil(filtered.length / rowsPerPage);
 
   const paginatedData = filtered.slice(
     (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
+    currentPage * rowsPerPage,
   );
 
   return (
@@ -134,7 +135,7 @@ const CashPage = () => {
             </div>
             <CustomSearchInput search={search} setSearch={setSearch} />{" "}
             <div className="w-full lg:w-auto">
-              <DatePicker />
+              <DatePicker setDate={setDate} date={date} />
             </div>
           </div>
         </div>
@@ -190,7 +191,7 @@ const CashPage = () => {
       {/* Footer */}
       <TableFooter
         currentPage={currentPage}
-        filtered={filtered}
+        length={filtered.length}
         rowsPerPage={rowsPerPage}
         setCurrentPage={setCurrentPage}
         setRowsPerPage={setRowsPerPage}

@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Baloo_Da_2 } from "next/font/google";
+import { Baloo_Da_2, Hind_Siliguri } from "next/font/google";
 import Providers from "@/components/Providers/Providers";
 import { Toaster } from "sonner";
 
 const balooDa = Baloo_Da_2({
   subsets: ["bengali", "latin"],
   weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-baloo",
+});
+
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-hind-siliguri",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +30,7 @@ export default function RootLayout({
     <html lang="bn">
       <body
         cz-shortcut-listen="true"
-        className={`${balooDa.className} antialiased no-scrollbar`}
+        className={`${balooDa.variable} ${hindSiliguri.variable} ${hindSiliguri.className} antialiased no-scrollbar`}
       >
         <Toaster position="top-center" richColors />
         <Providers>{children}</Providers>

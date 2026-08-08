@@ -1,4 +1,3 @@
-import React from "react";
 import ComputerLayout from "./ComputerLayout";
 import { TChildren } from "@/types/project";
 import MobileLayout from "./MobileLayout";

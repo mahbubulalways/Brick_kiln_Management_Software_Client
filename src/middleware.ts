@@ -3,20 +3,28 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Apply auth check for dashboard routes
-  if (pathname.startsWith("/dashboard")) {
-    const token = true;
+  const token = request.cookies.get("token")?.value;
 
-    // Redirect to /login if no token is found
-    if (!token) {
-      return NextResponse.redirect(new URL("/", request.url));
+  // No token
+  if (!token) {
+    // Allow login page
+    if (pathname === "/login") {
+      return NextResponse.next();
     }
+
+    // Redirect everything else to login
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Continue to the requested page
+  // Has token
+  // pathname === "/" ||
+  if (pathname === "/login") {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"], // Match all /dashboard routes
+  matcher: ["/", "/login", "/dashboard/:path*"],
 };

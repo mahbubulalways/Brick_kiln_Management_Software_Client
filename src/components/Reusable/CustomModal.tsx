@@ -5,15 +5,22 @@ type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-  width?: string;
+  width?: TModalWidth;
   title?: string;
 };
-
+type TModalWidth = "sm" | "md" | "lg" | "xl" | "full";
+const widthClasses: Record<TModalWidth, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  full: "max-w-5xl",
+};
 const CustomModal = ({
   isOpen,
   onClose,
   children,
-  width,
+  width = "md",
   title,
 }: TCustomModal) => {
   if (!isOpen) return null;
@@ -24,15 +31,15 @@ const CustomModal = ({
       // onClick={onClose}
     >
       <div
-        className={`bg-white relative rounded-md shadow-lg ${
-          width || "w-[500px]"
-        } max-w-5xl animate-zoomSlideIn`}
+        className={`relative bg-white w-full ${widthClasses[width]} 
+        md:rounded-md rounded-t-2xl shadow-xl
+        h-[90vh] md:h-auto md:max-h-[85vh]
+        flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: "95vh", overflowY: "auto" }}
       >
         {/* Header */}
         <div className="flex px-3 pt-2 items-center justify-between sticky top-0 bg-[#F8FAFC] border-b shadow-sm pb-2">
-          <h1 className="font-semibold text-gray-600 text-[14px]">{title}</h1>
+          <h1 className="font-semibold  text-2xl py-3">{title}</h1>
           <button
             className="text-black bg-gray-200 p-1 rounded-full duration-200 cursor-pointer hover:bg-red-600 hover:text-white"
             onClick={onClose}

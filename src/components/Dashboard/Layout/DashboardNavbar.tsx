@@ -13,6 +13,7 @@ import { CiYoutube } from "react-icons/ci";
 import { SiFampay } from "react-icons/si";
 import { ProfileMenu } from "../NavbarOptions/Profile";
 import { useTitleStore } from "@/zustand/store/titleStore";
+import Link from "next/link";
 
 interface DashboardNavbarProps {
   onToggleDrawer?: () => void;
@@ -27,6 +28,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -44,10 +46,11 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
         >
           <RiMenuFold4Line className={`w-5 h-5 text-gray-700  `} />
         </button>
-
-        <h1 className="text-lg font-semibold text-gray-900 pl-3 lg:pl-0">
-          {title}
-        </h1>
+        <Link href={"/"}>
+          <h1 className="text-lg font-semibold text-gray-900 pl-3 lg:pl-0">
+            {title}
+          </h1>
+        </Link>
       </div>
 
       {/* Right section */}

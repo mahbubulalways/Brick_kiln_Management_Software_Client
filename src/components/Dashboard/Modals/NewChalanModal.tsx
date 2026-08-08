@@ -19,6 +19,9 @@ import { showToast } from "@/components/Toast/CustomToast";
 import { MdOutlineError } from "react-icons/md";
 import { FaCircleCheck } from "react-icons/fa6";
 import { RiErrorWarningFill } from "react-icons/ri";
+import CustomInput from "@/components/Reusable/CustomInput";
+import CustomDatePicker from "@/components/Reusable/CustomDatePicker";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
@@ -26,7 +29,7 @@ type TCustomModal = {
 
 const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
-    new Date()
+    new Date(),
   );
   const [challanDate, setChallanDate] = useState<Date | undefined>(new Date());
   const [duePayDate, setDuepayDate] = useState<Date | undefined>();
@@ -44,10 +47,11 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
   // CREATE NEW INVOICE
   const [mutateAsync, { isLoading: createInvoiceLoading }] =
     useCreateInvoiceMutation();
-  const classOptions = classAndRate?.map(
-    (cls: TClassAndRate) => cls?.className
-  );
-
+  const classOptions = classAndRate?.map((cls: TClassAndRate) => ({
+    label: cls?.className,
+    value: cls?.className,
+  }));
+  console.log(classOptions);
   // REACT HOOK FORM
   const {
     register,
@@ -80,7 +84,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
     const selectedClassName = item.class;
     const rateFromClass =
       classAndRate.find(
-        (cls: TClassAndRate) => cls.className === selectedClassName
+        (cls: TClassAndRate) => cls.className === selectedClassName,
       )?.rate || 0;
 
     const quantity = Number(item.quantity) || 0;
@@ -99,7 +103,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
 
   const totalProductPrice = watchItems.reduce(
     (acc, current) => acc + Number(current.price),
-    0
+    0,
   );
   const totalPrice = totalProductPrice + Number(carRent) - Number(discount);
   const safeCash = Math.min(cash, totalPrice);
@@ -117,7 +121,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
   const onSubmit: SubmitHandler<TChallanCreate> = async (data) => {
     console.log(data);
     const allValid = watchItems.every((item) =>
-      Object.values(item).every((value) => value !== 0 && value !== "")
+      Object.values(item).every((value) => value !== 0 && value !== ""),
     );
     if (allValid === false) {
       return showToast({
@@ -179,8 +183,8 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
     <CustomModalBottom
       isOpen={isOpen}
       onClose={onClose}
-      title="নতুন চালান 😍"
-      width="w-4xl h-[85vh] lg:h-[85vh] overflow-y-auto pb-5 no-scrollbar"
+      title="নতুন চালান"
+      width="full"
     >
       {classRateLoading || serialLoading ? (
         <></>
@@ -197,7 +201,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
             </div>
 
             <div className="flex items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <div className="flex items-center border-2 border-gray-300 rounded-md px-2 py-1 w-full sm:w-auto">
+              <div className="flex items-center border h-[41px] border-gray-300 rounded-md px-2 py-1 w-full sm:w-auto">
                 <label className="text-gray-700 whitespace-nowrap mr-2">
                   চালান নম্বর:
                 </label>
@@ -213,60 +217,69 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                   }
                 />
               </div>
-              <div className="w-full sm:w-auto">
-                <DatePicker date={challanDate} setDate={setChallanDate} />
-              </div>
+
+              <CustomDatePickerState
+                value={challanDate!}
+                onChange={setChallanDate!}
+                disablePastDates
+              />
             </div>
           </div>
 
           {/* Main Form */}
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              <CustomInputLabel
+              <CustomInput
                 name="customer.phoneNumber"
                 label="ফোন নম্বর"
                 placeholder="ফোন নম্বর"
                 register={register}
                 type="text"
-                errMsg={"ফোন নম্বর লিখুন"}
-                required
+                rules={{ required: "ফোন নম্বর লিখুন" }}
                 error={errors.customer?.phoneNumber}
               />
-              <CustomInputLabel
+              <CustomInput
                 name="customer.name"
                 label="কাস্টমারের নাম"
                 placeholder="কাস্টমারের নাম"
                 register={register}
                 type="text"
-                required
-                errMsg={"কাস্টমারের নাম লিখুন"}
+                rules={{ required: "কাস্টমারের নাম লিখুন" }}
                 error={errors.customer?.name}
               />
-              <CustomInputLabel
+              <CustomInput
                 name="customer.address"
                 label="কাস্টমারের ঠিকানা"
                 placeholder="কাস্টমারের ঠিকানা"
                 register={register}
                 type="text"
-                errMsg={"কাস্টমারের ঠিকানা লিখুন"}
-                required
+                rules={{ required: "কাস্টমারের ঠিকানা লিখুন" }}
                 error={errors.customer?.address}
               />
               <CustomSelect
                 name="invoice.chalanType"
                 label="চালানের ধরণ"
-                placeholder=""
-                defaultValue="রেগুলার চালান"
+                placeholder="চালানের ধরণ"
+                error={errors.invoice?.chalanType}
+                rules={{ required: "চালানের ধরণ লিখুন" }}
                 control={control}
-                options={["রেগুলার চালান", "অগ্রিম চালান"]}
+                options={[
+                  { label: "রেগুলার চালান", value: "রেগুলার চালান" },
+                  { label: "অগ্রিম চালান", value: "অগ্রিম চালান" },
+                ]}
               />
               <div>
-                <Label className=" flex items-center text-sm font-medium text-gray-600">
-                  ডেলিভারি তারিখ
-                </Label>
-                <DatePicker setDate={setDeliveryDate} date={deliveryDate} />
+                <CustomDatePicker
+                  control={control}
+                  name=" data.invoice.deliveryDate"
+                  placeholder="ডেলিভারি তারিখ"
+                  label="ডেলিভারি তারিখ"
+                  disablePastDates
+                  error={errors.invoice?.deliveryDate}
+                  rules={{ required: "ডেলিভারি তারিখ" }}
+                />
               </div>
-              <CustomInputLabel
+              <CustomInput
                 name="invoice.note"
                 label="নোট"
                 placeholder="নোট"
@@ -280,64 +293,73 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="flex items-center gap-2 bg-gray-50 rounded-md p-2"
+                  className="flex w-full items-end gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3"
                 >
-                  <CustomSelect
-                    name={`invoiceItems.items.${index}.class`}
-                    label="শ্রেণি"
-                    placeholder="শ্রেণি"
-                    control={control}
-                    options={classOptions || []}
-                  />
-                  <CustomInputLabel
-                    name={`invoiceItems.items.${index}.rate`}
-                    label="রেট"
-                    placeholder="0"
-                    register={register}
-                    type="text"
-                    required
-                  />
-                  <CustomInputLabel
-                    name={`invoiceItems.items.${index}.quantity`}
-                    label="পরিমাণ"
-                    placeholder="0"
-                    register={register}
-                    type="number"
-                    required
-                  />
-                  <CustomInputLabel
-                    name={`invoiceItems.items.${index}.price`}
-                    label="মূল্য"
-                    placeholder="0"
-                    register={register}
-                    type="number"
-                    readonly={true}
-                    required
-                  />
-
-                  <div className="flex flex-col gap-1 mt-4">
-                    <button
-                      type="button"
-                      className="flex items-center justify-center p-1 rounded bg-green-100 text-green-600 hover:bg-green-200"
-                      onClick={() =>
-                        append({ class: "", rate: 0, quantity: 0, price: 0 })
-                      }
-                    >
-                      <Plus size={18} />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={fields.length === 1}
-                      className={`flex items-center justify-center p-1 rounded ${
-                        fields.length === 1
-                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-red-100 text-red-500 hover:bg-red-200"
-                      }`}
-                      onClick={() => remove(index)}
-                    >
-                      <Trash size={18} />
-                    </button>
+                  {/* Add Button */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      append({ class: "", rate: 0, quantity: 0, price: 0 })
+                    }
+                    className="flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border border-green-200 bg-green-50 text-green-600 transition-all duration-200 hover:bg-green-600 hover:text-white hover:shadow-md active:scale-95"
+                    title="নতুন সারি যোগ করুন"
+                  >
+                    <Plus size={18} strokeWidth={2.5} />
+                  </button>
+                  <div className="flex-1">
+                    <CustomSelect
+                      name={`invoiceItems.items.${index}.class`}
+                      label="শ্রেণি"
+                      placeholder="শ্রেণি"
+                      control={control}
+                      options={classOptions || []}
+                    />
                   </div>
+                  <div className="flex-1">
+                    <CustomInput
+                      name={`invoiceItems.items.${index}.rate`}
+                      label="রেট"
+                      placeholder="0"
+                      register={register}
+                      type="text"
+                      rules={{ required: "" }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <CustomInput
+                      name={`invoiceItems.items.${index}.quantity`}
+                      label="পরিমাণ"
+                      placeholder="0"
+                      register={register}
+                      type="number"
+                      rules={{ required: "" }}
+                    />
+                  </div>{" "}
+                  <div className="flex-1">
+                    <CustomInput
+                      name={`invoiceItems.items.${index}.price`}
+                      label="মূল্য"
+                      placeholder="0"
+                      register={register}
+                      type="number"
+                      readonly
+                      rules={{ required: "" }}
+                    />
+                  </div>
+                  {/* Delete Button */}
+                  <button
+                    type="button"
+                    disabled={fields.length === 1}
+                    onClick={() => remove(index)}
+                    title="সারি মুছে ফেলুন"
+                    className={`flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border transition-all duration-200 active:scale-95 ${
+                      fields.length === 1
+                        ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                        : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white hover:shadow-md"
+                    }`}
+                  >
+                    <Trash size={18} strokeWidth={2.5} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -361,55 +383,66 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                   />
                 </div>
               ) : (
-                <div>
-                  <h1>HERE WILL BE SOMETHING</h1>
+                <div className="flex flex-col items-center justify-center">
+                  <div>
+                    <h1 className="text-red-600 mx-auto bg-red-50 p-5 text-4xl font-semibold w-max">
+                      DEMO
+                    </h1>
+                    <SmsSwitch
+                      sendSms={sendSms}
+                      setSendSms={setSendSms}
+                      showBorder={false}
+                      showLabel={false}
+                      title="কাস্টমারকে এসএমএস দিন"
+                    />
+                  </div>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-2">
-                <CustomInputLabel
+                <CustomInput
                   name="invoice.productPrice"
                   label="মূল্য"
                   placeholder="0"
                   register={register}
                   type="number"
                   readonly
-                  required
+                  rules={{ required: "" }}
                 />
-                <CustomInputLabel
+                <CustomInput
                   name="invoice.discount"
                   label="ছাড়"
                   placeholder="0"
                   register={register}
                   type="number"
-                  required
+                  rules={{ required: "" }}
                   // error={errors.invoice?.discount}
                 />
-                <CustomInputLabel
+                <CustomInput
                   name="invoice.carRent"
                   label="গাড়ি ভাড়া"
                   placeholder="৳ 0"
                   register={register}
                   type="number"
-                  required
+                  rules={{ required: "" }}
                 />
-                <CustomInputLabel
+                <CustomInput
                   name="invoice.totalPrice"
                   label="মোট"
                   placeholder="৳ 0"
                   register={register}
                   type="number"
                   readonly
-                  required
+                  rules={{ required: "" }}
                 />
-                <CustomInputLabel
+                <CustomInput
                   name="invoice.cash"
                   label="নগদ"
                   placeholder="৳ 0"
                   register={register}
                   type="number"
                 />
-                <CustomInputLabel
+                <CustomInput
                   name="invoice.due"
                   label="বাকি"
                   placeholder="৳ 0"

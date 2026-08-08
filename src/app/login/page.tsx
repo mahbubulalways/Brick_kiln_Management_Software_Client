@@ -4,12 +4,52 @@ import Image from "next/image";
 import bgImage from "@/assets/login_bg.png";
 import sideImage from "@/assets/login_side.png";
 import MarqueeOneLine from "@/components/Marquee/Marguee";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import Link from "next/link";
-
+import { FieldValues, useForm } from "react-hook-form";
+import { userLogin } from "@/service/actions/userLogin";
+import { storeUserInLocalStorage } from "@/service/auth.services";
+import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
+import { useRouter } from "next/navigation";
+type TLogin = {
+  auth: string;
+  password: string;
+};
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>();
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TLogin>({
+    defaultValues: {
+      auth: "admin@gmail.com",
+      password: "12345678",
+    },
+  });
+
+  const onSubmt = async (data: FieldValues) => {
+    setIsLoading(true);
+    setErrorMsg("");
+    try {
+      const result = await userLogin(data);
+      console.log(result);
+      setIsLoading(false);
+      if (result?.success && result?.redirectPath) {
+        storeUserInLocalStorage(result?.data?.token);
+        router.push(result.redirectPath);
+      } else {
+        setErrorMsg(result?.message || "Something went wrong.");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.log(error);
+      setErrorMsg(error?.data?.message || "Something went wrong.");
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="relative w-full h-screen flex items-center justify-center bg-gray-100 overflow-hidden">
       {/* Background */}
@@ -51,56 +91,40 @@ export default function LoginPage() {
               আপনার ব্যবসা পরিচালনার জন্য লগইন করুন
             </p>
 
-            <form className="space-y-4">
-              {/* Username */}
-              <div className="flex flex-col w-full">
-                <label className="text-gray-700 mb-1   font-semibold">
-                  ইউজারনেম
-                </label>
-                <input
-                  type="text"
-                  placeholder="demo"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
-                />
-              </div>
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmt)}>
+              {errorMsg && (
+                <p className="py-5 text-center text-red-500 text-sm">
+                  {errorMsg}
+                </p>
+              )}
+              <CustomInputLabel
+                label="ইমেইল বা ফোন নম্বর"
+                name="auth"
+                placeholder="ইমেইল বা ফোন নম্বর লিখুন"
+                register={register}
+                errMsg="ইমেইল বা ফোন নম্বর আবশ্যক।"
+                error={errors.auth}
+                required
+              />
 
-              {/* Password */}
-              <div className="flex flex-col w-full">
-                {/* Label + Icon */}
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-gray-700   font-semibold">
-                    পাসওয়ার্ড
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-500 flex items-center"
-                  >
-                    {showPassword ? (
-                      <AiOutlineEyeInvisible size={20} />
-                    ) : (
-                      <AiOutlineEye size={20} />
-                    )}
-                  </button>
-                </div>
+              <CustomInputLabel
+                label="পাসওয়ার্ড"
+                name="password"
+                type="password"
+                placeholder="আপনার পাসওয়ার্ড লিখুন"
+                register={register}
+                errMsg="পাসওয়ার্ড আবশ্যক।"
+                error={errors.password}
+                required
+              />
 
-                {/* Input */}
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <Link href={"/"}>
-                <button
-                  type="submit"
-                  className="w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-500 transition cursor-pointer"
-                >
-                  লগইন
-                </button>
-              </Link>
+              <button
+                type="submit"
+                className={`w-full bg-green-600 text-white py-2 rounded-md font-semibold hover:bg-green-500 transition cursor-pointer disabled:bg-gray-300`}
+                disabled={isLoading}
+              >
+                লগইন করুন
+              </button>
             </form>
           </div>
         </div>

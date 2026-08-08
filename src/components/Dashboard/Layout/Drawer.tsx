@@ -23,9 +23,9 @@ const Drawer = ({ isOpen }: DrawerProps) => {
       `}
     >
       {/* Header / Logo */}
-      <div className="h-24 flex flex-col items-center justify-center ">
-        <span className="font-semibold text-gray-700   tracking-wide">
-          HELLO
+      <div className="h-12 flex flex-col items-center justify-center ">
+        <span className="font-semibold text-gray-700 text-xl pt-2 tracking-wide">
+          এডমিন প্যানেল
         </span>
       </div>
 

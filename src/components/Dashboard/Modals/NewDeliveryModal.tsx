@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
+import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import { DatePicker } from "@/components/Others/DatePicker";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import { showToast } from "@/components/Toast/CustomToast";
 import { RiErrorWarningFill } from "react-icons/ri";
 import { FaCircleCheck } from "react-icons/fa6";
 import { MdOutlineError } from "react-icons/md";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 
 type TCustomModal = {
   isOpen: boolean;
@@ -87,9 +88,12 @@ const NewDeliveryModal = ({
   const willReceiveDelivery = watch("items.quantity");
 
   const items = data?.data?.items;
-  const itemName = items?.map((item: IChallanItem) => item?.class);
+  const itemName = items?.map((item: IChallanItem) => ({
+    label: item?.class,
+    value: item?.class,
+  }));
   const selectedItem = data?.data?.items?.find(
-    (item: IChallanItem) => item?.class === targetClass
+    (item: IChallanItem) => item?.class === targetClass,
   );
   // Fetch invoice when invoiceId changes
 
@@ -136,7 +140,7 @@ const NewDeliveryModal = ({
   useEffect(() => {
     setValue(
       "items.quantity",
-      selectedItem?.quantity - selectedItem?.delivered
+      selectedItem?.quantity - selectedItem?.delivered,
     );
     setValue("items.remainingDelivery", willReceiveDelivery! - deliveryToday!);
   }, [
@@ -203,35 +207,36 @@ const NewDeliveryModal = ({
     <CustomModalBottom
       isOpen={isOpen}
       onClose={onClose}
-      title="নতুন ডেলিভারি 🚚"
-      width="w-3xl h-[75vh] lg:h-[75vh] overflow-y-auto pb-5 no-scrollbar"
+      title="নতুন ডেলিভারি"
+      width="full"
     >
       <div className="relative">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 lg:grid-cols-3 items-center gap-4 mb-4 pt-3">
-            <CustomInputLabel
+            <CustomInput
               name="deliveryNo"
               label="ডেলিভারি নং"
               placeholder="ডেলিভারি নং"
               register={register}
               type="text"
-              required
+              rules={{ required: "" }}
             />
-            <CustomInputLabel
+            <CustomInput
               name="invoiceId"
               label="চালান নং"
               placeholder="চালান নং"
               register={register}
               type="text"
-              required
+              rules={{ required: "" }}
             />
             <div>
-              <Label className="pb-1 lg:pb-0.5 flex items-center text-sm font-medium text-gray-600">
-                ডেলিভারি তারিখ
-              </Label>
-              <DatePicker setDate={setDate} date={date} />
+              <CustomDatePickerState
+                label=" ডেলিভারি তারিখ"
+                onChange={setDate}
+                value={date}
+              />
             </div>
-            <CustomInputLabel
+            <CustomInput
               name="customer.name"
               label="কাস্টমারের নাম"
               placeholder="কাস্টমারের নাম"
@@ -239,21 +244,19 @@ const NewDeliveryModal = ({
               type="text"
               readonly={data?.data?.customer}
               error={errors?.customer?.name}
-              errMsg="কাস্টমারের নাম লিখুন"
-              required
+              rules={{ required: "কাস্টমারের নাম লিখুন" }}
             />
-            <CustomInputLabel
+            <CustomInput
               name="customer.phoneNumber"
               label="ফোন নম্বর"
               placeholder="ফোন নম্বর"
               register={register}
               type="text"
               readonly={data?.data?.customer}
-              required
+              rules={{ required: "ফোন নম্বর লিখুন" }}
               error={errors?.customer?.phoneNumber}
-              errMsg="ফোন নম্বর লিখুন"
             />
-            <CustomInputLabel
+            <CustomInput
               name="customer.address"
               label="ডেলিভারি ঠিকানা"
               placeholder="ডেলিভারি ঠিকানা"
@@ -261,28 +264,25 @@ const NewDeliveryModal = ({
               type="text"
               readonly={data?.data?.customer}
               error={errors?.customer?.address}
-              errMsg="ঠিকানা নম্বর লিখুন"
-              required
+              rules={{ required: "ঠিকানা নম্বর লিখুন" }}
             />
           </div>
           <div className="flex items-center gap-5">
             <div className="flex-1">
-              <CustomInputLabel
+              <CustomInput
                 name="note"
                 label="নোট"
                 placeholder="চালানের  নোট"
                 register={register}
                 type="text"
-                required
+                rules={{ required: "" }}
               />
             </div>
             <div>
-              <h1 className="pb-1 lg:pb-0.5 flex items-center text-xs font-medium text-gray-600">
-                পরবর্তী ডেলিভারি তারিখ
-              </h1>
-              <DatePicker
-                date={nextDeliveryDate}
-                setDate={setNextDeliveryDate}
+              <CustomDatePickerState
+                label="  পরবর্তী ডেলিভারি তারিখ"
+                value={nextDeliveryDate}
+                onChange={setNextDeliveryDate}
               />
             </div>
           </div>
@@ -295,55 +295,54 @@ const NewDeliveryModal = ({
               placeholder="শ্রেণি"
               control={control}
               options={itemName || []}
-              // defaultValue={itemName?.[0] ?? ""}
             />
-            <CustomInputLabel
+            <CustomInput
               name={`items.quantity`}
               label="ডেলিভারি পাবে"
               placeholder="ডেলিভারি পাবে"
               register={register}
               type="number"
               readonly
-              required
+              rules={{ required: "" }}
             />
-            <CustomInputLabel
+            <CustomInput
               name={`items.todaysDelivery`}
               label="আজকের ডেলিভারি"
               placeholder="আজকের ডেলিভারি"
               register={register}
               type="number"
-              required
+              rules={{ required: "" }}
             />
-            <CustomInputLabel
+            <CustomInput
               name={`items.remainingDelivery`}
               label="ডেলিভারি বাকি"
               placeholder="ডেলিভারি বাকি"
               register={register}
               type="number"
-              required
+              rules={{ required: "" }}
             />
           </div>
 
           <div className="grid grid-cols-3 pt-3 gap-5">
             <div className="flex flex-col gap-1">
-              <h1 className=" lg:pb-0.5 flex items-center text-xs font-medium text-gray-600">
+              <h1 className=" lg:pb-0.5 flex items-center  font-medium text-gray-600">
                 ড্রাইভারের তথ্যঃ
               </h1>
-              <CustomInputLabel
+              <CustomInput
                 name={`driverName`}
                 label=""
                 placeholder="ড্রাইভারের নাম"
                 register={register}
                 type="text"
               />
-              <CustomInputLabel
+              <CustomInput
                 name={`driverMobileNumber`}
                 label=""
                 placeholder="ড্রাইভারের ফোন নম্বর"
                 register={register}
                 type="text"
               />
-              <CustomInputLabel
+              <CustomInput
                 name={`carNumber`}
                 label=""
                 placeholder="গাড়ি নম্বর"
@@ -353,8 +352,8 @@ const NewDeliveryModal = ({
             </div>
 
             <div className="flex flex-col w-full max-w-2xs">
-              <div>
-                <label className="text-gray-600 text-xs font-medium pb-1 flex items-center">
+              <div className="space-y-2">
+                <label className="text-gray-600 font-medium pb-1 flex items-center">
                   গাড়ি ভাড়া
                 </label>
                 <div className="relative w-full ">
@@ -371,6 +370,7 @@ const NewDeliveryModal = ({
                     ৳
                   </span>
                 </div>
+
                 <SmsSwitch
                   sendSms={sendSms}
                   setSendSms={setSendSms}

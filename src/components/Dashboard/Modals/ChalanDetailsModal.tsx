@@ -4,7 +4,7 @@ import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import { useGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
 import { IChallanForDataShow, TCustomInvoiceModal } from "@/types/types";
 import moment from "moment";
-import "moment/locale/bn";
+// import "moment/locale/bn";
 const ChalanDetailsModal = ({
   isOpen,
   onClose,
@@ -25,9 +25,8 @@ const ChalanDetailsModal = ({
     <CustomModalBottom
       isOpen={isOpen}
       onClose={handleClose}
-      title="চালান এর বিস্তারিত
-"
-      width="w-4xl h-[70vh] lg:h-[80vh] overflow-y-auto pb-5 no-scrollbar"
+      title="চালান এর বিস্তারিত"
+      width="xl"
     >
       {isLoading ? (
         <>

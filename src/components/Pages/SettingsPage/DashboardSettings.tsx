@@ -53,14 +53,14 @@ const DashboardSettings = () => {
     </div>
   );
 
-  return (
-    <div className="bg-white p-3 rounded-md h-[90vh]">
-      <div className="flex gap-5">
-        <SidebarMenu setPage={setPage} />
-        {content}
-      </div>
-    </div>
-  );
+  // return (
+  //   <div className="bg-white p-3 rounded-md h-[90vh]">
+  //     <div className="flex gap-5">
+  //       <SidebarMenu setPage={setPage} />
+  //       {content}
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default DashboardSettings;

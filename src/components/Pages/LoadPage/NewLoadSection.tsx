@@ -21,7 +21,7 @@ export type TPaymentRecord = {
 const NewLoadSection = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [ledger, setLedger] = useState<string>("");
-  const { register, handleSubmit } = useForm<TPaymentRecord>({
+  const { register, handleSubmit, control } = useForm<TPaymentRecord>({
     defaultValues: {},
   });
 
@@ -49,7 +49,7 @@ const NewLoadSection = () => {
           name="paymentType"
           label="লোডের ধরণ"
           placeholder=""
-          register={register}
+          control={control}
           options={[
             "মাঠ থেকে লোড হয়েছে",
             "স্টক থেকে লোড হয়েছে",

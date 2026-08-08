@@ -17,11 +17,20 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // ✅ Use shadcn wrapped components
+} from "@/components/ui/dropdown-menu";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // ✅ shadcn avatar component
+import { deleteCookie } from "@/service/deleteCookie";
+import { logoutUserFromSystem } from "@/service/auth.services";
+import { useRouter } from "next/navigation";
 
 export function ProfileMenu() {
+  const router = useRouter();
+  const handleLogout = () => {
+    deleteCookie();
+    logoutUserFromSystem();
+    router.push("/login");
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -77,13 +86,13 @@ export function ProfileMenu() {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link
-            href="/logout"
+          <button
+            onClick={handleLogout}
             className="menu-item text-red-500 hover:text-red-600"
           >
             <LogOut size={16} className="text-red-500" />
             Logout
-          </Link>
+          </button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

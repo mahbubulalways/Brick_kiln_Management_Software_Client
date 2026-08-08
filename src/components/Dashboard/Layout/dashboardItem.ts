@@ -125,7 +125,7 @@ export const dashboardItems1: TDashboardItem[] = [
   {
     id: "9",
     title: "স্টক খাতা",
-    path: "/dashboard/unload",
+    path: "/dashboard/stock-book",
     icon: RiStockFill,
   },
   {

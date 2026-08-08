@@ -68,7 +68,7 @@ const DueCollectionPage = () => {
 
   const totalCredit = dues?.data.reduce(
     (sum: number, r: IDueRecord) => sum + r?.collect,
-    0
+    0,
   );
 
   const toggleRow = (id: number) => {
@@ -139,7 +139,11 @@ const DueCollectionPage = () => {
                     <TableData td={row?.collect} cls="bg-green-100" />
                     <TableData td={row?.newDue} cls=" bg-red-100" />
                     <TableData
-                      td={moment(row?.nextDate).format("DD-MM-YYYY")}
+                      td={
+                        row?.nextDate
+                          ? moment(row?.nextDate).format("DD-MM-YYYY")
+                          : "পরিশোধিত"
+                      }
                       cls="hidden lg:table-cell"
                     />
                     <TableData td={row?.season} cls="hidden lg:table-cell" />

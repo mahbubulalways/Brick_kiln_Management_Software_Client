@@ -3,8 +3,8 @@ import CustomButton from "@/components/Dashboard/common/CustomButton";
 import { DatePicker } from "@/components/Others/DatePicker";
 import { MonthPicker } from "@/components/Others/MonthPicker";
 import { useState } from "react";
-
 const ButtonGroup = () => {
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [activeLabel, setActiveLabel] = useState("");
 
   const buttons = [
@@ -51,7 +51,7 @@ const ButtonGroup = () => {
       </div>
       <div className="flex items-center gap-5 w-full lg:w-auto">
         <MonthPicker />
-        <DatePicker />
+        <DatePicker setDate={setDate} date={date} />
       </div>
     </div>
   );
