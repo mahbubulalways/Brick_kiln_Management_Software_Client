@@ -57,7 +57,7 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
       isOpen={isOpen}
       onClose={onClose}
       title="শ্রেণি অ্যাড/আপডেট"
-      width="w-sm"
+      width="sm"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">

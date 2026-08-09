@@ -22,4 +22,17 @@ export type TPaymentResponse = {
   createdAt: string;
   updatedAt: string;
   ledger: TLedger;
+  paymentDate: string;
+};
+
+
+export type TPaymentReportResponse = {
+  ledgerId: number;
+  ledger: string;
+  quantity: number;
+  totalBill: number;
+  advancePayment: number;
+  cutting: number;
+  payment: number;
+  paymentDifference: number;
 };

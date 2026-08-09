@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Calendar, MoreVertical, Truck, User } from "lucide-react";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
-import { DatePicker } from "@/components/Others/DatePicker";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
 import TableHead from "@/components/Reusable/TableHead";
 import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
@@ -18,70 +17,42 @@ import moment from "moment";
 import TableData from "@/components/Reusable/TableData";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
-import TableFooter from "@/components/Reusable/TableFooter";
 import DeliveryReportModal, {
   TItems,
 } from "@/components/Dashboard/Modals/ReportModal/DeliveryReportModal";
 import { groupAndSumByClass } from "@/utils/getDeliveryReportData";
 import DeliveryPrintModal from "@/components/Dashboard/PrintModal/DeliveryPrint/DeliveryPrintModal";
-export type TInvoiceCustomer = {
-  id: number;
-  name: string;
-  phoneNumber: string;
-  address: string;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type TDeliveryInvoice = {
-  id: number;
-  customer: TInvoiceCustomer;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type TDeliveryShow = {
-  id: number;
-  carNo: string;
-  class: string;
-  deliveryDate: string;
-  nextDeliveryDate: string;
-  deliveryNo: number;
-  quantity: number;
-  deliveryReceived: number;
-  deliveryRemaining: number;
-  driverName: string;
-  driverPhoneNumber: string;
-  invoiceId: number;
-  invoice: TDeliveryInvoice;
-  isDeleted: boolean;
-  createdAt: string;
-};
-
-const TodaysDeliveryPage = () => {
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import { TQuery } from "@/interface/query";
+import { TMetaConfig } from "@/interface/meta";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import DeliveryDetailsModal from "@/components/Dashboard/Modals/DeliveryDetailsModal";
+import { TDeliveryResponse } from "@/interface/delivery";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import NewDeliveryModalForInput from "@/components/Dashboard/Modals/NewDeliveryModalForInput";
+const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
+  const [openDeliveryDetailsModal, setOpenDeliveryDetailsModal] = useState<boolean>(false);
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
-  const [deliveryId, setDeliveryId] = useState<number>(0);
+  const [deliveryId, setDeliveryId] = useState<number | undefined>();
   const isoDate = date ? date.toISOString() : "";
 
-  const { data, isLoading } = useGetTodaysDeliveryQuery(isoDate, {
+  const { data, isLoading } = useGetTodaysDeliveryQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
   });
 
-  const deliveries = data?.data || [];
-
+  const deliveries = data?.data?.data || [];
+  const meta = data?.data?.meta as TMetaConfig;
   const paginatedData = deliveries?.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
-  const items = deliveries?.map((delivery: TDeliveryShow) => {
+  const items = deliveries?.map((delivery: TDeliveryResponse) => {
     return {
       class: delivery?.class,
       delivered: delivery?.deliveryReceived,
@@ -97,10 +68,8 @@ const TodaysDeliveryPage = () => {
         </button>
 
         <div className="flex items-center gap-2 ">
-          <DatePicker setDate={setDate} date={date} />
-          <button onClick={() => setOpenDeliveryReport(true)}>
-            <CustomReportButton />
-          </button>
+          <CustomDatePickerState onChange={setDate} value={date} />
+          <CustomReportButton onClick={() => setOpenDeliveryReport(true)} />
         </div>
       </div>
 
@@ -137,7 +106,7 @@ const TodaysDeliveryPage = () => {
                 </td>
               </tr>
             ) : (
-              paginatedData?.map((row: TDeliveryShow) => (
+              paginatedData?.map((row: TDeliveryResponse) => (
                 <tr key={row.id} className="hover:bg-gray-50">
                   <TableData td={row?.id} />
                   <TableData td={row?.invoiceId} />
@@ -147,19 +116,19 @@ const TodaysDeliveryPage = () => {
                     cls="hidden lg:table-cell"
                   />
                   <TableData td={row?.class} />
-                  <TableData td={row?.quantity} cls="hidden lg:table-cell" />
-                  <TableData td={row?.deliveryReceived} />
+                  <TableData td={toBanglaNumber(row?.quantity)} cls="hidden lg:table-cell" />
+                  <TableData td={toBanglaNumber(row?.deliveryReceived)} />
                   <TableData
-                    td={row?.deliveryRemaining}
+                    td={toBanglaNumber(row?.deliveryRemaining)}
                     cls="hidden lg:table-cell"
                   />
                   <TableData td={row?.driverName} cls="hidden lg:table-cell" />
-                  <TableData td={row?.deliveryReceived} />
+                  <TableData td={toBanglaNumber(row?.deliveryReceived)} />
                   <TableData
                     cls="hidden lg:table-cell"
                     td={`${moment(row?.deliveryDate).format(
-                      "DD/MM/YYYY"
-                    )} ${moment(row?.deliveryDate).format("LT")}`}
+                      "DD-MM-YYYY"
+                    )} `}
                   />
 
                   <td className="border p-2">
@@ -185,7 +154,10 @@ const TodaysDeliveryPage = () => {
                           />
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setOpenDeliveryDetailsModal(true),
+                          setDeliveryId(row?.id);
+                        }}>
                           <CustomDropDownMenuItem
                             Icon={Truck}
                             title="ডেলিভারি বিস্তারিত"
@@ -211,18 +183,17 @@ const TodaysDeliveryPage = () => {
             )}
           </tbody>
         </table>
+
+        <TablePagination
+          page={meta?.page ?? 1}
+          totalPages={meta?.totalPages ?? 1}
+          dataLength={deliveries?.length}
+          title="ডেলিভারি"
+        />
       </div>
 
-      <TableFooter
-        currentPage={currentPage}
-        length={deliveries?.length}
-        rowsPerPage={rowsPerPage}
-        setCurrentPage={setCurrentPage}
-        setRowsPerPage={setRowsPerPage}
-        title=""
-      />
       {isOpen && (
-        <NewDeliveryModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        <NewDeliveryModalForInput isOpen={isOpen} onClose={() => setIsOpen(false)} />
       )}
 
       {openDeliveryReport && (
@@ -242,6 +213,14 @@ const TodaysDeliveryPage = () => {
           setDeliveryId={setDeliveryId}
         />
       )}
+
+      {openDeliveryDetailsModal &&
+        <DeliveryDetailsModal
+          isOpen={openDeliveryDetailsModal}
+          onClose={() => setOpenDeliveryDetailsModal(false)}
+          deliveryId={deliveryId}
+          setDeliveryId={setDeliveryId} />
+      }
     </div>
   );
 };

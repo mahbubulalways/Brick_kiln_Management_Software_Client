@@ -21,8 +21,8 @@ const CustomStatus: React.FC<CustomStatusProps> = ({
       title: "লোড হচ্ছে...",
       description: "অনুগ্রহ করে অপেক্ষা করুন, তথ্য লোড করা হচ্ছে।",
       icon: (
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-50 text-green-600">
-          <LoaderCircle size={50} className="animate-spin" />
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-600">
+          <LoaderCircle size={40} className="animate-spin" />
         </div>
       ),
     },
@@ -31,8 +31,8 @@ const CustomStatus: React.FC<CustomStatusProps> = ({
       title: "কিছু সমস্যা হয়েছে",
       description: "তথ্য লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
       icon: (
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-red-50 text-red-500">
-          <AlertTriangle size={48} className="animate-pulse" />
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-50 text-red-500">
+          <AlertTriangle size={40} className="animate-pulse" />
         </div>
       ),
     },
@@ -41,8 +41,8 @@ const CustomStatus: React.FC<CustomStatusProps> = ({
       title: "কোনো তথ্য পাওয়া যায়নি",
       description: "বর্তমানে প্রদর্শনের জন্য কোনো তথ্য নেই।",
       icon: (
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-          <Inbox size={52} />
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+          <Inbox size={40} />
         </div>
       ),
     },
@@ -53,14 +53,14 @@ const CustomStatus: React.FC<CustomStatusProps> = ({
   return (
     <div
       className={`flex ${
-        fullScreen ? "min-h-[70vh]" : "min-h-[30vh]"
+        fullScreen ? "min-h-[60vh]" : "min-h-[30vh]"
       } flex-col items-center justify-center px-6 text-center`}
     >
       {/* Icon */}
       <div className="mb-3">{current.icon}</div>
 
       {/* Title */}
-      <h2 className="text-2xl font-bold text-gray-900">
+      <h2 className="text-xl font-bold text-gray-900">
         {title || current.title}
       </h2>
 

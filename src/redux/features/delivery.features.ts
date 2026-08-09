@@ -1,3 +1,4 @@
+import { TQuery } from "@/interface/query";
 import { baseApi } from "../baseApi";
 
 const deliveryApi = baseApi.injectEndpoints({
@@ -12,28 +13,30 @@ const deliveryApi = baseApi.injectEndpoints({
       keepUnusedDataFor: 0,
     }),
     getTodaysDelivery: builder.query({
-      query: (date) => ({
-        url: `/delivery/todays-delivery?date=${date}`,
+      query: (query: TQuery) => ({
+        url: `/delivery/todays-delivery?page=${query.page}&limit=${query.limit}&date=${query.date}`,
         method: "GET",
       }),
-      providesTags: ["Delivery"],
+      providesTags: ["Delivery", "InvoiceItem"],
       keepUnusedDataFor: 0,
     }),
 
     getAllDeliveryList: builder.query({
-      query: (date: { startDate: string; endDate: string }) => ({
-        url: `/delivery/delivery-list?startDate=${date.startDate}&endDate=${date.endDate}`,
+      query: (query: TQuery) => ({
+        url: `/delivery/delivery-list?page=${query.page}&limit=${query.limit}&date=${query.date}&search=${query.search}`,
         method: "GET",
       }),
       keepUnusedDataFor: 0,
+      providesTags: ["Delivery", "InvoiceItem"],
     }),
 
     getDeliveryHaveToday: builder.query({
-      query: (date) => ({
-        url: `/delivery/today-have-delivery?date=${date}`,
+      query: (query: TQuery) => ({
+        url: `/delivery/today-have-delivery?limit=${query.limit}&page=${query.page}&search=${query.search}&date=${query.date}`,
         method: "GET",
       }),
       keepUnusedDataFor: 0,
+      providesTags: ["InvoiceItem"],
     }),
 
     // GET SINGLE

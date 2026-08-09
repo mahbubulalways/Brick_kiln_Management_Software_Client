@@ -72,7 +72,7 @@ export const dashboardItems1: TDashboardItem[] = [
       },
       {
         id: "4-3",
-        title: "সব ডেলিভারি লিস্ট",
+        title: "বাকি ডেলিভারি লিস্ট",
         path: "/dashboard/all-deliveries",
         icon: MdKeyboardArrowRight,
       },

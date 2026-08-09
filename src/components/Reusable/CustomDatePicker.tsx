@@ -1,22 +1,27 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Calendar } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { Controller, FieldError, RegisterOptions } from "react-hook-form";
+import {
+  Controller,
+  FieldError,
+  RegisterOptions,
+} from "react-hook-form";
 
-type TPickMode = "date" | "month" | "year";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-type TCustomDatePicker = {
+type TCustomDatePickerProps = {
   name: string;
   control: any;
   label?: string;
   placeholder?: string;
   rules?: RegisterOptions;
   error?: FieldError;
-  mode?: TPickMode;
   disablePastDates?: boolean;
   maxFutureDays?: number;
   minDate?: Date;
@@ -28,44 +33,84 @@ const CustomDatePicker = ({
   name,
   control,
   label,
-  placeholder,
+  placeholder = "Select a date",
   rules,
   error,
-  mode = "date",
   disablePastDates = false,
   maxFutureDays,
   minDate,
   maxDate,
   border = true,
-}: TCustomDatePicker) => {
-  const [focused, setFocused] = useState(false);
+}: TCustomDatePickerProps) => {
+  const [open, setOpen] = useState(false);
 
-  const modeConfig: Record<
-    TPickMode,
-    { dateFormat: string; placeholder: string }
-  > = {
-    date: { dateFormat: "dd-MM-yyyy", placeholder: "Select a date" },
-    month: { dateFormat: "MM-yyyy", placeholder: "Select a month" },
-    year: { dateFormat: "yyyy", placeholder: "Select a year" },
-  };
+  // ==========================================
+  // TODAY
+  // ==========================================
 
-  // today er start (time 00:00:00) - past date compare korar jonno
   const today = new Date();
+
   today.setHours(0, 0, 0, 0);
 
-  const resolvedMinDate = disablePastDates ? today : minDate;
+  // ==========================================
+  // MIN DATE
+  // ==========================================
+
+  const resolvedMinDate = disablePastDates
+    ? today
+    : minDate;
+
+  // ==========================================
+  // MAX DATE
+  // ==========================================
 
   const resolvedMaxDate =
     maxFutureDays !== undefined
-      ? new Date(today.getTime() + maxFutureDays * 24 * 60 * 60 * 1000)
+      ? new Date(
+          today.getTime() +
+            maxFutureDays *
+              24 *
+              60 *
+              60 *
+              1000,
+        )
       : maxDate;
 
+  // ==========================================
+  // FORMAT DATE
+  // ==========================================
+
+  const formatDate = (date: Date) => {
+    const day = date
+      .getDate()
+      .toString()
+      .padStart(2, "0");
+
+    const month = (date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0");
+
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
+  // ==========================================
+  // RENDER
+  // ==========================================
+
   return (
-    <div className="flex flex-col gap-1">
+    <div className="w-full">
+
       {label && (
-        <label className="block font-medium text-gray-700">
+        <label className="mb-1 block text-sm font-medium">
           {label}
-          {rules && <span className="text-red-500">*</span>}
+
+          {rules && (
+            <span className="ml-1 text-red-500">
+              *
+            </span>
+          )}
         </label>
       )}
 
@@ -73,49 +118,143 @@ const CustomDatePicker = ({
         control={control}
         name={name}
         rules={rules}
-        render={({ field }) => (
-          <div className="custom-date-picker-wrapper relative w-full">
-            <div
-              className={`h-9 relative flex w-full items-center rounded-lg ${border ? "border px-4 py-2 outline-none" : ""} transition-colors ${
-                error
-                  ? "border-2 border-red-500"
-                  : `${border ? "border-gray-300 focus-within:ring-2 focus-within:ring-[#00664A] duration-500" : ""}`
-              }`}
-            >
-              <DatePicker
-                placeholderText={placeholder || modeConfig[mode].placeholder}
-                selected={field.value}
-                onChange={(date: Date | null) => field.onChange(date)}
-                onCalendarOpen={() => setFocused(true)}
-                onCalendarClose={() => {
-                  setFocused(false);
-                  field.onBlur();
-                }}
-                minDate={resolvedMinDate}
-                maxDate={resolvedMaxDate}
-                dateFormat={modeConfig[mode].dateFormat}
-                showYearPicker={mode === "year"}
-                showMonthYearPicker={mode === "month"}
-                className="w-full cursor-pointer bg-transparent pr-6 text-sm text-black outline-none placeholder:text-[16px] placeholder:text-black/50"
-                calendarClassName="custom-datepicker-calendar"
-                popperPlacement="bottom-start"
-                onKeyDown={(e) => {
-                  e.preventDefault();
-                }}
-              />
-              {/* Calendar Icon Right Side */}
-              {border ? (
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Calendar size={18} />
-                </div>
-              ) : (
-                ""
-              )}
+        render={({ field }) => {
+          /*
+           * Make sure field value is a valid Date
+           */
+          const selectedDate =
+            field.value instanceof Date &&
+            !isNaN(field.value.getTime())
+              ? field.value
+              : field.value
+                ? new Date(field.value)
+                : undefined;
+
+          return (
+            <div className="relative w-full">
+              <Popover
+                open={open}
+                onOpenChange={setOpen}
+              >
+                {/* ==================================
+                    TRIGGER
+                ================================== */}
+
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    onBlur={field.onBlur}
+                    className={`relative flex h-9 w-full items-center rounded-lg bg-white text-left transition-colors ${
+                      border
+                        ? "border px-4 py-2"
+                        : ""
+                    } ${
+                      error
+                        ? "border-2 border-red-500"
+                        : border
+                          ? "border-gray-300 focus:ring-2 focus:ring-[#00664A]"
+                          : ""
+                    }`}
+                  >
+                    <span
+                      className={`w-full truncate pr-8 text-sm ${
+                        selectedDate
+                          ? "text-black"
+                          : "text-black/50"
+                      }`}
+                    >
+                      {selectedDate
+                        ? formatDate(
+                            selectedDate,
+                          )
+                        : placeholder}
+                    </span>
+
+                    {border && (
+                      <CalendarIcon
+                        size={18}
+                        className="pointer-events-none absolute right-3 text-gray-400"
+                      />
+                    )}
+                  </button>
+                </PopoverTrigger>
+
+                {/* ==================================
+                    CALENDAR
+                ================================== */}
+
+                <PopoverContent
+                  align="start"
+                  className="w-auto p-2"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    captionLayout="dropdown"
+                    fromYear={
+                      resolvedMinDate?.getFullYear() ??
+                      2000
+                    }
+                    toYear={
+                      resolvedMaxDate?.getFullYear() ??
+                      new Date().getFullYear() + 10
+                    }
+                    onSelect={(date) => {
+                      if (!date) {
+                        field.onChange(
+                          undefined,
+                        );
+                        return;
+                      }
+
+                      const selected =
+                        new Date(date);
+
+                      selected.setHours(
+                        0,
+                        0,
+                        0,
+                        0,
+                      );
+
+                      field.onChange(selected);
+
+                      setOpen(false);
+                    }}
+                    disabled={(date) => {
+                      if (
+                        resolvedMinDate &&
+                        date < resolvedMinDate
+                      ) {
+                        return true;
+                      }
+
+                      if (
+                        resolvedMaxDate &&
+                        date > resolvedMaxDate
+                      ) {
+                        return true;
+                      }
+
+                      return false;
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-          </div>
-        )}
+          );
+        }}
       />
-      {error && <p className="text-sm text-red-600">{error.message}</p>}
+
+      {/* ==========================================
+          ERROR
+      ========================================== */}
+
+      {error && (
+        <p className="mt-1 text-sm text-red-600">
+          {error.message}
+        </p>
+      )}
     </div>
   );
 };

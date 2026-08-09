@@ -36,12 +36,12 @@ const CustomReportModal = ({
         className={`relative bg-white w-full ${widthClasses[width]} 
         md:rounded-md rounded-t-2xl shadow-xl
         h-[90vh] md:h-auto md:max-h-[85vh]
-        flex flex-col overflow-hidden`}
+        flex flex-col overflow-auto animate-zoomSlideIn no-scrollbar`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex px-3  items-center justify-between sticky top-0 bg-[#039A63] border-b shadow-sm py-3">
-          <h1 className="font-semibold text-white  mx-auto">{title}</h1>
+          <h1 className="font-medium text-white text-xl  mx-auto">{title}</h1>
           {/* <button
             className="text-black bg-gray-200 p-1 rounded-full duration-200 cursor-pointer hover:bg-red-600 hover:text-white"
             onClick={onClose}

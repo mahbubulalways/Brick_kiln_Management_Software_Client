@@ -8,12 +8,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Pencil, Printer, Trash, User } from "lucide-react";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
-import { DatePicker } from "@/components/Others/DatePicker";
 import TableHead from "@/components/Reusable/TableHead";
 import NewDueCollectionModal from "@/components/Dashboard/Modals/NewDueCollectionModal";
 import TableData from "@/components/Reusable/TableData";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
-import TableFooter from "@/components/Reusable/TableFooter";
 import PrintDueCollectionModal from "@/components/Dashboard/Modals/PrintDueCollectionModal";
 import UpdateDueCollection from "@/components/Dashboard/Modals/UpdateDueCollectionModal";
 import ThermalDueCollectionPrintModal from "@/components/Dashboard/Modals/ThermalDueCollectionPrintModal";
@@ -22,6 +20,11 @@ import { BsPencilSquare } from "react-icons/bs";
 import { useGetTodayPaidQuery } from "@/redux/features/dueCollection.features";
 import moment from "moment";
 import CustomLoader from "@/components/Reusable/CustomLoader";
+import { TQuery } from "@/interface/query";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import { TMetaConfig } from "@/interface/meta";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import { SERVER_ERROR_MESSAGE } from "@/constant";
 
 export interface ICustomer {
   id: number;
@@ -50,9 +53,7 @@ export interface IDueRecord {
   updatedAt: string;
 }
 
-const DueCollectionPage = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [currentPage, setCurrentPage] = useState(1);
+const DueCollectionPage = ({ limit, page }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isOpenPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [isOpenThermalPrintModal, setOpenThermalPrintModal] =
@@ -62,18 +63,20 @@ const DueCollectionPage = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [dueId, setDueId] = useState<number>();
   const isoDate = date ? date.toISOString() : "";
-  const { data: dues, isLoading } = useGetTodayPaidQuery(isoDate, {
+  const { data, isLoading, isError,error } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
   });
 
-  const totalCredit = dues?.data.reduce(
+  const dues = data?.data?.data as IDueRecord[] || []
+  const meta = data?.data?.meta as TMetaConfig;
+  const totalCredit = dues?.reduce(
     (sum: number, r: IDueRecord) => sum + r?.collect,
     0,
   );
-
   const toggleRow = (id: number) => {
     setExpandedRow((prev) => (prev === id ? null : id));
   };
+
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       <span className="bg-green-100 text-center text-green-800 px-3 py-1 rounded text-sm border border-green-300 font-medium lg:hidden block">
@@ -90,7 +93,7 @@ const DueCollectionPage = () => {
         </div>
 
         <div>
-          <DatePicker setDate={setDate} date={date} />
+          <CustomDatePickerState onChange={setDate} value={date} />
         </div>
       </div>
       <div className="overflow-x-auto pt-3">
@@ -116,14 +119,17 @@ const DueCollectionPage = () => {
                   <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ) : !dues?.data?.length ? (
+            ) : isError ? (
               <tr>
-                <td colSpan={9} className="py-8 text-gray-600">
-                  {dues?.message}
-                </td>
-              </tr>
-            ) : (
-              dues?.data?.map((row: IDueRecord) => (
+                <td colSpan={9} className="py-8">{SERVER_ERROR_MESSAGE}</td>
+              </tr>) : !dues?.length ? (
+                <tr>
+                  <td colSpan={9} className="py-8 text-gray-600">
+                    {data?.message}
+                  </td>
+                </tr>
+              ) : (
+              dues?.map((row: IDueRecord) => (
                 <React.Fragment key={row?.id}>
                   <tr
                     className="hover:bg-gray-50 cursor-pointer"
@@ -280,15 +286,14 @@ const DueCollectionPage = () => {
             )}
           </tbody>
         </table>
+        <TablePagination
+          page={meta?.page ?? 1}
+          totalPages={meta?.totalPages ?? 1}
+          dataLength={dues?.length}
+          title="পেমেন্ট"
+        />
       </div>
-      <TableFooter
-        currentPage={currentPage}
-        length={2}
-        rowsPerPage={rowsPerPage}
-        setCurrentPage={setCurrentPage}
-        setRowsPerPage={setRowsPerPage}
-        title={"জমা"}
-      />
+
 
       {isOpen && (
         <NewDueCollectionModal

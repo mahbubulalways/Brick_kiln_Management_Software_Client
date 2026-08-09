@@ -1,3 +1,4 @@
+import { TQuery } from "@/interface/query";
 import { baseApi } from "../baseApi";
 
 const invoiceApi = baseApi.injectEndpoints({
@@ -23,8 +24,16 @@ const invoiceApi = baseApi.injectEndpoints({
 
     // GET ALL INVOICE
     getAllInvoices: builder.query({
-      query: () => ({
-        url: "/invoice/all-invoices",
+      query: (payload: TQuery) => ({
+        url: `/invoice/all-invoices?limit=${payload?.limit}&page=${payload?.page}&search=${payload?.search}&date=${payload?.date}`,
+        method: "GET",
+      }),
+      providesTags: ["Invoice"],
+    }),
+
+     getAllAdvanceInvoices: builder.query({
+      query: (payload: TQuery) => ({
+        url: `/invoice/all-advance-invoices?limit=${payload?.limit}&page=${payload?.page}&search=${payload?.search}&date=${payload?.date}`,
         method: "GET",
       }),
       providesTags: ["Invoice"],
@@ -72,7 +81,7 @@ const invoiceApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload.payload,
       }),
-      invalidatesTags: ["Invoice"],
+      invalidatesTags: ["InvoiceItem",],
     }),
     // UPDATE INVOICE ITEM DELIVERY DAE
     updateInvoiceItemDeliveryDate: builder.mutation({
@@ -81,7 +90,7 @@ const invoiceApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload.payload,
       }),
-      invalidatesTags: ["InvoiceItem"],
+      invalidatesTags: ["InvoiceItem",],
     }),
 
     //  DELETE INVOICE
@@ -92,6 +101,8 @@ const invoiceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Invoice"],
     }),
+
+
   }),
 });
 
@@ -107,4 +118,5 @@ export const {
   useUpdateInvoiceDeliveryDateMutation,
   useUpdateInvoiceItemDeliveryDateMutation,
   useLazyGetSingleInvoiceQuery,
+  useGetAllAdvanceInvoicesQuery
 } = invoiceApi;

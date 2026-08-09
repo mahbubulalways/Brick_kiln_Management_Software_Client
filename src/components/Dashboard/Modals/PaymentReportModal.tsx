@@ -3,100 +3,79 @@
 import { useState } from "react";
 import CustomReportModal from "@/components/Reusable/CustomReportModal";
 import { useGetPaymentReportQuery } from "@/redux/features/payment.features";
+import TableHead from "@/components/Reusable/TableHead";
+import { NO_DATA_FOUND_MESSAGE } from "@/constant";
+import TableData from "@/components/Reusable/TableData";
+import { TPaymentReportResponse } from "@/interface/payment";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-const toBanglaNumber = (value: string | number) => {
-  const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-  return String(value).replace(/\d/g, (digit) => banglaDigits[Number(digit)]);
-};
-const [todayDate, setTodayDate] = useState(new Date());
-const {} = useGetPaymentReportQuery(todayDate, {
-  refetchOnMountOrArgChange: true,
-});
+
 const formatDate = (date: Date) => {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
 
-  return `${toBanglaNumber(day)}-${toBanglaNumber(month)}-${toBanglaNumber(
-    year,
-  )}`;
+  return `${toBanglaNumber(day)}-${toBanglaNumber(
+    month,
+  )}-${toBanglaNumber(year)}`;
 };
 
-const PaymentReportModal = ({ isOpen, onClose }: TCustomModal) => {
-  const [activeTab, setActiveTab] = useState<"date" | "all">("date");
+const PaymentReportModal = ({
+  isOpen,
+  onClose,
+}: TCustomModal) => {
+  const [activeTab, setActiveTab] = useState<"date" | "all">(
+    "date",
+  );
+  const [todayDate] = useState(new Date());
+  const date =
+    activeTab === "date"
+      ? todayDate.toISOString()
+      : undefined;
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useGetPaymentReportQuery(date!, {
+    refetchOnMountOrArgChange: true,
+  });
 
-  const paymentData = [
-    {
-      ledger: "অন্যান্য",
-      quantity: "৯৮,৫৮০",
-      totalBill: "৳ ৮৭,০৯,৫৪৪",
-      advance: "৳ ০",
-      cutting: "৳ ৫,৫৯০",
-      payment: "৳ ৮১,৪৯,৩৫৪",
-      due: "৳ ০",
-    },
-    {
-      ledger: "শেল",
-      quantity: "৩৬,৩৬৪",
-      totalBill: "৳ ৪১,৯১,৯৬২",
-      advance: "৳ ০",
-      cutting: "৳ ৪,৮৩৯",
-      payment: "৳ ৪১,৯০,৮২৯",
-      due: "৳ ০",
-    },
-    {
-      ledger: "কয়লা",
-      quantity: "৪",
-      totalBill: "৳ ১,০২,২২২",
-      advance: "৳ ০",
-      cutting: "৳ ০",
-      payment: "৳ ১,০৪,২২২",
-      due: "৳ ২,০০০ (বেশি)",
-    },
-    {
-      ledger: "কিন পরিষ্কার",
-      quantity: "৫,০০০",
-      totalBill: "৳ ৬০,০০০",
-      advance: "৳ ০",
-      cutting: "৳ ৯,৭৯৯",
-      payment: "৳ ২৮,২১০",
-      due: "৳ ০",
-    },
-    {
-      ledger: "বালু",
-      quantity: "১,৫৫০",
-      totalBill: "৳ ২৬,০২২",
-      advance: "৳ ৬,০০০",
-      cutting: "৳ ৬,০০৫",
-      payment: "৳ ১০,০১৭",
-      due: "৳ ৪,০০০ (কম)",
-    },
-    {
-      ledger: "মেশি",
-      quantity: "০",
-      totalBill: "৳ ৫০০",
-      advance: "৳ ০",
-      cutting: "৳ ০",
-      payment: "৳ ৫০০",
-      due: "৳ ০",
-    },
-  ];
+  const paymentReports = data?.data as TPaymentReportResponse[] | []
+  const summary = paymentReports?.reduce(
+    (acc, row) => {
+      acc.totalBill += row.totalBill || 0;
+      acc.advancePayment += row.advancePayment || 0;
+      acc.cutting += row.cutting || 0;
+      acc.payment += row.payment || 0;
+      acc.paymentDifference += row.paymentDifference || 0;
 
+      return acc;
+    },
+    {
+      totalBill: 0,
+      advancePayment: 0,
+      cutting: 0,
+      payment: 0,
+      paymentDifference: 0,
+    },
+  );
   return (
     <CustomReportModal
       isOpen={isOpen}
       onClose={onClose}
-      title="গ্রুপ অনুযায়ি পেমেন্ট রিপোর্ট"
       width="xxl"
+      title="গ্রুপ অনুযায়ি পেমেন্ট রিপোর্ট"
     >
-      <div className="w-full">
+      <div className="space-y-4">
         {/* Tabs */}
-        <div className="mb-3 grid grid-cols-2 gap-2">
+        <div className="flex gap-2">
           {/* Date Tab */}
           <button
             type="button"
@@ -104,14 +83,13 @@ const PaymentReportModal = ({ isOpen, onClose }: TCustomModal) => {
             className={`
               h-9 rounded-md border px-3
               text-sm font-medium transition
-              ${
-                activeTab === "date"
-                  ? "border-[#039A63] bg-[#039A63] text-white"
-                  : "border-[#039A63] bg-white text-[#039A63] hover:bg-[#039A63] hover:text-white"
+              ${activeTab === "date"
+                ? "border-[#039A63] bg-[#039A63] text-white"
+                : "border-[#039A63] bg-white text-[#039A63] hover:bg-[#039A63] hover:text-white"
               }
             `}
           >
-            {formatDate(new Date()) + "এর রিপোর্ট"}
+            {formatDate(todayDate)} এর রিপোর্ট
           </button>
 
           {/* All Payment Tab */}
@@ -121,10 +99,9 @@ const PaymentReportModal = ({ isOpen, onClose }: TCustomModal) => {
             className={`
               h-9 rounded-md border px-3
               text-sm font-medium transition
-              ${
-                activeTab === "all"
-                  ? "border-[#039A63] bg-[#039A63] text-white"
-                  : "border-[#039A63] bg-white text-[#039A63] hover:bg-[#039A63] hover:text-white"
+              ${activeTab === "all"
+                ? "border-[#039A63] bg-[#039A63] text-white"
+                : "border-[#039A63] bg-white text-[#039A63] hover:bg-[#039A63] hover:text-white"
               }
             `}
           >
@@ -132,135 +109,179 @@ const PaymentReportModal = ({ isOpen, onClose }: TCustomModal) => {
           </button>
         </div>
 
-        {/* Report Content */}
-        {activeTab === "date" && (
-          <div className="overflow-x-auto">
-            <div className="overflow-hidden border border-gray-200">
-              <table className="w-full min-w-[750px] border-collapse">
-                <thead>
-                  <tr className="bg-[#11966D] text-white">
-                    <th className="border-r border-[#0d8b65] px-3 py-3 text-left font-semibold">
-                      খতিয়ান
-                    </th>
 
-                    <th className="border-r border-[#0d8b65] px-3 py-3 text-left font-semibold">
-                      পরিমাণ
-                    </th>
 
-                    <th className="border-r border-[#0d8b65] px-3 py-3 text-left font-semibold">
-                      মোট বিল
-                    </th>
+        <div className="pt-4">
+          {isLoading? <CustomStatus type="loading"/>:
+            isError ?<CustomStatus type="error"/>:
+            (
+              <div className="overflow-x-auto">
+                <table className="min-w-full   text-center border-t">
+                  <thead className="bg-[#039A63] text-white">
+                    <tr>
 
-                    <th className="border-r border-[#0d8b65] px-3 py-3 text-left font-semibold">
-                      অগ্রিম
-                    </th>
+                      <TableHead th="খতিয়ান" cls="hidden lg:table-cell" />
+                      <TableHead th="পরিমাণ" />
+                      <TableHead th="মোট বিল" cls="hidden lg:table-cell" />
+                      <TableHead th="অগ্রিম" cls="hidden lg:table-cell" />
+                      <TableHead th="কর্তন" cls="hidden lg:table-cell" />
+                      <TableHead th="পেমেন্ট" />
+                      <TableHead th="কম/বেশি" cls="hidden lg:table-cell" />
 
-                    <th className="border-r border-[#0d8b65] px-3 py-3 text-left font-semibold">
-                      কর্তন
-                    </th>
-
-                    <th className="border-r border-[#0d8b65] px-3 py-3 text-left font-semibold">
-                      পেমেন্ট
-                    </th>
-
-                    <th className="px-3 py-3 text-left font-semibold">
-                      কম/বেশি
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {paymentData.map((item, index) => (
-                    <tr
-                      key={index}
-                      className="border-b border-gray-200 last:border-b-0"
-                    >
-                      <td className="px-3 py-3 text-[#039A63]">
-                        {item.ledger}
-                      </td>
-
-                      <td className="px-3 py-3 text-gray-800">
-                        {item.quantity}
-                      </td>
-
-                      <td className="px-3 py-3 text-gray-800">
-                        {item.totalBill}
-                      </td>
-
-                      <td className="px-3 py-3 text-orange-500">
-                        {item.advance}
-                      </td>
-
-                      <td className="px-3 py-3 text-orange-500">
-                        {item.cutting}
-                      </td>
-
-                      <td className="px-3 py-3 font-medium text-[#039A63]">
-                        {item.payment}
-                      </td>
-
-                      <td
-                        className={`px-3 py-3 ${
-                          item.due.includes("বেশি")
-                            ? "text-[#039A63]"
-                            : item.due.includes("কম")
-                              ? "text-orange-500"
-                              : "text-gray-700"
-                        }`}
-                      >
-                        {item.due}
-                      </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {paymentReports?.length ? (
+                      <>
+                        {paymentReports?.map((row: TPaymentReportResponse, index) => (
 
-            {/* Summary */}
-            <div className="mt-4 overflow-hidden border border-gray-100 bg-gray-50">
-              <div className="grid grid-cols-2 border-b border-gray-100 px-4 py-2.5">
-                <span className="text-gray-700">মোট বিল</span>
+                          <tr
+                            key={row?.ledgerId}
+                            className="hover:bg-gray-50"
 
-                <span className="text-gray-800">৳ ৬৫,৬৫,২২০</span>
+                          >
+
+                            <TableData
+                              td={row?.ledger}
+                              cls="hidden lg:table-cell"
+                            />
+                            <TableData
+                              td={toBanglaNumber(row?.quantity)}
+                              cls="hidden lg:table-cell"
+                            />
+
+
+                            <TableData
+                              td={`৳ ${toBanglaNumber(row?.totalBill)}`}
+                              cls="hidden lg:table-cell"
+                            />
+                            <TableData
+                              td={`৳ ${toBanglaNumber(row?.advancePayment)}`}
+                              cls="border p-2 text-red-500 hidden lg:table-cell"
+                            />
+                            <TableData
+                              cls="border p-2 text-green-600 hidden lg:table-cell"
+                              td={`৳ ${toBanglaNumber(row?.cutting)}`}
+                            />
+                            <TableData
+                              cls="border p-2 text-green-600"
+                              td={`৳ ${toBanglaNumber(row?.payment)}`}
+                            />
+                            <TableData
+                              cls={`border hidden lg:table-cell p-2 ${row?.paymentDifference < 0
+                                ? "text-red-500"
+                                : row?.paymentDifference > 0
+                                  ? "text-green-600"
+                                  : "text-gray-600"
+                                }`}
+                              td={
+                                row?.paymentDifference < 0
+                                  ? `৳ ${toBanglaNumber(Math.abs(row?.paymentDifference))} (কম)`
+                                  : row?.paymentDifference > 0
+                                    ? `৳ ${toBanglaNumber(row?.paymentDifference)} (বেশি)`
+                                    : "৳ 0"
+                              }
+                            />
+
+
+                          </tr>
+
+
+                        ))}
+                      </>
+                    ) : (
+                      <tr>
+                        <td className="text-center py-5" colSpan={9}>
+                          {NO_DATA_FOUND_MESSAGE}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+
+                {/* Summary */}
+                <div className="mt-4 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+                  {/* Total Bill */}
+                  <div className="grid grid-cols-2 border-b border-gray-200 px-4 py-2.5">
+                    <span className="font-medium text-gray-700">
+                      মোট বিল
+                    </span>
+
+                    <span className="font-medium text-gray-800">
+                      ৳ {toBanglaNumber(summary?.totalBill ?? 0)}
+                    </span>
+                  </div>
+
+                  {/* Advance */}
+                  <div className="grid grid-cols-2 border-b border-gray-200 px-4 py-2.5">
+                    <span className="font-medium text-orange-500">
+                      অগ্রিম
+                    </span>
+
+                    <span className="font-medium text-orange-500">
+                      ৳ {toBanglaNumber(summary?.advancePayment ?? 0)}
+                    </span>
+                  </div>
+
+                  {/* Cutting */}
+                  <div className="grid grid-cols-2 border-b border-gray-200 px-4 py-2.5">
+                    <span className="font-medium text-orange-500">
+                      কর্তন
+                    </span>
+
+                    <span className="font-medium text-orange-500">
+                      ৳ {toBanglaNumber(summary?.cutting ?? 0)}
+                    </span>
+                  </div>
+
+                  {/* Payment */}
+                  <div className="grid grid-cols-2 border-b border-gray-200 px-4 py-2.5">
+                    <span className="font-medium text-[#039A63]">
+                      পেমেন্ট
+                    </span>
+
+                    <span className="font-medium text-[#039A63]">
+                      ৳ {toBanglaNumber(summary?.payment ?? 0)}
+                    </span>
+                  </div>
+
+                  {/* Difference */}
+                  <div className="grid grid-cols-2 px-4 py-2.5">
+                    <span
+                      className={`font-semibold ${summary?.paymentDifference < 0
+                          ? "text-red-500"
+                          : summary?.paymentDifference > 0
+                            ? "text-[#039A63]"
+                            : "text-gray-600"
+                        }`}
+                    >
+                      কম/বেশি
+                    </span>
+
+                    <span
+                      className={`font-semibold ${summary?.paymentDifference < 0
+                          ? "text-red-500"
+                          : summary?.paymentDifference > 0
+                            ? "text-[#039A63]"
+                            : "text-gray-600"
+                        }`}
+                    >
+                      {summary?.paymentDifference < 0
+                        ? `৳ ${toBanglaNumber(
+                          Math.abs(summary.paymentDifference),
+                        )} (কম)`
+                        : summary?.paymentDifference > 0
+                          ? `৳ ${toBanglaNumber(
+                            summary.paymentDifference,
+                          )} (বেশি)`
+                          : "৳ ০"}
+                    </span>
+                  </div>
+                </div>
               </div>
+            )}
+        </div>
 
-              <div className="grid grid-cols-2 border-b border-gray-100 px-4 py-2.5">
-                <span className="text-orange-500">অগ্রিম</span>
-
-                <span className="text-orange-500">৳ ৬,০০০</span>
-              </div>
-
-              <div className="grid grid-cols-2 border-b border-gray-100 px-4 py-2.5">
-                <span className="text-orange-500">কর্তন</span>
-
-                <span className="text-orange-500">৳ ২২,৫৫১</span>
-              </div>
-
-              <div className="grid grid-cols-2 border-b border-gray-100 px-4 py-2.5">
-                <span className="text-orange-500">পেমেন্ট করা</span>
-
-                <span className="text-orange-500">৳ ৬,০০০</span>
-              </div>
-
-              <div className="grid grid-cols-2 px-4 py-2.5">
-                <span className="font-medium text-[#039A63]">
-                  মোট পেমেন্ট দেওয়া
-                </span>
-
-                <span className="font-medium text-[#039A63]">৳ ৬৫,৬৫,৯০৯</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* All Payment Report */}
-        {activeTab === "all" && (
-          <div className="flex min-h-[250px] items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-50">
-            <p className="text-sm text-gray-500">
-              সব পেমেন্ট রিপোর্ট এখানে দেখানো হবে
-            </p>
-          </div>
-        )}
       </div>
     </CustomReportModal>
   );

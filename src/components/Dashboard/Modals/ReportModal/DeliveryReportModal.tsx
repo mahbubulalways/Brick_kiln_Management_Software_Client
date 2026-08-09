@@ -29,7 +29,7 @@ const DeliveryReportModal = ({
   );
 
   return (
-    <CustomModal isOpen={isOpen} onClose={onClose} title={title} width="w-sm">
+    <CustomModal isOpen={isOpen} onClose={onClose} title={title} width="md">
       {!items?.length ? (
         <p className="text-center py-16">কোনো রিপোর্ট পাওয়া যায় নি</p>
       ) : (

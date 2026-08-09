@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -8,85 +7,60 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Calendar, MoreVertical, Truck, User } from "lucide-react";
-import CustomSearchInput from "@/components/Reusable/CustomSearchInput";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
 import TableHead from "@/components/Reusable/TableHead";
 import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
-import TableFooter from "@/components/Reusable/TableFooter";
 import TableData from "@/components/Reusable/TableData";
 import { useGetAllDeliveryListQuery } from "@/redux/features/delivery.features";
-import DateRangePicker from "@/components/Reusable/DateRangePicker";
 import moment from "moment";
-import "moment/locale/en-gb";
 import { IChallanForDataShow } from "@/types/types";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import UpdateDeliveryDateModal from "@/components/Dashboard/Modals/EditModals/UpdateDeliveryDateModal";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import DeliveryReportModal from "@/components/Dashboard/Modals/ReportModal/DeliveryReportModal";
 import {
-  groupAndSumByClass,
   remainingAllDelivery,
 } from "@/utils/getDeliveryReportData";
+import { TQuery } from "@/interface/query";
+import SearchBar from "@/components/Reusable/SearchBar";
+import CustomDateRangePicker from "@/components/Reusable/CustomDateRangePicker";
+import { TMetaConfig } from "@/interface/meta";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
-const AllDeliveryPage = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [currentPage, setCurrentPage] = useState(1);
+const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
+  const [searchItem, setSearchItem] = useState<string>("");
   const [openDateChangeModal, setIsOpenDateChangeModal] =
     useState<boolean>(false);
+  const [InvoiceIdDelivery, setInvoiceIDelivery] = useState<number>();
   const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
   const [InvoiceId, setInvoiceId] = useState<number>();
   const [itemIds, setItemIds] = useState<number[]>([]);
-  const [filterRange, setFilterRange] = useState<{
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-  }>({
-    startDate: undefined,
-    endDate: undefined,
-  });
+  const [filterRange, setFilterRange] = useState("");
 
-  const handleDateRangeChange = (range: {
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-  }) => {
-    setFilterRange(range);
-  };
-  const info = {
-    startDate: filterRange.startDate ? filterRange.startDate.toISOString() : "",
-    endDate: filterRange.endDate ? filterRange.endDate.toISOString() : "",
-  };
-  const { data, isLoading } = useGetAllDeliveryListQuery(info, {
-    // skip: !filterRange.startDate || !filterRange.endDate, // optional safety
+
+  const { data, isLoading } = useGetAllDeliveryListQuery({ date: filterRange, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
-  const deliveries = data?.data;
-
-  // 🔍 Filter data
-  const filtered = deliveries?.filter((item: IChallanForDataShow) =>
-    item?.customer?.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const paginatedData = filtered?.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
+  const deliveries = data?.data?.data;
+  const meta = data?.data?.meta as TMetaConfig;
 
   const reportItems = remainingAllDelivery(deliveries || []);
 
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
-      {/* Top Controls */}
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
-        <CustomSearchInput search={search} setSearch={setSearch} />
+        <SearchBar
+          value={searchItem}
+          onChange={(e) => setSearchItem(e.target.value)}
+          onClear={() => setSearchItem("")}
+        />
         <div className="flex items-center gap-2 ">
-          <DateRangePicker onChange={handleDateRangeChange} />
-          <button onClick={() => setOpenDeliveryReport(true)}>
-            <CustomReportButton />
-          </button>
+          <CustomDateRangePicker value={filterRange} onChange={setFilterRange} />
+          <CustomReportButton onClick={() => setOpenDeliveryReport(true)} />
         </div>
       </div>
-      {/* Table */}
       <div className="overflow-x-auto pt-3">
         <table className="min-w-full   text-center border-t">
           <thead className="bg-[#039A63] text-white">
@@ -113,14 +87,14 @@ const AllDeliveryPage = () => {
                   <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ) : !paginatedData?.length ? (
+            ) : !deliveries?.length ? (
               <tr>
                 <td colSpan={12} className="py-8 text-gray-600">
                   {data?.message}
                 </td>
               </tr>
             ) : (
-              paginatedData?.map((row: IChallanForDataShow) =>
+              deliveries?.map((row: IChallanForDataShow) =>
                 row.items?.map((item, index) => (
                   <tr key={`${row.id}-${item.id}`} className="hover:bg-gray-50">
                     {/* Show challan info only for the first item row */}
@@ -138,8 +112,8 @@ const AllDeliveryPage = () => {
                         />
                         <TableData
                           td={
-                            row?.customer?.totalPurchased -
-                            row?.customer?.totalPaid
+                          toBanglaNumber(  row?.customer?.totalPurchased -
+                            row?.customer?.totalPaid)
                           }
                           rowSpan={row.items.length}
                           cls="hidden lg:table-cell"
@@ -154,18 +128,18 @@ const AllDeliveryPage = () => {
 
                     {/* These change per item */}
                     <TableData td={item?.class} />
-                    <TableData td={item?.quantity} cls="hidden lg:table-cell" />
+                    <TableData td={toBanglaNumber(item?.quantity)} cls="hidden lg:table-cell" />
                     <TableData
                       td={item?.delivered}
                       cls="hidden lg:table-cell"
                     />
-                    <TableData td={item?.quantity - item?.delivered} />
+                    <TableData td={toBanglaNumber(item?.quantity - item?.delivered)} />
                     {index === 0 && (
                       <TableData
-                        td={row.items.reduce(
+                        td={toBanglaNumber(row.items.reduce(
                           (t, i) => t + (i.quantity - i.delivered),
                           0
-                        )}
+                        ))}
                         rowSpan={row.items.length}
                       />
                     )}
@@ -208,7 +182,10 @@ const AllDeliveryPage = () => {
                               />
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => {
+                              setIsOpen(true);
+                              setInvoiceIDelivery(row?.id);
+                            }}>
                               <CustomDropDownMenuItem
                                 Icon={Truck}
                                 title="ডেলিভারি দিন"
@@ -230,17 +207,15 @@ const AllDeliveryPage = () => {
             )}
           </tbody>
         </table>
-        <TableFooter
-          currentPage={currentPage}
-          length={filtered?.length}
-          rowsPerPage={rowsPerPage}
-          setCurrentPage={setCurrentPage}
-          setRowsPerPage={setRowsPerPage}
-          title=""
+        <TablePagination
+          page={meta?.page ?? 1}
+          totalPages={meta?.totalPages ?? 1}
+          dataLength={deliveries?.length}
+          title="পেমেন্ট"
         />
       </div>
       {isOpen && (
-        <NewDeliveryModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        <NewDeliveryModal isOpen={isOpen} onClose={() => setIsOpen(false)} invoiceId={InvoiceIdDelivery} />
       )}
       {openDateChangeModal && (
         <UpdateDeliveryDateModal
@@ -250,7 +225,7 @@ const AllDeliveryPage = () => {
           itemIds={itemIds}
           setItemIds={setItemIds}
         />
-      )}{" "}
+      )}
       {openDeliveryReport && (
         <DeliveryReportModal
           isOpen={openDeliveryReport}

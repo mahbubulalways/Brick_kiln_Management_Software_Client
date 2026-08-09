@@ -33,7 +33,7 @@ const CustomInput = ({
   return (
     <div className="flex flex-col">
       {label && (
-        <label className="text-gray-600 mb-1 font-medium" htmlFor={name}>
+        <label className="text-gray-600 mb-1 font-medium text-[14px]" htmlFor={name}>
           {label}
           {rules && <span className="text-red-500">*</span>}
         </label>
@@ -48,7 +48,7 @@ const CustomInput = ({
           {...register(name, rules)}
           className={`w-full px-4 h-9  bg-white border-gray-300 rounded-lg ${error ? "border-red-500 border-2" : "border-gray-300 border"} focus:outline-none focus:ring-2 focus:ring-[#00664A] transition ${
             isPassword ? "pr-12" : ""
-          } placeholder:text-gray-400`}
+          } placeholder:text-gray-400 text-[14px]`}
         />
 
         {/* Show/Hide Icon */}

@@ -390,6 +390,7 @@
 .custom-date-picker-wrapper
   .react-datepicker__month-container {
   width: 290px;
+  
 }
 
 .custom-date-picker-wrapper
@@ -482,4 +483,55 @@
 .custom-date-picker-wrapper
   .react-datepicker__today-button:hover {
   background: #f8faf9;
+}
+
+
+.custom-datepicker-calendar {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 8px;
+}
+
+.custom-datepicker-calendar
+  .react-datepicker__month-container {
+  float: none !important;
+  width: 250px !important;
+}
+
+
+
+body {
+  font-family: var(--font-noto-bengali), sans-serif;
+}
+
+.font-baloo {
+  font-family: var(--font-baloo), sans-serif;
+}
+
+
+
+/* Thin Green Scrollbar */
+.thin-green-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.thin-green-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.thin-green-scrollbar::-webkit-scrollbar-thumb {
+  background: #039a63;
+  border-radius: 10px;
+}
+
+.thin-green-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #027a4f;
+}
+
+/* Firefox */
+.thin-green-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #039a63 #f1f1f1;
 }

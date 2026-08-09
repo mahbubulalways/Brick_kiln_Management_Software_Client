@@ -23,6 +23,7 @@ const paymentApi = baseApi.injectEndpoints({
       providesTags: ["PAYMENT"],
     }),
 
+    // GET PAYMENT REPORT
     getPaymentReport: builder.query({
       query: (date: string) => ({
         url: `/payment/report/date=${date}`,
@@ -31,23 +32,34 @@ const paymentApi = baseApi.injectEndpoints({
       providesTags: ["PAYMENT"],
     }),
 
-    // // GET ALL LEDGER
-    // getAllLedger: builder.query({
-    //   query: () => ({
-    //     url: `/ledger/all`,
-    //     method: "GET",
-    //   }),
-    //   providesTags: ["LEDGER"],
-    // }),
+    // GET SINGLE PAYMENT REPORT
+    getSinglePaymentReport: builder.query({
+      query: (id: string) => ({
+        url: `/payment/single/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["PAYMENT"],
+    }),
 
-    // // GET LEDGER OPTION
-    // getLedgerOption: builder.query({
-    //   query: () => ({
-    //     url: `/ledger/options`,
-    //     method: "GET",
-    //   }),
-    //   providesTags: ["LEDGER"],
-    // }),
+    // UPDATE PAYMENT
+    updatePayment: builder.mutation({
+      query: (payload) => ({
+        url: `/payment/update/${payload.id}`,
+        method: "PATCH",
+        body: payload.data,
+      }),
+      invalidatesTags: ["PAYMENT"],
+    }),
+
+    // DELETE PAYMENT (SOFT DELETE)
+    deletePayment: builder.mutation({
+      query: (id: string) => ({
+        url: `/payment/delete/${id}`,
+        method: "PATCH",
+
+      }),
+      invalidatesTags: ["PAYMENT"],
+    }),
   }),
 });
 
@@ -55,4 +67,6 @@ export const {
   useCreatePaymentMutation,
   useGetPaymentQuery,
   useGetPaymentReportQuery,
+  useGetSinglePaymentReportQuery,
+  useUpdatePaymentMutation,useDeletePaymentMutation
 } = paymentApi;

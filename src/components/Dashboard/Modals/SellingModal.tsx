@@ -46,7 +46,6 @@ const SellingModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title="বিক্রির রিপোর্ট"
-      width="w-lg"
     >
       {isLoading ? (
         <>

@@ -1,6 +1,7 @@
 "use client";
 import { DatePicker } from "@/components/Others/DatePicker";
-import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import SmsSwitch from "@/components/Reusable/SmsSwitch";
 import { showToast } from "@/components/Toast/CustomToast";
@@ -52,19 +53,20 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
   // eslint-disable-next-line react-hooks/incompatible-library
   const collect = watch("collect");
 
-  useEffect(() => {
-    if (!data?.data) return;
-    reset({
-      name: data.data.customer?.name,
-      address: data.data.customer?.address,
-      customerId: data.data.customer?.id,
-      due: data?.data?.due,
-      collect: data.data.collect,
-      season: data.data.season,
-    });
-    setDate(data?.data?.nextDate);
-  }, [data, reset]);
+ useEffect(() => {
+  if (!data?.data) return;
 
+  reset({
+    name: data.data.customer?.name,
+    address: data.data.customer?.address,
+    customerId: data.data.customer?.id,
+    due: data.data.due,
+    collect: data.data.collect,
+    season: data.data.season,
+  });
+  setDate(new Date(data.data.nextDate));
+
+}, [data, reset]);
   const newDue = useMemo(
     () => data?.data?.due - (Number(collect) || 0),
     [data?.data?.due, collect]
@@ -80,7 +82,6 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
     };
     try {
       const result = await updateDueCollection(updateData).unwrap();
-      console.log(result);
       if (result?.success) {
         onClose();
         reset();
@@ -95,7 +96,6 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error);
       return showToast({
         title: error?.data?.message,
         type: "error",
@@ -106,27 +106,29 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
       });
     }
   };
+
+
   return (
     <CustomModalBottom
       isOpen={isOpen}
       onClose={onClose}
-      title="বাকি জমা 😍"
-      width="w-3xl overflow-y-auto pb-5 no-scrollbar"
+      title="বাকি জমা (আপডেট)"
+      width="xxl"
     >
       <div className="relative">
         <form onSubmit={handleSubmit(onSubmit)} className="pt-5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            <CustomInputLabel
+            <CustomInput
               name="customerId"
+              type="number"
               label="কাস্টমার আইডি"
               placeholder="কাস্টমার আইডি"
               register={register}
-              type="text"
-              errMsg="কাস্টমারের আইডি লিখুন"
+              rules={{ required: "কাস্টমার আইডি" }}
               error={errors.customerId}
-              required
+              readonly
             />
-            <CustomInputLabel
+            <CustomInput
               name="name"
               label="কাস্টমারের নাম"
               placeholder="কাস্টমারের নাম"
@@ -134,7 +136,7 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
               readonly
               type="text"
             />
-            <CustomInputLabel
+            <CustomInput
               name="address"
               label="কাস্টমারের ঠিকানা"
               placeholder="কাস্টমারের ঠিকানা"
@@ -142,7 +144,7 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
               readonly
               type="text"
             />
-            <CustomInputLabel
+            <CustomInput
               name="season"
               label="সিজন"
               placeholder="সিজন"
@@ -154,34 +156,35 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
 
           <div className="bg-gray-100 rounded-md p-3 grid grid-cols-2 gap-5 mt-5">
             <div className="grid grid-cols-2 gap-3">
-              <CustomInputLabel
+              <CustomInput
                 name="due"
                 label="মোট বাকি"
                 placeholder="৳ মোট বাকি"
                 register={register}
                 readonly
                 type="text"
-                cls="bg-white"
               />
-              <CustomInputLabel
+              <CustomInput
                 name="collect"
                 label="জমা"
                 placeholder="৳ জমা"
                 register={register}
                 type="text"
-                cls="bg-white"
-                required
-                errMsg="আজকের জমা লিখুন"
+                rules={{ required: "আজকের জমা লিখুন" }}
                 error={errors.collect}
               />
               <div>
-                <label className="text-gray-600 text-xs font-medium pb-0.5  flex items-center">
-                  নতুন তারিখ
-                </label>
-                <DatePicker setDate={setDate} date={date} />
+                <CustomDatePickerState
+                  disablePastDates
+                  height="9"
+                  onChange={setDate}
+                  value={date}
+                  label=" নতুন তারিখ"
+                  placeholder=" নতুন তারিখ"
+                />
               </div>
               <div>
-                <label className="text-gray-600 text-xs font-medium pb-0.5  flex items-center">
+                <label className="text-sm font-medium text-gray-700 pb-1.5  flex items-center">
                   এসএমএস
                 </label>
                 <SmsSwitch sendSms={sendSms} setSendSms={setSendSms} />

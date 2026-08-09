@@ -1,6 +1,7 @@
 "use client";
 import { DatePicker } from "@/components/Others/DatePicker";
-import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import SmsSwitch from "@/components/Reusable/SmsSwitch";
 import { showToast } from "@/components/Toast/CustomToast";
@@ -59,18 +60,27 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
 
   const newDue = useMemo(() => due - (Number(collect) || 0), [due, collect]);
 
-  // Populate customer info when data loads
-  useEffect(() => {
-    if (!data?.data) return;
 
-    reset((prev) => ({
-      ...prev,
-      name: data.data.name,
-      address: data.data.address,
-      due: data?.data?.totalPurchased - data?.data?.totalPaid,
-      season: "2427",
-    }));
-  }, [data?.data, due, reset]);
+  // Populate customer info when data loads
+ useEffect(() => {
+  if (isError) {
+    reset();
+    setDate(undefined);
+    return;
+  }
+
+  if (!data?.data) return;
+
+  reset((prev) => ({
+    ...prev,
+    name: data.data.name || "",
+    address: data.data.address || "",
+    due:
+      Number(data.data.totalPurchased || 0) -
+      Number(data.data.totalPaid || 0),
+    season: "2427",
+  }));
+}, [data?.data, isError, reset]);
 
   const onSubmit: SubmitHandler<TDueCollection> = async (data) => {
     data.newDue = newDue;
@@ -103,7 +113,7 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error);
+     
       return showToast({
         title: error.data?.message,
         type: "success",
@@ -120,22 +130,22 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
       isOpen={isOpen}
       onClose={onClose}
       title="বাকি জমা 😍"
-      width="w-3xl overflow-y-auto pb-5 no-scrollbar"
+      width="xxl"
     >
       <div className="relative">
-        <form onSubmit={handleSubmit(onSubmit)} className="pt-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="pt-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            <CustomInputLabel
+            <CustomInput
               name="customerId"
               label="কাস্টমার আইডি"
               placeholder="কাস্টমার আইডি"
               register={register}
               type="text"
-              errMsg="কাস্টমারের আইডি লিখুন"
+              rules={{ required: "কাস্টমার আইডি" }}
               error={errors.customerId}
-              required
+
             />
-            <CustomInputLabel
+            <CustomInput
               name="name"
               label="কাস্টমারের নাম"
               placeholder="কাস্টমারের নাম"
@@ -143,7 +153,7 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
               readonly
               type="text"
             />
-            <CustomInputLabel
+            <CustomInput
               name="address"
               label="কাস্টমারের ঠিকানা"
               placeholder="কাস্টমারের ঠিকানা"
@@ -151,7 +161,7 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
               readonly
               type="text"
             />
-            <CustomInputLabel
+            <CustomInput
               name="season"
               label="সিজন"
               placeholder="সিজন"
@@ -161,36 +171,30 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
             />
           </div>
 
-          <div className="bg-gray-100 rounded-md p-3 grid grid-cols-2 gap-5 mt-5">
-            <div className="grid grid-cols-2 gap-3">
-              <CustomInputLabel
+          <div className="bg-gray-100 rounded-md p-12 grid grid-cols-2 gap-5 mt-12">
+            <div className="grid grid-cols-2 gap-5">
+              <CustomInput
                 name="due"
                 label="মোট বাকি"
                 placeholder="৳ মোট বাকি"
                 register={register}
                 readonly
                 type="text"
-                cls="bg-white"
               />
-              <CustomInputLabel
+              <CustomInput
                 name="collect"
                 label="জমা"
                 placeholder="৳ জমা"
                 register={register}
                 type="text"
-                cls="bg-white"
-                required
-                errMsg="আজকের জমা লিখুন"
+                rules={{ required: "আজকের জমা লিখুন" }}
                 error={errors.collect}
               />
               <div>
-                <label className="text-gray-600 text-xs font-medium pb-0.5  flex items-center">
-                  নতুন তারিখ
-                </label>
-                <DatePicker setDate={setDate} date={date} />
+                <CustomDatePickerState height="9" onChange={setDate} value={date} label=" নতুন তারিখ" placeholder=" নতুন তারিখ"/>
               </div>
               <div>
-                <label className="text-gray-600 text-xs font-medium pb-0.5  flex items-center">
+                <label className="text-sm font-medium text-gray-700 pb-1.5  flex items-center">
                   এসএমএস
                 </label>
                 <SmsSwitch sendSms={sendSms} setSendSms={setSendSms} />
@@ -237,7 +241,7 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
             </button>
           </div>
         </form>
-        {isLoading && (
+        {isFetching && (
           <div className="absolute inset-0 w-full  bg-gray-100/50 blur-md"></div>
         )}
       </div>

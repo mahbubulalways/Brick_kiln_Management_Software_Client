@@ -1,11 +1,15 @@
 "use client";
 import ChalanDetailsModal from "@/components/Dashboard/Modals/ChalanDetailsModal";
+import NewChalanModal from "@/components/Dashboard/Modals/NewChalanModal";
 import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
 import SellingModal from "@/components/Dashboard/Modals/SellingModal";
+import UpdateChalanModal from "@/components/Dashboard/Modals/UpdateChalanModal";
 import ChalanPrintModal from "@/components/Dashboard/PrintModal/ChalanPrint/ChalanPrintModal";
 import PrintThermalInvoice from "@/components/Dashboard/PrintModal/PrintThermalInvoice";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import CustomLoader from "@/components/Reusable/CustomLoader";
+import CustomNewButton from "@/components/Reusable/CustomNewButton";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
 import SearchBar from "@/components/Reusable/SearchBar";
 import TableData from "@/components/Reusable/TableData";
@@ -19,35 +23,107 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TMetaConfig } from "@/interface/meta";
 import { TQuery } from "@/interface/query";
-import { useGetAllAdvanceInvoicesQuery, } from "@/redux/features/invoice.features";
+import {
+  useDeleteInvoiceMutation,
+  useGetAllInvoicesQuery,
+} from "@/redux/features/invoice.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
-import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
-import { useState } from "react";
+import {
+  MoreVertical,
+  Printer,
+  Truck,
+  Notebook,
+  User,
+  Trash,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { BsPencilSquare } from "react-icons/bs";
+import Swal from "sweetalert2";
 
-const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
+const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
+  const [searchItems, setSearchItem] = useState("");
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [openReportModal, setOpenReportModal] = useState<boolean>(false);
-  const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
-  const [openThermalModal, setOpenThermalModal] = useState<boolean>(false);
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
     useState<boolean>(false);
-  const [searchItems, setSearchItems] = useState("");
+  const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
+  const [openThermalModal, setOpenThermalModal] = useState<boolean>(false);
   const [invoiceId, setInvoiceId] = useState<number>();
   const [openChalanDetailsModal, setOpenChalanDetailsModal] =
     useState<boolean>(false);
-  const { isLoading: fetchInvoiceLoading, data: invoices, error } =
-    useGetAllAdvanceInvoicesQuery({ limit, page, search });
 
-  // INVOICE RELATED FILTER
-  const totalInvoices = invoices?.data?.data || [];
+  // FETCH ALL INVOICES
+  const formatDate = date?.toISOString() ?? ""
+  const { isLoading: fetchInvoiceLoading, data: invoices } =
+    useGetAllInvoicesQuery(
+      { limit, page, search,date: formatDate }
+      ,{refetchOnMountOrArgChange: true});
+  //  CALL DELETE INVOICE HOOK
+  const [deleteInvoice] = useDeleteInvoiceMutation();
+
+  const totalInvoices = invoices?.data?.data as IChallanForDataShow[] || [];
   const meta = invoices?.data?.meta as TMetaConfig;
 
+  //  DELETE INVOICE PART
+  const handleDeleteInvoice = async (invoiceId: number) => {
+    Swal.fire({
+      title: "আপনি কি নিশ্চিত?",
+      text: "একবার মুছে ফেলা হলে এটি আর ফিরিয়ে আনা যাবে না।",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "হ্যাঁ, মুছে ফেলুন!",
+      cancelButtonText: "বাতিল করুন",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const result = await deleteInvoice(invoiceId).unwrap();
+          if (result?.success) {
+            Swal.fire({
+              title: "মুছে ফেলা হয়েছে!",
+              text: "আপনার চালান সফলভাবে মুছে ফেলা হয়েছে।",
+              icon: "success",
+              confirmButtonText: "ঠিক আছে",
+            });
+          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          Swal.fire({
+            title: "মুছে ফেলা হয়েছে!",
+            text:
+              error?.data?.message ||
+              "দুঃখিত! সার্ভারে ত্রুটি ঘটেছে। কিছুক্ষণ পর চেষ্টা করুন।",
+            icon: "error",
+            confirmButtonText: "ঠিক আছে",
+          });
+        }
+      }
+    });
+  };
+
   return (
-    <div className="bg-white rounded-md shadow border border-gray-200 overflow-hidden">
-      {/* Header search & controls */}
-      <div className="flex justify-between items-center p-3  bg-gray-50">
-        <SearchBar value={searchItems} onChange={(e) => setSearchItems(e.target.value)} />
-        <div className="flex items-center gap-4">
+    <div className="bg-white rounded-md shadow border border-gray-200 ">
+      <div className="flex justify-between items-center p-3 border-b bg-gray-50 gap-5">
+        <div className="flex items-center gap-2 ">
+          <button onClick={() => setIsOpen(true)}>
+            <CustomNewButton title="নতুন চালান" />
+          </button>
+          <div className="flex-1">
+            <SearchBar
+              value={searchItems}
+              onChange={(e) => setSearchItem(e.target.value)}
+              onClear={() => setSearchItem("")}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 ">
+          <CustomDatePickerState value={date} onChange={setDate} />
           <CustomReportButton onClick={() => setOpenReportModal(true)} />
+
         </div>
       </div>
 
@@ -166,6 +242,18 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                                 align="end"
                                 className="rounded-md border bg-white shadow-md"
                               >
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setOpenUpdateModal(true);
+                                    setInvoiceId(row?.id);
+                                  }}
+                                >
+                                  <CustomDropDownMenuItem
+                                    Icon={BsPencilSquare}
+                                    title="আপডেট করুন"
+                                  />
+                                </DropdownMenuItem>
+
                                 {/* for lg desktop */}
                                 <DropdownMenuItem
                                   className="hidden lg:block"
@@ -194,7 +282,12 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                                   />
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setIsDeliveryModalOpen(true);
+                                    setInvoiceId(row?.id);
+                                  }}
+                                >
                                   <CustomDropDownMenuItem
                                     Icon={Truck}
                                     title="ডেলিভারি দিন"
@@ -215,6 +308,14 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                                   <CustomDropDownMenuItem
                                     Icon={User}
                                     title="প্রোফাইলে যান"
+                                  />
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteInvoice(row?.id)}
+                                >
+                                  <CustomDropDownMenuItem
+                                    Icon={Trash}
+                                    title="ডিলিট করুন"
                                   />
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -280,6 +381,18 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                           align="end"
                           className="rounded-md border bg-white shadow-md"
                         >
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setOpenUpdateModal(true);
+                              setInvoiceId(row?.id);
+                            }}
+                          >
+                            <CustomDropDownMenuItem
+                              Icon={BsPencilSquare}
+                              title="আপডেট করুন"
+                            />
+                          </DropdownMenuItem>
+
                           {/* for lg desktop */}
                           <DropdownMenuItem
                             className="hidden lg:block"
@@ -307,7 +420,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                               title="প্রিন্ট চালান"
                             />
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => {
                               setIsDeliveryModalOpen(true);
                               setInvoiceId(row?.id);
@@ -335,11 +448,19 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                               title="প্রোফাইলে যান"
                             />
                           </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteInvoice(row?.id)}
+                          >
+                            <CustomDropDownMenuItem
+                              Icon={Trash}
+                              title="ডিলিট করুন"
+                            />
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
                   </tr>
-                )
+                ),
               )
             )}
           </tbody>
@@ -351,14 +472,24 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
           title="চালান"
         />
       </div>
-
+      {isOpen && (
+        <NewChalanModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      )}
       {openReportModal && (
         <SellingModal
           isOpen={openReportModal}
           onClose={() => setOpenReportModal(false)}
+          startDate={date ? date.toISOString() : ""}
         />
       )}
-
+      {openUpdateModal && (
+        <UpdateChalanModal
+          isOpen={openUpdateModal}
+          onClose={() => setOpenUpdateModal(false)}
+          invoiceId={invoiceId!}
+          setInvoiceId={setInvoiceId!}
+        />
+      )}
       {openPrintModal && (
         <ChalanPrintModal
           isOpen={openPrintModal}
@@ -395,4 +526,4 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
   );
 };
 
-export default AdvanceInvoicePage;
+export default TodaysInVoicePage;

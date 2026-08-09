@@ -22,6 +22,7 @@ import { RiErrorWarningFill } from "react-icons/ri";
 import CustomInput from "@/components/Reusable/CustomInput";
 import CustomDatePicker from "@/components/Reusable/CustomDatePicker";
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
@@ -36,11 +37,11 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
   const [sendSms, setSendSms] = useState<boolean>(false);
 
   // GET INVOICE SERIAL FOR INVOICE NO
-  const { data: invoiceSerial, isLoading: serialLoading } =
+  const { data: invoiceSerial, isLoading: serialLoading, isError: invoiceError } =
     useGetInvoiceSerialQuery({ refetchOnMountOrArgChange: true });
 
   // GET CLASS AND RATE FOR DROPDOWN
-  const { isLoading: classRateLoading, data: fetchedData } =
+  const { isLoading: classRateLoading, data: fetchedData, isError } =
     useGetAllClassAndRateQuery(undefined);
   const classAndRate = fetchedData?.data || [];
 
@@ -184,11 +185,11 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
       isOpen={isOpen}
       onClose={onClose}
       title="নতুন চালান"
-      width="full"
+      width="xxl"
     >
       {classRateLoading || serialLoading ? (
-        <></>
-      ) : (
+        <CustomStatus type="loading" />
+      ) : invoiceError || isError ? <CustomStatus type="error" /> : (
         <div>
           <div className="flex flex-col lg:flex-row justify-between gap-4 mb-4">
             <div className="flex items-stretch sm:items-center gap-2 w-full lg:w-auto">
@@ -352,11 +353,10 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                     disabled={fields.length === 1}
                     onClick={() => remove(index)}
                     title="সারি মুছে ফেলুন"
-                    className={`flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border transition-all duration-200 active:scale-95 ${
-                      fields.length === 1
+                    className={`flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border transition-all duration-200 active:scale-95 ${fields.length === 1
                         ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
                         : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white hover:shadow-md"
-                    }`}
+                      }`}
                   >
                     <Trash size={18} strokeWidth={2.5} />
                   </button>
@@ -372,7 +372,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                     বাকি পরিশোধের তারিখ লিখুন
                   </h1>
                   <div className="w-max mx-auto py-2">
-                    <DatePicker date={duePayDate} setDate={setDuepayDate} />
+                    <CustomDatePickerState value={duePayDate} onChange={setDuepayDate} />
                   </div>
                   <SmsSwitch
                     sendSms={sendSms}
@@ -416,7 +416,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                   register={register}
                   type="number"
                   rules={{ required: "" }}
-                  // error={errors.invoice?.discount}
+                // error={errors.invoice?.discount}
                 />
                 <CustomInput
                   name="invoice.carRent"

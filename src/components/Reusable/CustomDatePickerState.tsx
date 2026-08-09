@@ -1,18 +1,23 @@
 "use client";
 
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
-type TPickMode = "date" | "month" | "year";
+import { Calendar as CalendarIcon } from "lucide-react";
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+} from "react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type TCustomDatePickerStateProps = {
   label?: string;
   placeholder?: string;
   value: Date | undefined;
   onChange: Dispatch<SetStateAction<Date | undefined>>;
-  mode?: TPickMode;
   disablePastDates?: boolean;
   maxFutureDays?: number;
   minDate?: Date;
@@ -21,14 +26,11 @@ type TCustomDatePickerStateProps = {
   height?: string;
 };
 
-type TCalendarView = "date" | "month" | "year";
-
 const CustomDatePickerState = ({
   label,
-  placeholder,
+  placeholder = "Select a date",
   value,
   onChange,
-  mode = "date",
   disablePastDates = false,
   maxFutureDays,
   minDate,
@@ -36,257 +38,136 @@ const CustomDatePickerState = ({
   error,
   height = "10",
 }: TCustomDatePickerStateProps) => {
-  const [calendarView, setCalendarView] = useState<TCalendarView>(mode);
+  const [open, setOpen] = useState(false);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const resolvedMinDate = disablePastDates ? today : minDate;
+  const resolvedMinDate = disablePastDates
+    ? today
+    : minDate;
 
   const resolvedMaxDate =
     maxFutureDays !== undefined
-      ? new Date(today.getTime() + maxFutureDays * 24 * 60 * 60 * 1000)
+      ? new Date(
+        today.getTime() +
+        maxFutureDays * 24 * 60 * 60 * 1000,
+      )
       : maxDate;
 
-  const getDateFormat = () => {
-    if (calendarView === "year") {
-      return "yyyy";
-    }
+  // Make sure value is a valid Date object
+  const safeDate =
+    value instanceof Date &&
+      !isNaN(value.getTime())
+      ? value
+      : undefined;
 
-    if (calendarView === "month") {
-      return "MM-yyyy";
-    }
+  const formatDate = (date: Date) => {
+    const day = date
+      .getDate()
+      .toString()
+      .padStart(2, "0");
 
-    return "dd-MM-yyyy";
+    const month = (date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0");
+
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
   };
 
-  const getPlaceholder = () => {
-    if (placeholder) return placeholder;
-
-    if (calendarView === "year") {
-      return "Select a year";
-    }
-
-    if (calendarView === "month") {
-      return "Select a month";
-    }
-
-    return "Select a date";
-  };
-
-  const handleDateChange = (date: Date | null) => {
+  const handleDateChange = (
+    date: Date | undefined,
+  ) => {
     if (!date) {
       onChange(undefined);
       return;
     }
 
-    onChange(date);
+    const selectedDate = new Date(date);
 
-    // Month select করার পর আবার date view
-    if (calendarView === "month") {
-      setCalendarView("date");
-    }
+    selectedDate.setHours(0, 0, 0, 0);
 
-    // Year select করার পর month view
-    if (calendarView === "year") {
-      setCalendarView("month");
-    }
+    onChange(selectedDate);
+    setOpen(false);
   };
 
   return (
-    <div className="w-full lg:w-auto">
+    <div>
       {label && (
-        <label className="mb-1.5 block text-sm font-medium text-gray-700">
+        <label className="mb-1 block text-sm font-medium">
           {label}
         </label>
       )}
 
-      <div className="custom-date-picker-wrapper relative w-full max-w-[250px]">
-        <div
-          className={`relative flex h-${height} w-full items-center rounded-lg border px-4 py-2 transition-colors ${
-            error
-              ? "border-2 border-red-500"
-              : "border-gray-300 focus-within:ring-2 focus-within:ring-[#00664A]"
-          }`}
+      <div className="relative w-full max-w-[250px]">
+        <Popover
+          open={open}
+          onOpenChange={setOpen}
         >
-          <DatePicker
-            selected={value}
-            onChange={handleDateChange}
-            placeholderText={getPlaceholder()}
-            minDate={resolvedMinDate}
-            maxDate={resolvedMaxDate}
-            dateFormat={getDateFormat()}
-            showMonthYearPicker={calendarView === "month"}
-            showYearPicker={calendarView === "year"}
-            className="w-full cursor-pointer bg-transparent pr-6 text-sm outline-none"
-            popperPlacement="bottom-start"
-            calendarClassName="custom-datepicker-calendar"
-            onKeyDown={(e) => e.preventDefault()}
-            renderCustomHeader={({
-              date,
-              decreaseMonth,
-              increaseMonth,
-              prevMonthButtonDisabled,
-              nextMonthButtonDisabled,
-              changeMonth,
-              changeYear,
-            }) => {
-              const currentYear = date.getFullYear();
-              const currentMonth = date.getMonth();
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={`relative flex h-${height} w-full items-center overflow-hidden rounded-lg border bg-white px-4 py-2 text-left transition-colors ${error
+                  ? "border-2 border-red-500"
+                  : "border-gray-300 focus-within:ring-2 focus-within:ring-[#00664A]"
+                }`}
+            >
+              <span
+                className={`w-full truncate pr-8 text-sm ${safeDate
+                    ? "text-gray-900"
+                    : "text-gray-400"
+                  }`}
+              >
+                {safeDate
+                  ? formatDate(safeDate)
+                  : placeholder}
+              </span>
 
-              const monthName = date.toLocaleString("en-US", {
-                month: "short",
-              });
+              <CalendarIcon
+                size={18}
+                className="pointer-events-none absolute right-3 shrink-0 text-gray-400"
+              />
+            </button>
+          </PopoverTrigger>
 
-              /*
-               * Single arrow:
-               * Previous / Next month
-               */
-              const handlePreviousMonth = () => {
-                if (calendarView === "year") {
-                  changeYear(currentYear - 1);
-                  return;
+          <PopoverContent
+            align="start"
+            className="w-[320px] p-2"
+          >
+            <Calendar
+              mode="single"
+              selected={safeDate}
+              captionLayout="dropdown"
+              onSelect={handleDateChange}
+              disabled={(date) => {
+                if (
+                  resolvedMinDate &&
+                  date < resolvedMinDate
+                ) {
+                  return true;
                 }
 
-                if (calendarView === "month") {
-                  changeYear(currentYear - 1);
-                  return;
+                if (
+                  resolvedMaxDate &&
+                  date > resolvedMaxDate
+                ) {
+                  return true;
                 }
 
-                decreaseMonth();
-              };
+                return false;
+              }}
+              className="w-full"
+            />
+          </PopoverContent>
+        </Popover>
 
-              const handleNextMonth = () => {
-                if (calendarView === "year") {
-                  changeYear(currentYear + 1);
-                  return;
-                }
-
-                if (calendarView === "month") {
-                  changeYear(currentYear + 1);
-                  return;
-                }
-
-                increaseMonth();
-              };
-
-              /*
-               * Double arrow:
-               * Previous / Next year
-               */
-              const handlePreviousYear = () => {
-                changeYear(currentYear - 1);
-              };
-
-              const handleNextYear = () => {
-                changeYear(currentYear + 1);
-              };
-
-              return (
-                <div className="custom-calendar-header">
-                  {/* LEFT ARROWS */}
-                  <div className="calendar-nav-left">
-                    {/* Previous Year */}
-                    <button
-                      type="button"
-                      onClick={handlePreviousYear}
-                      className="calendar-nav-button"
-                      aria-label="Previous year"
-                    >
-                      <ChevronLeft size={15} />
-                      <ChevronLeft size={15} className="-ml-2" />
-                    </button>
-
-                    {/* Previous Month */}
-                    <button
-                      type="button"
-                      onClick={handlePreviousMonth}
-                      disabled={
-                        calendarView === "date" && prevMonthButtonDisabled
-                      }
-                      className="calendar-nav-button"
-                      aria-label="Previous month"
-                    >
-                      <ChevronLeft size={17} />
-                    </button>
-                  </div>
-
-                  {/* TITLE */}
-                  <div className="calendar-title">
-                    {/* Month */}
-                    {calendarView === "date" ? (
-                      <button
-                        type="button"
-                        onClick={() => setCalendarView("month")}
-                        className="calendar-title-button"
-                      >
-                        {monthName}
-                      </button>
-                    ) : calendarView === "month" ? (
-                      <span className="calendar-title-text">{currentYear}</span>
-                    ) : (
-                      <span className="calendar-title-text">{currentYear}</span>
-                    )}
-
-                    {/* Year */}
-                    {calendarView === "date" && (
-                      <button
-                        type="button"
-                        onClick={() => setCalendarView("year")}
-                        className="calendar-title-button"
-                      >
-                        {currentYear}
-                      </button>
-                    )}
-
-                    {calendarView === "month" && (
-                      <button
-                        type="button"
-                        onClick={() => setCalendarView("year")}
-                        className="calendar-title-button"
-                      >
-                        {currentYear}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* RIGHT ARROWS */}
-                  <div className="calendar-nav-right">
-                    {/* Next Month */}
-                    <button
-                      type="button"
-                      onClick={handleNextMonth}
-                      disabled={
-                        calendarView === "date" && nextMonthButtonDisabled
-                      }
-                      className="calendar-nav-button"
-                      aria-label="Next month"
-                    >
-                      <ChevronRight size={17} />
-                    </button>
-
-                    {/* Next Year */}
-                    <button
-                      type="button"
-                      onClick={handleNextYear}
-                      className="calendar-nav-button"
-                      aria-label="Next year"
-                    >
-                      <ChevronRight size={15} />
-                      <ChevronRight size={15} className="-ml-2" />
-                    </button>
-                  </div>
-                </div>
-              );
-            }}
-          />
-
-          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <Calendar size={18} />
-          </div>
-        </div>
-
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && (
+          <p className="mt-1 text-sm text-red-600">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );

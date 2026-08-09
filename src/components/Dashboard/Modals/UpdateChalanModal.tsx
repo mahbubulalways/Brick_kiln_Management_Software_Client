@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
-import { DatePicker } from "@/components/Others/DatePicker";
 import { Plus, Trash } from "lucide-react";
-import { Label } from "@radix-ui/react-dropdown-menu";
 import SmsSwitch from "@/components/Reusable/SmsSwitch";
 import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
 import CustomSelect from "@/components/Reusable/CustomSelect";
@@ -25,6 +23,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 import CustomDatePicker from "@/components/Reusable/CustomDatePicker";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 const UpdateChalanModal = ({
   isOpen,
@@ -32,11 +31,11 @@ const UpdateChalanModal = ({
   invoiceId,
   setInvoiceId,
 }: TCustomInvoiceModal) => {
-  const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
-    new Date(),
-  );
+  // const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
+  //   new Date(),
+  // );
   const [challanDate, setChallanDate] = useState<Date | undefined>(new Date());
-  const [duePayDate, setDuepayDate] = useState<Date | undefined>(new Date());
+  // const [duePayDate, setDuepayDate] = useState<Date | undefined>(new Date());
   const [sendSms, setSendSms] = useState<boolean>(false);
   // FETCH SINGLE INVOICE
   const { data: invoice, isLoading: invoiceLoading } = useGetSingleInvoiceQuery(
@@ -56,7 +55,10 @@ const UpdateChalanModal = ({
     useUpdateInvoiceMutation();
 
   const classOptions = classAndRate?.map(
-    (cls: TClassAndRate) => cls?.className,
+    (cls: TClassAndRate) => ({
+      label: cls?.className,
+      value: cls?.className,
+    }),
   );
 
   // REACT HOOK FORM
@@ -68,6 +70,7 @@ const UpdateChalanModal = ({
         },
       },
     });
+
 
   // ✅ FIX: Reset form when invoice data is loaded
   useEffect(() => {
@@ -99,12 +102,12 @@ const UpdateChalanModal = ({
       });
 
       // ✅ Sync dates with DB values if available
-      if (invoice.data.deliveryDate)
-        setDeliveryDate(new Date(invoice.data.deliveryDate));
+      // if (invoice.data.deliveryDate)
+      //   setDeliveryDate(new Date(invoice.data.deliveryDate));
       if (invoice.data.challanDate)
         setChallanDate(new Date(invoice.data.challanDate));
-      if (invoice.data.duePaymentDate)
-        setDuepayDate(new Date(invoice.data.duePaymentDate));
+      // if (invoice.data.duePaymentDate)
+      //   setDuepayDate(new Date(invoice.data.duePaymentDate));
     }
   }, [invoice, reset]);
 
@@ -175,10 +178,11 @@ const UpdateChalanModal = ({
         },
       });
     }
-    data.invoice.deliveryDate = deliveryDate as Date;
+    // data.invoice.deliveryDate = deliveryDate as Date;
     data.invoice.challanDate = challanDate as Date;
-    data.invoice.duePaymentDate = duePayDate as Date;
+    // data.invoice.duePaymentDate = duePayDate as Date;
     data.invoice.serial = Number(data.invoice.serial);
+    data.invoice.productPrice = Number(data.invoice.productPrice);
     data.invoice.carRent = Number(data.invoice.carRent);
     data.invoice.cash = Number(data.invoice.cash);
     data.invoice.discount = Number(data.invoice.discount);
@@ -192,9 +196,9 @@ const UpdateChalanModal = ({
       },
       id: invoiceId,
     };
+
     try {
       const result = await mutateAsync(updatedData).unwrap();
-      console.log(result);
       if (result?.success) {
         onClose();
         reset();
@@ -231,11 +235,12 @@ const UpdateChalanModal = ({
       isOpen={isOpen}
       onClose={handleClose}
       title="আপডেট চালান 🧐"
-      width="full"
+      width="xxl"
     >
       {classRateLoading || invoiceLoading ? (
         <>
-          <CustomLoader cls="h-[60vh]" />
+          {/* <CustomLoader cls="h-[60vh]" /> */}
+           <CustomStatus type="loading" />
         </>
       ) : (
         <div>
@@ -309,7 +314,7 @@ const UpdateChalanModal = ({
               />
               <CustomDatePicker
                 control={control}
-                name=" data.invoice.deliveryDate"
+                name="invoice.deliveryDate"
                 placeholder="ডেলিভারি তারিখ"
                 label="ডেলিভারি তারিখ"
                 disablePastDates
@@ -385,11 +390,10 @@ const UpdateChalanModal = ({
                     disabled={fields.length === 1}
                     onClick={() => remove(index)}
                     title="সারি মুছে ফেলুন"
-                    className={`flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border transition-all duration-200 active:scale-95 ${
-                      fields.length === 1
-                        ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
-                        : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white hover:shadow-md"
-                    }`}
+                    className={`flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border transition-all duration-200 active:scale-95 ${fields.length === 1
+                      ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                      : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white hover:shadow-md"
+                      }`}
                   >
                     <Trash size={18} strokeWidth={2.5} />
                   </button>
@@ -400,12 +404,13 @@ const UpdateChalanModal = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {due ? (
                 <div className="hidden lg:flex flex-col items-center justify-center h-auto">
-                  <h1 className="text-orange-600 text-sm text-center">
-                    বাকি পরিশোধের তারিখ লিখুন
-                  </h1>
-                  <div className="w-max mx-auto py-2">
-                    <DatePicker date={duePayDate} setDate={setDuepayDate} />
-                  </div>
+                  <CustomDatePicker control={control}
+                    name="invoice.duePaymentDate"
+                    placeholder=" বাকি পরিশোধের তারিখ লিখুন"
+                    label=" বাকি পরিশোধের তারিখ লিখুন"
+                    disablePastDates
+                    rules={{ required: " বাকি পরিশোধের তারিখ লিখুন" }} />
+
                   <SmsSwitch
                     showBorder={false}
                     showLabel={false}

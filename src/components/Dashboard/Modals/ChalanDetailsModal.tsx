@@ -26,7 +26,7 @@ const ChalanDetailsModal = ({
       isOpen={isOpen}
       onClose={handleClose}
       title="চালান এর বিস্তারিত"
-      width="xl"
+      width="xxl"
     >
       {isLoading ? (
         <>

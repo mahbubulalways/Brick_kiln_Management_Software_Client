@@ -31,6 +31,7 @@ export const TablePagination = ({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
+  
   return (
     <div className="flex w-full min-w-0 items-center justify-between gap-2 overflow-x-auto border-t border-gray-200 bg-gray-50 px-3 py-3 sm:px-4 md:px-6 md:py-4">
       {/* Left Side */}
@@ -55,7 +56,7 @@ export const TablePagination = ({
               value={limit}
               onChange={(e) => updateParams(1, Number(e.target.value))}
               className="
-                h-9
+                h-8
                 min-w-14
                 cursor-pointer
                 appearance-none
@@ -67,7 +68,6 @@ export const TablePagination = ({
                 text-xs
                 font-semibold
                 text-gray-700
-                shadow-sm
                 outline-none
                 transition-all
                 hover:border-[#006A4E]/40
@@ -120,94 +120,94 @@ export const TablePagination = ({
         </div>
       </div>
 
-      {/* Pagination */}
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        {/* Previous */}
-        <button
-          type="button"
-          onClick={() => updateParams(page - 1, limit)}
-          disabled={page <= 1}
-          aria-label="আগের পৃষ্ঠা"
-          title="আগের পৃষ্ঠা"
-          className="
-            flex
-            h-9
-            w-9
-            shrink-0
-            items-center
-            justify-center
-            rounded-lg
-            border
-            border-gray-300
-            bg-white
-            text-gray-700
-            transition
-            hover:border-[#006A4E]
-            hover:text-[#006A4E]
-            disabled:cursor-not-allowed
-            disabled:opacity-50
-            sm:h-10
-            sm:w-10
-            sm:rounded-xl
-          "
-        >
-          <ChevronLeft size={17} />
-        </button>
+     {/* Pagination */}
+<div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
+  {/* Previous */}
+  <button
+    type="button"
+    onClick={() => updateParams(page - 1, limit)}
+    disabled={page <= 1}
+    aria-label="আগের পৃষ্ঠা"
+    title="আগের পৃষ্ঠা"
+    className="
+      flex
+      h-7
+      w-7
+      shrink-0
+      items-center
+      justify-center
+      rounded-md
+      border
+      border-gray-300
+      bg-white
+      text-gray-600
+      transition
+      hover:border-[#006A4E]
+      hover:text-[#006A4E]
+      disabled:cursor-not-allowed
+      disabled:opacity-50
+      sm:h-8
+      sm:w-8
+      sm:rounded-lg
+    "
+  >
+    <ChevronLeft size={14} strokeWidth={2} />
+  </button>
 
-        {/* Current Page */}
-        <div
-          className="
-            flex
-            h-9
-            min-w-9
-            shrink-0
-            items-center
-            justify-center
-            rounded-lg
-            border
-            border-[#006A4E]
-            bg-white
-            px-2
-            sm:h-10
-            sm:min-w-10
-            sm:rounded-xl
-            sm:px-3
-          "
-        >
-          <span className="text-xs font-semibold text-[#006A4E] sm:text-sm">
-            {page}
-          </span>
-        </div>
+  {/* Current Page */}
+  <div
+    className="
+      flex
+      h-7
+      min-w-7
+      shrink-0
+      items-center
+      justify-center
+      rounded-md
+      border
+      border-[#006A4E]
+      bg-white
+      px-1.5
+      sm:h-8
+      sm:min-w-8
+      sm:rounded-lg
+      sm:px-2
+    "
+  >
+    <span className="text-[11px] font-semibold text-[#006A4E] sm:text-xs">
+      {page}
+    </span>
+  </div>
 
-        {/* Next */}
-        <button
-          type="button"
-          onClick={() => updateParams(page + 1, limit)}
-          disabled={page >= totalPages || dataLength === 0}
-          aria-label="পরের পৃষ্ঠা"
-          title="পরের পৃষ্ঠা"
-          className="
-            flex
-            h-9
-            w-9
-            shrink-0
-            items-center
-            justify-center
-            rounded-lg
-            bg-[#006A4E]
-            text-white
-            transition
-            hover:bg-[#00563f]
-            disabled:cursor-not-allowed
-            disabled:opacity-50
-            sm:h-10
-            sm:w-10
-            sm:rounded-xl
-          "
-        >
-          <ChevronRight size={17} />
-        </button>
-      </div>
+  {/* Next */}
+  <button
+    type="button"
+    onClick={() => updateParams(page + 1, limit)}
+    disabled={page >= totalPages || dataLength === 0}
+    aria-label="পরের পৃষ্ঠা"
+    title="পরের পৃষ্ঠা"
+    className="
+      flex
+      h-7
+      w-7
+      shrink-0
+      items-center
+      justify-center
+      rounded-md
+      bg-[#006A4E]
+      text-white
+      transition
+      hover:bg-[#00563f]
+      disabled:cursor-not-allowed
+      disabled:opacity-50
+      sm:h-8
+      sm:w-8
+      sm:rounded-lg
+    "
+  >
+    <ChevronRight size={14} strokeWidth={2} />
+  </button>
+</div>
     </div>
   );
 };

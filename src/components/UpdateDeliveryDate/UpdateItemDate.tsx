@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { DatePicker } from "../Others/DatePicker";
 import { SubmitErrorHandler, useForm } from "react-hook-form";
 import CustomSelect from "../Reusable/CustomSelect";
 import {
@@ -11,19 +10,21 @@ import {
 import CustomLoader from "../Reusable/CustomLoader";
 import { IChallanItem } from "@/types/types";
 import moment from "moment";
-import "moment/locale/bn";
 import { showToast } from "../Toast/CustomToast";
 import { PiWarningCircleFill } from "react-icons/pi";
 import { FaCircleCheck } from "react-icons/fa6";
 import { MdOutlineError } from "react-icons/md";
 import { getQueryIds } from "@/utils/getQueryIds";
+import CustomDatePickerState from "../Reusable/CustomDatePickerState";
 
 const UpdateItemDate = ({
   invoiceId,
   itemIds,
+  handleCloseModal,
 }: {
   invoiceId: number;
   itemIds: number[];
+  handleCloseModal: () => void;
 }) => {
   const ids = getQueryIds(itemIds);
 
@@ -49,6 +50,9 @@ const UpdateItemDate = ({
     }
   }, [filterClass, reset]);
 
+
+  const labelValue = filterClass?.map((cls: string) => ({ label: cls, value: cls })) || [];
+
   const targetClass = data?.data?.find(
     (item: IChallanItem) => item?.class == itemClass
   ) as IChallanItem;
@@ -72,8 +76,8 @@ const UpdateItemDate = ({
 
     try {
       const result = await updateItemsDeliveryDate(updatedData).unwrap();
-      console.log(result);
       if (result?.success) {
+        // handleCloseModal()
         return showToast({
           title: result?.message,
           type: "success",
@@ -94,7 +98,6 @@ const UpdateItemDate = ({
       });
     }
   };
-
   return (
     <div>
       {isLoading ? (
@@ -107,15 +110,14 @@ const UpdateItemDate = ({
             control={control}
             label="শ্রেণি নির্বাচন"
             name="class"
-            options={filterClass}
-            defaultValue={filterClass?.[0] ?? ""}
+            options={labelValue}
           />
 
-          <p className="text-sm pt-3 pb-5">
+          <p className="text-sm pt-6 pb-7">
             বর্তমান ডেলিভারি তারিখ:{" "}
             <span className="text-orange-500">
               {targetClass?.deliveryDate &&
-                moment(targetClass?.deliveryDate).format("L")}
+                moment(targetClass?.deliveryDate).format("DD-MM-YYYY",)}
             </span>
           </p>
 
@@ -123,9 +125,9 @@ const UpdateItemDate = ({
             <h1 className="pb-1 lg:pb-0.5 flex items-center text-sm font-medium text-gray-600">
               নতুন ডেলিভারি তারিখ
             </h1>
-            <DatePicker date={newDeliveryDate} setDate={setNewDeliveryDate} />
+            <CustomDatePickerState value={newDeliveryDate} onChange={setNewDeliveryDate} placeholder="ডেলিভারি তারিখ"/>
           </div>
-          <div className="flex items-center gap-2 justify-end pt-5">
+          <div className="flex items-center gap-2 justify-end pt-8">
             <div
               onClick={() => reset()}
               className="text-sm border border-gray-300 bg-white hover:border-[#039A63] px-2 py-1 text-gray-500 duration-500 hover:text-[#039A63]  rounded cursor-pointer"

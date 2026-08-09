@@ -141,7 +141,7 @@ const CustomSelect = ({
         return (
           <div className="flex flex-col gap-1 " ref={wrapperRef}>
             {label && (
-              <label className="font-medium text-gray-600">
+              <label className="font-medium text-gray-600 text-[14px]">
                 {label}
                 {rules && <span className="text-red-500">*</span>}
               </label>
@@ -176,12 +176,12 @@ const CustomSelect = ({
                       setSearch("");
                     }}
                     placeholder={placeholder}
-                    className="min-w-0 flex-1 border-none bg-transparent outline-none"
+                    className="min-w-0 flex-1 border-none bg-transparent outline-none text-[14px]"
                   />
                 ) : (
                   <span
                     className={`flex-1 truncate ${
-                      selectedOption ? "text-gray-900" : "text-gray-400"
+                      selectedOption ? "text-gray-900" : "text-gray-400 text-[14px]"
                     }`}
                   >
                     {selectedOption?.label ?? placeholder}
@@ -237,7 +237,7 @@ const CustomSelect = ({
                           key={`${String(item.value)}-${item.label}`}
                           type="button"
                           onClick={() => selectOption(item)}
-                          className={`block w-full px-4 py-3 cursor-pointer text-left transition-colors hover:bg-gray-100 ${
+                          className={`block w-full px-4 py-2 text-[14px] cursor-pointer text-left transition-colors hover:bg-gray-100 ${
                             item.value === selectedValue
                               ? "bg-[#00664A]/10 text-[#00664A]"
                               : ""

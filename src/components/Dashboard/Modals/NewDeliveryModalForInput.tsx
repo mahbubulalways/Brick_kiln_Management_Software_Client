@@ -25,7 +25,6 @@ import CustomStatus from "@/components/Reusable/CustomStatus";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
-  invoiceId?: number;
 };
 
 type TDelivery = {
@@ -53,10 +52,9 @@ type TDelivery = {
   savingType?: string;
 };
 
-const NewDeliveryModal = ({
+const NewDeliveryModalForInput = ({
   isOpen,
   onClose,
-  invoiceId: invoId,
 }: TCustomModal) => {
   const [nextDeliveryDate, setNextDeliveryDate] = useState<Date | undefined>();
   const [sendSms, setSendSms] = useState<boolean>(false);
@@ -87,7 +85,6 @@ const NewDeliveryModal = ({
     formState: { errors },
   } = useForm<Partial<TDelivery>>({
     defaultValues: {
-      invoiceId: invoId || "",
       customer: {
         name: "",
         phoneNumber: "",
@@ -128,7 +125,7 @@ const NewDeliveryModal = ({
     const firstItem = data.data.items?.[0];
 
     reset({
-      invoiceId: invoId && invoId,
+      
       customer: {
         name: data.data.customer?.name || "",
         phoneNumber: data.data.customer?.phoneNumber || "",
@@ -151,17 +148,14 @@ const NewDeliveryModal = ({
       note: data.data.note || "",
       deliveryNo: nextDeliveryNo?.data || "",
     });
-  }, [data, invoId, reset]);
+  }, [data, reset]);
 
 
 
   useEffect(() => {
-    const id = invoId || invoiceId;
 
-    if (!id) return;
-
-    getSingleInvoice(Number(id));
-  }, [invoId, invoiceId, getSingleInvoice]);
+    getSingleInvoice(Number(invoiceId));
+  }, [ invoiceId, getSingleInvoice]);
 
   useEffect(() => {
     if (nextDeliveryNo?.data) {
@@ -250,7 +244,6 @@ const NewDeliveryModal = ({
               register={register}
               type="text"
               rules={{ required: "" }}
-              readonly
             />
             <CustomInput
               name="invoiceId"
@@ -258,7 +251,6 @@ const NewDeliveryModal = ({
               placeholder="চালান নং"
               register={register}
               type="text"
-              readonly
               rules={{ required: "" }}
             />
             <div>
@@ -458,4 +450,4 @@ const NewDeliveryModal = ({
   );
 };
 
-export default NewDeliveryModal;
+export default NewDeliveryModalForInput;

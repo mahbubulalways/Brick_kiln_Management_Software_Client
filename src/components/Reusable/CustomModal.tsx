@@ -32,14 +32,14 @@ const CustomModal = ({
     >
       <div
         className={`relative bg-white w-full ${widthClasses[width]} 
-        md:rounded-md rounded-t-2xl shadow-xl
-        h-[90vh] md:h-auto md:max-h-[85vh]
-        flex flex-col overflow-hidden`}
+        md:rounded-md rounded-2xl shadow-xl
+       max-h-[90vh] md:max-h-auto md:max-h-[85vh]
+        flex flex-col overflow-hidden `}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex px-3 pt-2 items-center justify-between sticky top-0 bg-[#F8FAFC] border-b shadow-sm pb-2">
-          <h1 className="font-semibold  text-2xl py-3">{title}</h1>
+          <h1 className="font-semibold  text-2xl py-2.5">{title}</h1>
           <button
             className="text-black bg-gray-200 p-1 rounded-full duration-200 cursor-pointer hover:bg-red-600 hover:text-white"
             onClick={onClose}
@@ -49,7 +49,7 @@ const CustomModal = ({
         </div>
 
         {/* Body */}
-        <div className="p-3">{children}</div>
+        <div className="p-3 thin-green-scrollbar">{children}</div>
       </div>
 
       {/* Combined zoom + slide animation */}

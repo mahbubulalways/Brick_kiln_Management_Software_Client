@@ -37,7 +37,7 @@ const SmsSwitch = ({
         <span
           className={`${
             enabled ? "text-green-600" : "text-gray-600"
-          } text-[16px]`}
+          } text-[14px]`}
         >
           {title}
         </span>

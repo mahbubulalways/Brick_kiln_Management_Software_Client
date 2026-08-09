@@ -42,15 +42,15 @@ const UpdateDeliveryDateModal = ({
       isOpen={isOpen}
       onClose={handleCloseModal}
       title={`চালান নং - ${id}`}
-      width="w-sm"
+      width="sm"
     >
       {isLoading ? (
         <CustomLoader cls="h-[10vh]" />
       ) : (
         <div>
           <div>
-            <h1 className="text-gray-600 text-sm font-medium">অপশন নির্বাচন</h1>
-            <div className="flex items-center gap-6 pt-3">
+            <h1 className="text-gray-600 text-sm font-medium pt-3">অপশন নির্বাচন</h1>
+            <div className="flex items-center gap-6 pt-5">
               {options.map((opt) => (
                 <label
                   key={opt.value}
@@ -87,9 +87,9 @@ const UpdateDeliveryDateModal = ({
 
           <div className="pt-5 pb-4">
             {option === "class" ? (
-              <UpdateItemDate invoiceId={id} itemIds={itemIds} />
+              <UpdateItemDate invoiceId={id} itemIds={itemIds} handleCloseModal={handleCloseModal}/>
             ) : (
-              <UpdateInvoiceDate invoiceId={id} />
+              <UpdateInvoiceDate invoiceId={id} handleCloseModal={handleCloseModal} />
             )}
           </div>
         </div>

@@ -57,13 +57,13 @@ const ShowSidebarItems = ({
                 className="w-full flex justify-between items-center p-2  transition cursor-pointer    hover:translate-x-2 "
               >
                 <div className="flex items-center space-x-2 text-gray-700 transition">
-                  <Icon className="text-lg" />
-                  <span className="text-[16px]">{item.title}</span>
+                  <Icon className="text-[14px]" />
+                  <span className="text-[14px]">{item.title}</span>
                 </div>
                 {isOpen ? (
-                  <MdKeyboardArrowDown className="text-lg" />
+                  <MdKeyboardArrowDown className="text-[14px]" />
                 ) : (
-                  <MdKeyboardArrowRight className="text-lg" />
+                  <MdKeyboardArrowRight className="text-[14px]" />
                 )}
               </button>
             </div>
@@ -88,7 +88,7 @@ const ShowSidebarItems = ({
                         className={`flex items-center space-x-2 p-2`}
                       >
                         <ChildIcon className="text-base" />
-                        <span className="text-[16px]">{child.title}</span>
+                        <span className="text-[14px]">{child.title}</span>
                       </Link>
                     </li>
                   );
@@ -114,8 +114,8 @@ const ShowSidebarItems = ({
      group-hover:translate-x-2
     `}
             >
-              <Icon className="text-lg" />
-              <span className="text-[16px]">{item.title}</span>
+              <Icon className="text-[14px]" />
+              <span className="text-[14px]">{item.title}</span>
             </Link>
           </div>
         )}

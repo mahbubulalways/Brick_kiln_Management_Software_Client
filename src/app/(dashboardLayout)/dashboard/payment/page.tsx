@@ -6,13 +6,11 @@ const Payment = async ({ searchParams }: TQuerySearch) => {
   const query = await searchParams;
   const { currentLimit, currentPage, currentSearch } = modifyQuery(query);
   return (
-    <div>
       <PaymentPage
         limit={currentLimit}
         search={currentSearch}
         page={currentPage}
       />
-    </div>
   );
 };
 

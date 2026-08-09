@@ -4,13 +4,12 @@ import CustomNormalModal from "@/components/Reusable/CustomNormalModal";
 import { Dispatch, SetStateAction, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import moment from "moment";
-import "moment/locale/bn";
 import { useGetSingleDeliveryQuery } from "@/redux/features/delivery.features";
 type TDeliveryModalPrint = {
   isOpen: boolean;
   onClose: () => void;
-  deliveryId: number;
-  setDeliveryId: Dispatch<SetStateAction<number>>;
+  deliveryId: number|undefined;
+  setDeliveryId: Dispatch<SetStateAction<number|undefined>>;
 };
 export interface TDeliveryItem {
   id: number;

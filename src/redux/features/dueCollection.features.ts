@@ -1,3 +1,4 @@
+import { TQuery } from "@/interface/query";
 import { baseApi } from "../baseApi";
 
 const dueCollectionApi = baseApi.injectEndpoints({
@@ -32,8 +33,8 @@ const dueCollectionApi = baseApi.injectEndpoints({
 
     // GET TODAY PAID
     getTodayPaid: builder.query({
-      query: (date: string) => ({
-        url: `/due/today-paid?date=${date}`,
+      query: (query: TQuery) => ({
+        url: `/due/today-paid?date=${query.date}&page=${query.page}&limit=${query.limit}`,
         method: "GET",
       }),
       providesTags: ["DueCollection"],

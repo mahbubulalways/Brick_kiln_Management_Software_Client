@@ -22,14 +22,18 @@ import UpdateDeliveryDateModal from "@/components/Dashboard/Modals/EditModals/Up
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import DeliveryReportModal from "@/components/Dashboard/Modals/ReportModal/DeliveryReportModal";
 import { remainingAllDelivery } from "@/utils/getDeliveryReportData";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import { TQuery } from "@/interface/query";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import { TMetaConfig } from "@/interface/meta";
+import SearchBar from "@/components/Reusable/SearchBar";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
-const TodaysHaveToDelivery = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [currentPage, setCurrentPage] = useState(1);
+const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [openDateChangeModal, setIsOpenDateChangeModal] =
     useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
+  const [searchItem, setSearchItem] = useState<string>("");
   const [InvoiceId, setInvoiceId] = useState<number>();
   const [InvoiceIdDelivery, setInvoiceIDelivery] = useState<number>();
   const [itemIds, setItemIds] = useState<number[]>([]);
@@ -38,32 +42,27 @@ const TodaysHaveToDelivery = () => {
   );
   const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
   const isoDate = deliveryDate ? deliveryDate.toISOString() : "";
-  const { data, isLoading } = useGetDeliveryHaveTodayQuery(isoDate, {
+  const { data, isLoading,isError,error } = useGetDeliveryHaveTodayQuery({ date: isoDate, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
-
-  const todaysDelivery = data?.data || [];
-
-  // Filter & paginate
-  const filtered = todaysDelivery.filter((item: TTodaySDelivery) =>
-    item?.customer?.name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const paginatedData = filtered.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
+  const todaysDelivery = data?.data?.data || [];
+  const meta = data?.data?.meta as TMetaConfig;
   const reportItems = remainingAllDelivery(todaysDelivery || []);
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       {/* Top Controls */}
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
-        <CustomSearchInput search={search} setSearch={setSearch} />
+        <SearchBar
+          value={searchItem}
+          onChange={(e) => setSearchItem(e.target.value)}
+          onClear={() => setSearchItem("")}
+        />
+
         <div className="flex items-center gap-2 ">
-          <DatePicker date={deliveryDate} setDate={setDeliveryDate} />
-          <button onClick={() => setOpenDeliveryReport(true)}>
-            <CustomReportButton />
-          </button>
+          <CustomDatePickerState value={deliveryDate} onChange={setDeliveryDate} placeholder="ডেলিভারি তারিখ" />
+
+          <CustomReportButton onClick={() => setOpenDeliveryReport(true)} />
+
         </div>
       </div>
       {/* Table */}
@@ -98,8 +97,7 @@ const TodaysHaveToDelivery = () => {
               </tr>
             ) : (
               <>
-                {paginatedData?.map((row: TTodaySDelivery) => {
-                  // Calculate total baki for this delivery
+                {todaysDelivery?.map((row: TTodaySDelivery) => {
                   const totalBaki = row.items.reduce(
                     (acc, item) => acc + (item.quantity - item.delivered),
                     0
@@ -129,20 +127,20 @@ const TodaysHaveToDelivery = () => {
                       {/* Item info */}
                       <TableData td={item.class} />
                       <TableData
-                        td={item.quantity}
+                        td={toBanglaNumber(item.quantity)}
                         cls="hidden lg:table-cell"
                       />
                       <TableData
-                        td={item.delivered}
+                        td={toBanglaNumber(item.delivered)}
                         cls="hidden lg:table-cell"
                       />
                       {/* Daily baki */}
-                      <TableData td={item.quantity - item.delivered} />
+                      <TableData td={toBanglaNumber(item.quantity - item.delivered)} />
 
                       {/* Total baki — only on first item row */}
                       {index === 0 && (
                         <TableData
-                          td={totalBaki}
+                          td={toBanglaNumber(totalBaki)}
                           rowSpan={row.items.length}
                           cls="hidden lg:table-cell"
                         />
@@ -202,13 +200,11 @@ const TodaysHaveToDelivery = () => {
             )}
           </tbody>
         </table>
-        <TableFooter
-          currentPage={currentPage}
-          length={filtered?.length}
-          rowsPerPage={rowsPerPage}
-          setCurrentPage={setCurrentPage}
-          setRowsPerPage={setRowsPerPage}
-          title=""
+        <TablePagination
+          page={meta?.page ?? 1}
+          totalPages={meta?.totalPages ?? 1}
+          dataLength={todaysDelivery?.length}
+          title="পেমেন্ট"
         />
       </div>
       {isOpen && (
