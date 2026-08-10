@@ -55,7 +55,7 @@ const NewPaymentSection = () => {
           label="পেমেন্টের ধরণ"
           placeholder=""
           control={control}
-          options={["রেগুলার পেমেন্ট", "অগ্রিম পেমেন্ট", "বাকি পেমেন্ট"]}
+          options={[]}
         />
         <CustomInputLabel
           name="amount"

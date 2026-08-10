@@ -25,10 +25,11 @@ const dueCollectionApi = baseApi.injectEndpoints({
 
     // GET TODAY HAVE DUE
     getTodayHaveDue: builder.query({
-      query: (date: string) => ({
-        url: `/due/today-have-due?date=${date}`,
+      query: (query: TQuery) => ({
+        url: `/due/today-have-due?date=${query.date}&page=${query.page}&limit=${query.limit}&search=${query.search}`,
         method: "GET",
       }),
+      providesTags: ['DueCollection']
     }),
 
     // GET TODAY PAID
@@ -42,11 +43,12 @@ const dueCollectionApi = baseApi.injectEndpoints({
 
     // GET ALL DUES
     getAllDueList: builder.query({
-      query: (date: { startDate: string; endDate: string }) => ({
-        url: `/due/all-due?startDate=${date.startDate}&endDate=${date.endDate}`,
+      query: (query: TQuery) => ({
+        url: `/due/all-due?date=${query.date}&page=${query.page}&limit=${query.limit}&search=${query.search}`,
         method: "GET",
       }),
       keepUnusedDataFor: 0,
+      providesTags:["DueCollection"]
     }),
     // GET ALL DUES
     getSingleDue: builder.query({
@@ -54,7 +56,14 @@ const dueCollectionApi = baseApi.injectEndpoints({
         url: `/due/get-single/${id}`,
         method: "GET",
       }),
-      keepUnusedDataFor: 0,
+    }),
+
+    // GET SINGLE DUE DATE
+    getSingleDueDate: builder.query({
+      query: (id) => ({
+        url: `/due/get-single-date/${id}`,
+        method: "GET",
+      }),
     }),
 
     // UPDATE DUE COLLECTION
@@ -63,6 +72,16 @@ const dueCollectionApi = baseApi.injectEndpoints({
         url: `/due/update/${payload.id}`,
         method: "PATCH",
         body: payload.payload,
+      }),
+      invalidatesTags: ["DueCollection"],
+    }),
+
+      // UPDATE DUE COLLECTION DATE
+    updateDueCollectionDate: builder.mutation({
+      query: (payload) => ({
+        url: `/due/update-date/${payload.id}`,
+        method: "PATCH",
+        body: payload.data,
       }),
       invalidatesTags: ["DueCollection"],
     }),
@@ -77,4 +96,6 @@ export const {
   useGetAllDueListQuery,
   useGetSingleDueQuery,
   useUpdateDueCollectionMutation,
+  useGetSingleDueDateQuery,
+  useUpdateDueCollectionDateMutation
 } = dueCollectionApi;

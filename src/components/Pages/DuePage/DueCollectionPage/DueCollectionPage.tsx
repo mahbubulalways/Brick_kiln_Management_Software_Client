@@ -25,33 +25,9 @@ import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 import { TMetaConfig } from "@/interface/meta";
 import { TablePagination } from "@/components/Reusable/TablePagination";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
+import { IDueResponse } from "@/interface/due";
 
-export interface ICustomer {
-  id: number;
-  name: string;
-  address: string;
-  phoneNumber: string;
-  totalPurchased: number;
-  totalPaid: number;
-  nextPaymentDate: string;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
-export interface IDueRecord {
-  id: number;
-  customerId: number;
-  customer: ICustomer;
-  collect: number;
-  due: number;
-  newDue: number;
-  nextDate: string;
-  season: string;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
 const DueCollectionPage = ({ limit, page }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -63,19 +39,20 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [dueId, setDueId] = useState<number>();
   const isoDate = date ? date.toISOString() : "";
-  const { data, isLoading, isError,error } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
+  const { data, isLoading, isError, error } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
   });
 
-  const dues = data?.data?.data as IDueRecord[] || []
+  const dues = data?.data?.data as IDueResponse[] || []
   const meta = data?.data?.meta as TMetaConfig;
   const totalCredit = dues?.reduce(
-    (sum: number, r: IDueRecord) => sum + r?.collect,
+    (sum: number, r: IDueResponse) => sum + r?.collect,
     0,
   );
   const toggleRow = (id: number) => {
     setExpandedRow((prev) => (prev === id ? null : id));
   };
+
 
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
@@ -129,7 +106,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                   </td>
                 </tr>
               ) : (
-              dues?.map((row: IDueRecord) => (
+              dues?.map((row: IDueResponse) => (
                 <React.Fragment key={row?.id}>
                   <tr
                     className="hover:bg-gray-50 cursor-pointer"
@@ -177,7 +154,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => setOpenPrintModal(true)}
+                            onClick={() => { setOpenPrintModal(true), setDueId(row?.id); }}
                           >
                             <CustomDropDownMenuItem
                               Icon={Printer}
@@ -305,6 +282,8 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
         <PrintDueCollectionModal
           isOpen={isOpenPrintModal}
           onClose={() => setOpenPrintModal(false)}
+          id={dueId}
+          setDueId={setDueId}
         />
       )}
       {isOpenUpdateModal && (

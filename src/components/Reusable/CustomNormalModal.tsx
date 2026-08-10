@@ -1,18 +1,27 @@
 import { ReactNode } from "react";
-import { HiXMark } from "react-icons/hi2";
+type TModalWidth = "sm" | "md" | "lg" | "xl" | "xxl" | "full";
+
+const widthClasses: Record<TModalWidth, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  xxl:" max-w-3xl",
+  full: "max-w-5xl",
+};
 
 type TCustomNormalModal = {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-  width?: string;
+  width?: TModalWidth;
 };
 
 const CustomNormalModal = ({
   isOpen,
   onClose,
   children,
-  width,
+  width="lg",
 }: TCustomNormalModal) => {
   if (!isOpen) return null;
 
@@ -22,7 +31,10 @@ const CustomNormalModal = ({
       onClick={onClose}
     >
       <div
-        className={`bg-white relative rounded-md shadow-lg ${width} max-w-5xl `}
+          className={`relative bg-white w-full ${widthClasses[width]} 
+        md:rounded-md rounded-t-2xl shadow-xl
+        h-[90vh] md:h-auto md:max-h-[90vh]
+        flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* <div className="flex px-3 pt-2 items-center justify-between sticky top-0 bg-[#F8FAFC] border-b shadow-sm pb-2">

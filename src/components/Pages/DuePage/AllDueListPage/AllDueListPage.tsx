@@ -7,85 +7,80 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Eye, MessageSquare, Pencil, User, Wallet2Icon } from "lucide-react";
-import CustomSearchInput from "@/components/Reusable/CustomSearchInput";
+import { MessageSquare, MoreVertical, Pencil, User, Wallet2Icon } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
-import NewPaymentModal from "@/components/Dashboard/Modals/NewPaymentModal";
 import TableHead from "@/components/Reusable/TableHead";
 import CustomButtonFixed from "@/components/Reusable/CustomButtonFixed";
-import DateRangePicker from "@/components/Reusable/DateRangePicker";
 import TableData from "@/components/Reusable/TableData";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import { useGetAllDueListQuery } from "@/redux/features/dueCollection.features";
-import { IChallanForDataShow, ICustomer } from "@/types/types";
+import { ICustomer } from "@/types/types";
 import moment from "moment";
 import CustomLoader from "@/components/Reusable/CustomLoader";
-import TableFooter from "@/components/Reusable/TableFooter";
+import { TQuery } from "@/interface/query";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import { TMetaConfig } from "@/interface/meta";
+import CustomDateRangePicker from "@/components/Reusable/CustomDateRangePicker";
+import SearchBar from "@/components/Reusable/SearchBar";
+import { SERVER_ERROR_MESSAGE } from "@/constant";
+import UpdateDueCollectionDateModal from "@/components/Dashboard/Modals/EditModals/UpdateDueCollectionDateModal";
+import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
 
-type PaymentRow = {
-  challans: IChallanForDataShow[];
-} & ICustomer;
-
-const AllDueListPage = () => {
-  const [search, setSearch] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterRange, setFilterRange] = useState<{
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-  }>({
-    startDate: undefined,
-    endDate: undefined,
-  });
-
-  const handleDateRangeChange = (range: {
-    startDate: Date | undefined;
-    endDate: Date | undefined;
-  }) => {
-    setFilterRange(range);
-  };
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const info = {
-    startDate: filterRange.startDate ? filterRange.startDate.toISOString() : "",
-    endDate: filterRange.endDate ? filterRange.endDate.toISOString() : "",
-  };
-
-  const { data: dues, isLoading } = useGetAllDueListQuery(info, {
-    // skip: !filterRange.startDate || !filterRange.endDate, // optional safety
+const AllDueListPage = ({ limit, page, search }: TQuery) => {
+  const [searchItem, setSearchItem] = useState("");
+  const [dateRange, setDateRange] = useState("");
+  const [customerId, setCustomerId] = useState<number | undefined>(undefined)
+  const [openDueModal, setOpenDueModal] = useState<boolean>(false);
+  const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
+  const { data, isLoading, isError } = useGetAllDueListQuery({ date: dateRange, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
-  console.log(dues);
-  const filtered = dues?.data?.filter((row: PaymentRow) =>
-    row?.name?.toLowerCase()?.includes(search?.toLowerCase()),
-  );
-
-  const totalCredit = filtered?.reduce(
-    (sum: number, r: PaymentRow) => sum + (r?.totalPurchased - r?.totalPaid),
+  const dues = data?.data?.data as ICustomer[]
+  const meta = data?.data?.meta as TMetaConfig;
+  const totalCredit = dues?.reduce(
+    (sum: number, r: ICustomer) => sum + (r?.totalPurchased - r?.totalPaid),
     0,
   );
-
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
 
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
-      <div className="flex justify-between items-center w-full pt-2 lg:pt-0 gap-5">
-        <div className="flex items-center gap-2 w-auto ">
-          <button>
+      <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+
+        {/* Left */}
+        <div className="flex w-full items-center justify-between gap-2 lg:w-auto lg:justify-start">
+          <button type="button">
             <CustomButtonFixed title="বর্তমান সিজন" />
           </button>
-          <span className=" text-orange-500 px-3 py-1 rounded   border border-orange-300 font-medium hidden lg:block ">
-            মোট বাকিঃ {totalCredit?.toLocaleString()} টাকা
+
+          <span className="whitespace-nowrap rounded-md border border-orange-300 bg-orange-50 px-3 py-2 text-sm font-medium text-orange-600">
+            মোট বাকি: {totalCredit?.toLocaleString()} টাকা
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <CustomSearchInput search={search} setSearch={setSearch} />
-          <div className="shrink-0 ">
-            <DateRangePicker onChange={handleDateRangeChange} />
+        {/* Right */}
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:w-auto">
+          <div className="w-full sm:w-auto sm:min-w-[220px]">
+            <SearchBar
+              value={searchItem}
+              onChange={(e) => setSearchItem(e.target.value)}
+              onClear={() => setSearchItem("")}
+            />
           </div>
-          <button className="w-full" onClick={reactToPrintFn}>
+
+          <div className="w-full sm:w-auto">
+            <CustomDateRangePicker
+              value={dateRange}
+              onChange={setDateRange}
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={reactToPrintFn}
+            className="w-full sm:w-auto"
+          >
             <CustomButtonFixed title="প্রিন্ট করুন" />
           </button>
         </div>
@@ -115,30 +110,25 @@ const AllDueListPage = () => {
                   <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ) : !dues?.data?.length ? (
+            ) : isError ? <tr>
+              <td colSpan={9} className="py-8 text-gray-600">
+                {SERVER_ERROR_MESSAGE}
+              </td>
+            </tr> : !dues?.length ? (
               <tr>
                 <td colSpan={9} className="py-8 text-gray-600">
-                  {dues?.message}
+                  {data?.message}---
                 </td>
               </tr>
             ) : (
               <>
-                {filtered?.map((row: PaymentRow) => (
+                {dues?.map((row: ICustomer) => (
                   <tr key={row?.id} className="hover:bg-gray-50">
                     <TableData td={row?.id} />
                     <TableData td={row?.name} />
                     <TableData td={row?.address} />
                     <TableData
-                      td={row?.challans?.reduce((accChallan, challan) => {
-                        const itemsSum =
-                          challan.items?.reduce(
-                            (accItem, curr) =>
-                              accItem +
-                              ((curr.quantity ?? 0) - (curr.delivered ?? 0)),
-                            0,
-                          ) ?? 0;
-                        return accChallan + itemsSum;
-                      }, 0)}
+                      td={row?.remainingDelivery}
                       cls="text-orange-500"
                     />
                     <TableData td={row?.totalPurchased - row?.totalPaid} />
@@ -147,39 +137,50 @@ const AllDueListPage = () => {
                     />
 
                     <TableData td={row?.phoneNumber} />
-                    <TableData td={row?.challans?.[0]?.note ?? "-"} />
+                    <TableData td={row?.note ?? "-"} />
                     <TableData td={"2020"} />
 
                     <td className="border p-2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="text-gray-600 cursor-pointer hover:text-green-700">
-                            <Eye className="w-4 h-4" />
+                          <button className="p-1.5 rounded hover:bg-gray-100 transition">
+                            <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
-                          className=" rounded-md border bg-white shadow-md"
+                          className="rounded-md border bg-white shadow-md"
                         >
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            setCustomerId(row?.id)
+                            setOpenDueModal(true)
+                          }}>
                             <CustomDropDownMenuItem
                               Icon={Pencil}
                               title="তারিখ আপডেট করুন"
                             />
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => {
+                            setCustomerId(row?.id)
+                            setOpenDueCollectionModal(true)
+                          }}>
                             <CustomDropDownMenuItem
                               Icon={Wallet2Icon}
                               title="জমা করুন"
                             />
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+
+                          >
                             <CustomDropDownMenuItem
                               Icon={MessageSquare}
                               title="মেসেজ করুন"
                             />
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+
+                          <DropdownMenuItem
+
+                          >
                             <CustomDropDownMenuItem
                               Icon={User}
                               title="প্রোফাইল"
@@ -195,17 +196,29 @@ const AllDueListPage = () => {
           </tbody>
         </table>
       </div>
-      <TableFooter
-        currentPage={currentPage}
-        length={2}
-        rowsPerPage={rowsPerPage}
-        setCurrentPage={setCurrentPage}
-        setRowsPerPage={setRowsPerPage}
-        title={"বাকি"}
+      <TablePagination
+        page={meta?.page ?? 1}
+        totalPages={meta?.totalPages ?? 1}
+        dataLength={dues?.length}
+        title="পেমেন্ট"
       />
-      {isOpen && (
-        <NewPaymentModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
-      )}
+
+
+
+      {
+        <UpdateDueCollectionDateModal
+          id={customerId}
+          isOpen={openDueModal}
+          onClose={() => setOpenDueModal(false)}
+          setId={setCustomerId} />
+      }
+      {openDueCollectionModal &&
+        <NewDueCollectionModalId
+          id={customerId}
+          isOpen={openDueCollectionModal}
+          onClose={() => setOpenDueCollectionModal(false)}
+        />
+      }
     </div>
   );
 };

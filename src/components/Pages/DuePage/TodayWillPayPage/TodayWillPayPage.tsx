@@ -5,14 +5,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Eye, MoreVertical, Pencil, Trash2 } from "lucide-react";
-import CustomNewButton from "@/components/Reusable/CustomNewButton";
-import CustomSearchInput from "@/components/Reusable/CustomSearchInput";
-import { DatePicker } from "@/components/Others/DatePicker";
+import { Eye, MessageSquare, MoreVertical, Pencil, Trash2, User, Wallet2Icon } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 
 import NewPaymentModal from "@/components/Dashboard/Modals/NewPaymentModal";
@@ -23,35 +18,42 @@ import { useGetTodayHaveDueQuery } from "@/redux/features/dueCollection.features
 import { IChallanForDataShow, ICustomer } from "@/types/types";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import TableFooter from "@/components/Reusable/TableFooter";
+import { TQuery } from "@/interface/query";
+import SearchBar from "@/components/Reusable/SearchBar";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import { TMetaConfig } from "@/interface/meta";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
+import UpdateDueCollectionDateModal from "@/components/Dashboard/Modals/EditModals/UpdateDueCollectionDateModal";
+import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
 
 type PaymentRow = {
   challans: IChallanForDataShow[];
 } & ICustomer;
 
-const TodayWillPayPage = () => {
-  const [search, setSearch] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [currentPage, setCurrentPage] = useState(1);
+const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
+  const [searchItem, setSearchItem] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [customerId, setCustomerId] = useState<number | undefined>(undefined)
+  const [openDueModal, setOpenDueModal] = useState<boolean>(false);
+  const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const isoDate = date ? date.toISOString() : "";
 
-  const { data: dues, isLoading } = useGetTodayHaveDueQuery(isoDate, {
+  const { data, isLoading, isError, } = useGetTodayHaveDueQuery({ date: isoDate, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
 
-  const filtered = dues?.data?.filter((row: PaymentRow) =>
-    row.name.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  const totalCredit = filtered?.reduce(
+  const dues = data?.data?.data as PaymentRow[]
+  const meta = data?.data?.meta as TMetaConfig;
+  const totalCredit = dues?.reduce(
     (sum: number, r: PaymentRow) => sum + (r?.totalPurchased - r?.totalPaid),
     0,
   );
 
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
-  console.log(filtered);
+
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
@@ -62,8 +64,17 @@ const TodayWillPayPage = () => {
         </div>
 
         <div className="flex items-center lg:justify-end gap-2 w-full">
-          <CustomSearchInput search={search} setSearch={setSearch} />
-          <DatePicker setDate={setDate} date={date} />
+          <SearchBar
+            value={searchItem}
+            onChange={(e) => setSearchItem(e.target.value)}
+            onClear={() => setSearchItem("")}
+          />
+          <CustomDatePickerState
+            onChange={setDate}
+            value={date}
+            placeholder="তারিখ"
+            height="8"
+          />
           <button onClick={reactToPrintFn}>
             <CustomButtonFixed title="প্রিন্ট করুন" />
           </button>
@@ -93,14 +104,16 @@ const TodayWillPayPage = () => {
                   <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ) : !filtered?.length ? (
+            ) : isError ? <tr><td colSpan={9} className="py-8 text-gray-600">
+              {data?.message}
+            </td></tr> : !dues?.length ? (
               <tr>
                 <td colSpan={9} className="py-8 text-gray-600">
-                  {dues?.message}
+                  {data?.message}
                 </td>
               </tr>
             ) : (
-              filtered?.map((row: PaymentRow) => (
+              dues?.map((row: PaymentRow) => (
                 <tr key={row.id} className="hover:bg-gray-50">
                   <TableData td={row?.id} />
                   <TableData td={row?.name} />
@@ -120,7 +133,7 @@ const TodayWillPayPage = () => {
 
                   <TableData td={row?.totalPurchased - row?.totalPaid} />
                   <TableData td={row?.phoneNumber} />
-                  <TableData td={row?.challans?.[0]?.note ?? "-"} />
+                  <TableData td={row?.note ?? "-"} />
 
                   <TableData td={"2425"} />
 
@@ -133,20 +146,42 @@ const TodayWillPayPage = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="w-36 rounded-md border bg-white shadow-md"
+                        className="rounded-md border bg-white shadow-md"
                       >
-                        <DropdownMenuLabel className="px-3 py-1 text-gray-500 text-xs">
-                          Actions
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
-                          <Eye className="w-4 h-4 text-green-600" /> বিস্তারিত
+                        <DropdownMenuItem onClick={() => {
+                          setCustomerId(row?.id)
+                          setOpenDueModal(true)
+                        }}>
+                          <CustomDropDownMenuItem
+                            Icon={Pencil}
+                            title="তারিখ আপডেট করুন"
+                          />
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100">
-                          <Pencil className="w-4 h-4 text-blue-600" /> সম্পাদনা
+                        <DropdownMenuItem onClick={() => {
+                          setCustomerId(row?.id)
+                          setOpenDueCollectionModal(true)
+                        }}>
+                          <CustomDropDownMenuItem
+                            Icon={Wallet2Icon}
+                            title="জমা করুন"
+                          />
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2   cursor-pointer hover:bg-gray-100 text-red-600">
-                          <Trash2 className="w-4 h-4" /> মুছুন
+                        <DropdownMenuItem
+
+                        >
+                          <CustomDropDownMenuItem
+                            Icon={MessageSquare}
+                            title="মেসেজ করুন"
+                          />
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+
+                        >
+                          <CustomDropDownMenuItem
+                            Icon={User}
+                            title="প্রোফাইল"
+                          />
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -156,20 +191,31 @@ const TodayWillPayPage = () => {
             )}
           </tbody>
         </table>
+        <TablePagination
+          page={meta?.page ?? 1}
+          totalPages={meta?.totalPages ?? 1}
+          dataLength={dues?.length}
+          title="পেমেন্ট"
+        />
       </div>
-      <TableFooter
-        currentPage={currentPage}
-        length={2}
-        rowsPerPage={rowsPerPage}
-        setCurrentPage={setCurrentPage}
-        setRowsPerPage={setRowsPerPage}
-        title={"বাকি"}
-      />
-      {/* Footer */}
-
       {isOpen && (
         <NewPaymentModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       )}
+
+      {
+        <UpdateDueCollectionDateModal
+          id={customerId}
+          isOpen={openDueModal}
+          onClose={() => setOpenDueModal(false)}
+          setId={setCustomerId} />
+      }
+      {openDueCollectionModal &&
+        <NewDueCollectionModalId
+          id={customerId}
+          isOpen={openDueCollectionModal}
+          onClose={() => setOpenDueCollectionModal(false)}
+        />
+      }
     </div>
   );
 };

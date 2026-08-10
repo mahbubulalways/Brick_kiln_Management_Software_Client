@@ -60,6 +60,8 @@ export interface ICustomer {
   totalPurchased: number;
   totalPaid: number;
   nextPaymentDate: string;
+  note:string
+  remainingDelivery:number
 }
 
 export interface IChallanItem {

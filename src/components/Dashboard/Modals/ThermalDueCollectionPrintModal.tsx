@@ -14,7 +14,7 @@ const ThermalDueCollectionPrintModal = ({ isOpen, onClose }: TCustomModal) => {
   const handlePrint = useReactToPrint({ contentRef });
 
   return (
-    <CustomNormalModal isOpen={isOpen} onClose={onClose} width="w-4xl">
+    <CustomNormalModal isOpen={isOpen} onClose={onClose} width="xxl">
       <div className="w-[400px] mx-auto my-5 bg-white text-center  text-gray-800">
         {/* Header */}
         <h2 className="  font-medium border-b border-dotted pb-1">

@@ -72,7 +72,7 @@ const DeliveryPrintModal = ({
   };
 
   return (
-    <CustomNormalModal isOpen={isOpen} onClose={handleClose} width="w-4xl">
+    <CustomNormalModal isOpen={isOpen} onClose={handleClose} width="xxl">
       {isLoading ? (
         <>
           <CustomLoader cls="h-[50vh]" />

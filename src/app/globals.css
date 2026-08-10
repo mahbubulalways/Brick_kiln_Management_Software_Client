@@ -501,13 +501,12 @@
 
 
 body {
-  font-family: var(--font-noto-bengali), sans-serif;
+  font-family:
+    "Bangla MN",
+    "Shonar Bangla",
+    "Bangla Sangam MN",
+    sans-serif;
 }
-
-.font-baloo {
-  font-family: var(--font-baloo), sans-serif;
-}
-
 
 
 /* Thin Green Scrollbar */

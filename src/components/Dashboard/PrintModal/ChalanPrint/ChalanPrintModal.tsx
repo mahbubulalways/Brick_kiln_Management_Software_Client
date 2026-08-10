@@ -17,8 +17,6 @@ const ChalanPrintModal = ({
   });
 
   const invoice: IChallanForDataShow = data?.data || {};
-
-  console.log(invoice);
   const handleClose = () => {
     setInvoiceId(0);
     onClose();
@@ -37,7 +35,7 @@ const ChalanPrintModal = ({
   };
 
   return (
-    <CustomNormalModal isOpen={isOpen} onClose={handleClose} width="w-4xl">
+    <CustomNormalModal isOpen={isOpen} onClose={handleClose} width="xxl">
       {isLoading ? (
         <>
           <CustomLoader cls="h-[50vh]" />

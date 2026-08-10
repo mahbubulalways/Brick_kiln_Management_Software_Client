@@ -3,7 +3,6 @@ import CustomNormalModal from "@/components/Reusable/CustomNormalModal";
 import { useGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
 import { IChallanForDataShow, TCustomInvoiceModal } from "@/types/types";
 import moment from "moment";
-import "moment/locale/bn";
 const PrintThermalInvoice = ({
   isOpen,
   onClose,
@@ -19,7 +18,7 @@ const PrintThermalInvoice = ({
     onClose();
   };
   return (
-    <CustomNormalModal isOpen={isOpen} onClose={handleClose} width="w-4xl">
+    <CustomNormalModal isOpen={isOpen} onClose={handleClose} width="xxl">
       {isLoading ? (
         <>
           <CustomLoader cls="h-[50vh]" />

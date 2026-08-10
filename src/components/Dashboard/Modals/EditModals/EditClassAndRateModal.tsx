@@ -59,7 +59,6 @@ const EditClassAndRateModal = ({ isOpen, onClose, id }: TCustomModal) => {
         onClose();
       }
     } catch (error) {
-      console.log(error);
       showToast({
         title: "দুঃখিত! সার্ভারে ত্রুটি হয়েছে, পরে চেষ্টা করুন",
         type: "error",
@@ -76,7 +75,7 @@ const EditClassAndRateModal = ({ isOpen, onClose, id }: TCustomModal) => {
       isOpen={isOpen}
       onClose={onClose}
       title="শ্রেণি আপডেট"
-      width="w-sm"
+      width="sm"
     >
       {isLoading ? (
         <CustomLoader cls="h-[10vh]" />
@@ -88,8 +87,7 @@ const EditClassAndRateModal = ({ isOpen, onClose, id }: TCustomModal) => {
               label="শ্রেণির ধরণ"
               placeholder="ধরণ নির্বাচন করুন"
               control={control}
-              options={["ইট", "আধলা", "অন্যান্য"]}
-              defaultValue={data?.data?.classType}
+              options={[{label:"ইট",value:"ইট"},{label: "আধলা",value:"আধলা"},{label: "অন্যান্য",value:"অন্যান্য"}]}
             />
 
             <CustomInputLabel

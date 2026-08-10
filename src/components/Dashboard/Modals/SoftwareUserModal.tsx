@@ -23,7 +23,7 @@ const SoftwareUserModal = ({ isOpen, onClose }: TCustomModal) => {
       isOpen={isOpen}
       onClose={onClose}
       title="নতুন ইউজার অ্যাড"
-      width="w-sm"
+      width="sm"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-2">

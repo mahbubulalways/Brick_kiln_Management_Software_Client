@@ -52,7 +52,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
     label: cls?.className,
     value: cls?.className,
   }));
-  console.log(classOptions);
+  console.log(invoiceError);
   // REACT HOOK FORM
   const {
     register,
@@ -120,7 +120,6 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
 
   //* FORM SUBMIT
   const onSubmit: SubmitHandler<TChallanCreate> = async (data) => {
-    console.log(data);
     const allValid = watchItems.every((item) =>
       Object.values(item).every((value) => value !== 0 && value !== ""),
     );
@@ -213,7 +212,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                   {...register("invoice.serial")}
                   defaultValue={
                     invoiceSerial?.data?.totalInvoice
-                      ? invoiceSerial?.data?.totalInvoice + 1
+                      ? invoiceSerial?.data?.totalInvoice 
                       : 1
                   }
                 />
