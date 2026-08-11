@@ -7,9 +7,13 @@ const cashApi = baseApi.injectEndpoints({
     // GET ALL CASH
     getAllCash: builder.query({
       query: (query) => ({
-        url: `/cash`,
-        method: "GET",
-        params: query,
+        url: "/cash/all",
+        params: {
+          page: query.page,
+          limit: query.limit,
+          search: query.search,
+          date: query.date,
+        },
       }),
       providesTags: ["CASH"],
     }),
@@ -35,10 +39,10 @@ const cashApi = baseApi.injectEndpoints({
 
     // UPDATE CASH
     updateCash: builder.mutation({
-      query: ({ id, payload }) => ({
-        url: `/cash/update/${id}`,
+      query: (payload) => ({
+        url: `/cash/update/${payload.id}`,
         method: "PATCH",
-        body: payload,
+        body: payload.data,
       }),
       invalidatesTags: ["CASH"],
     }),

@@ -24,7 +24,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="bn">
-      <body className={`${hindSiliguri.className} antialiased no-scrollbar`}>
+      <body
+        cz-shortcut-listen="true"
+        className={`${hindSiliguri.className} antialiased no-scrollbar`}>
         <Providers>
           {children}
           <Toaster />

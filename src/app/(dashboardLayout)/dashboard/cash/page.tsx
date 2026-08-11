@@ -7,7 +7,7 @@ const Cash = async ({ searchParams }: TQuerySearch) => {
   const { currentLimit, currentPage, currentSearch } = modifyQuery(query)
   return (
     <div>
-      <CashPage />
+      <CashPage limit={currentLimit} page={currentPage} search={currentSearch} />
     </div>
   );
 };

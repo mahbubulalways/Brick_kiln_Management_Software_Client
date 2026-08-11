@@ -1,11 +1,12 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import UnloadPage from "@/components/Pages/UnloadPage/UnloadPage";
 
-const Page = () => {
+
+const Unload = () => {
   return (
     <div>
-      <UnderConstructionPage />
+      <UnloadPage />
     </div>
   );
 };
 
-export default Page;
+export default Unload;

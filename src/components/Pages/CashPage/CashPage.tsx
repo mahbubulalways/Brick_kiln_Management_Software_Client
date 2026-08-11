@@ -1,10 +1,6 @@
 "use client";
-
-import { DatePicker } from "@/components/Others/DatePicker";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
-import CustomSearchInput from "@/components/Reusable/CustomSearchInput";
 import TableData from "@/components/Reusable/TableData";
-import TableFooter from "@/components/Reusable/TableFooter";
 import TableHead from "@/components/Reusable/TableHead";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import {
@@ -14,34 +10,46 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Pencil, Trash } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import NewCashModal from "@/components/Dashboard/Modals/NewCashModal";
-import { useGetAllCashQuery } from "@/redux/features/cash.features";
+import { useDeleteCashMutation, useGetAllCashQuery } from "@/redux/features/cash.features";
 import { TCash } from "@/interface/cash";
 import { TMetaConfig } from "@/interface/meta";
 import { TablePagination } from "@/components/Reusable/TablePagination";
 import CustomLoader from "@/components/Reusable/CustomLoader";
-import moment from "moment";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 import { TQuery } from "@/interface/query";
 import SearchBar from "@/components/Reusable/SearchBar";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
+import CustomReportButton from "@/components/Reusable/CustomReportButton";
+import { formatBanglaDate } from "@/utils/formatBanglaDate";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import UpdateCashModal from "@/components/Dashboard/Modals/EditModals/UpdateCashModal";
+import Swal from "sweetalert2";
+import { useReactToPrint } from "react-to-print";
+import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
+import CashPagePrint from "./CashPagePrint";
 
 const CashPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const printRef = useRef<TCommonPrintRef>(null);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const [cashId, setCashId] = useState<number | undefined>(undefined);
   const [date, setDate] = useState<Date | undefined>(new Date());
-
   const {
     data: cashResponse,
     isLoading,
-    isFetching,
     isError,
   } = useGetAllCashQuery({
     page,
     limit,
     search: search || undefined,
-    // date: date ? date.toISOString().split("T")[0] : undefined,
+    date: date ? date.toISOString() : undefined,
   });
+  const [deleteCash, { isLoading: isDeleting }] =
+    useDeleteCashMutation();
 
   const cashData = cashResponse?.data?.data as TCash[] || [];
   const meta = cashResponse?.data?.meta as TMetaConfig;
@@ -56,8 +64,48 @@ const CashPage = ({ limit, page, search }: TQuery) => {
     .filter((item) => item.type === "EXPENSE")
     .reduce((total, item) => total + Number(item.amount), 0);
 
+
+  // DELETE CASH
+
+  const handleDeleteCash = async (id: number) => {
+    const result = await Swal.fire({
+      title: "আপনি কি নিশ্চিত?",
+      text: "এই ক্যাশের হিসাবটি ডিলেট করা হবে!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "হ্যাঁ, ডিলেট করুন",
+      cancelButtonText: "বাতিল",
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await deleteCash(id).unwrap();
+
+      await Swal.fire({
+        title: "সফল!",
+        text:
+          response?.message ||
+          "ক্যাশের হিসাব সফলভাবে ডিলেট হয়েছে",
+        icon: "success",
+        confirmButtonText: "ঠিক আছে",
+      });
+    } catch (error: any) {
+      Swal.fire({
+        title: "ব্যর্থ!",
+        text:
+          error?.data?.message ||
+          "ক্যাশ ডিলেট করতে সমস্যা হয়েছে",
+        icon: "error",
+        confirmButtonText: "ঠিক আছে",
+      });
+    }
+  };
+
+
   return (
-    <div className="w-full">
+    <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-3 justify-between pt-3 lg:pt-0">
         <button onClick={() => setIsModalOpen(true)}>
@@ -67,12 +115,12 @@ const CashPage = ({ limit, page, search }: TQuery) => {
         <div className="flex items-center gap-3 w-full lg:w-auto">
           {/* Total */}
           <div className="hidden lg:flex items-center gap-2">
-            <span className="text-green-500 px-3 py-1 rounded border border-green-300 font-medium">
-              মোট জমাঃ {totalIncome.toLocaleString()} টাকা
+            <span className="text-green-500 px-3 text-[15px] text-nowrap py-1 rounded border border-green-300 font-medium">
+              আজকের ক্যাশঃ {toBanglaNumber(totalIncome.toLocaleString())} টাকা
             </span>
 
-            <span className="text-orange-500 px-3 py-1 rounded border border-orange-300 font-medium">
-              মোট খরচঃ {totalExpense.toLocaleString()} টাকা
+            <span className="text-orange-500 px-3 text-[15px] text-nowrap py-1 rounded border border-orange-300 font-medium">
+              ক্যাশ জেরঃ {toBanglaNumber(totalExpense.toLocaleString())} টাকা
             </span>
           </div>
 
@@ -80,13 +128,12 @@ const CashPage = ({ limit, page, search }: TQuery) => {
 
           {/* Date */}
           <div className="w-full lg:w-auto">
-            <DatePicker
-              setDate={(value) => {
-                setDate(value);
-              }}
-              date={date}
-            />
+            <CustomDatePickerState value={date} onChange={setDate} height="8" />
           </div>
+          <CustomPrintButton
+            onClick={() => printRef.current?.print()}
+          />
+          <CustomReportButton />
         </div>
       </div>
       <div className="overflow-x-auto mt-2">
@@ -122,18 +169,18 @@ const CashPage = ({ limit, page, search }: TQuery) => {
                       </td>
                     </tr> :
 
-                    cashData?.map((row) => (
+                    cashData?.map((row, idx) => (
                       <tr
-                        key={row.id}
+                        key={idx + 1}
                         className="hover:bg-gray-50 transition-colors"
                       >
                         <TableData td={row.id} />
 
                         <TableData td={row.source} />
                         <TableData td={row.description} />
-                        <TableData td={row.type === "INCOME" ? row.amount : "-"} />
+                        <TableData td={row.type === "INCOME" ? toBanglaNumber(row.amount) : "-"} />
                         <TableData td={row.type === "EXPENSE" ? row.amount : "-"} />
-                        <TableData td={moment(row.createdAt).format("DD-MM-YYYY")} />
+                        <TableData td={formatBanglaDate({ date: row.createdAt })} />
 
 
                         <td className="border p-2">
@@ -147,14 +194,17 @@ const CashPage = ({ limit, page, search }: TQuery) => {
                               align="end"
                               className="rounded-md border bg-white shadow-md"
                             >
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => {
+                                setCashId(row?.id)
+                                setOpenUpdateModal(true)
+                              }}>
                                 <CustomDropDownMenuItem
                                   Icon={Pencil}
                                   title="আপডেট"
                                 />
                               </DropdownMenuItem>
 
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDeleteCash(row?.id)}>
                                 <CustomDropDownMenuItem
                                   Icon={Trash}
                                   title="ডিলেট"
@@ -172,10 +222,18 @@ const CashPage = ({ limit, page, search }: TQuery) => {
           page={meta?.page ?? 1}
           totalPages={meta?.totalPages ?? 1}
           dataLength={cashData?.length}
-          title="চালান"
+          title="ক্যাশ"
         />
       </div>
-
+      <CommonPrint
+        ref={printRef}
+        title="Daily_cash_report"
+      >
+        <CashPagePrint
+          cashData={cashData}
+          date={date}
+        />
+      </CommonPrint>
       {/* New Cash Modal */}
       {isModalOpen && (
         <NewCashModal
@@ -183,6 +241,10 @@ const CashPage = ({ limit, page, search }: TQuery) => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
+
+      {
+        <UpdateCashModal id={cashId} setId={setCashId} isOpen={openUpdateModal} onClose={() => setOpenUpdateModal(false)} />
+      }
     </div>
   );
 };

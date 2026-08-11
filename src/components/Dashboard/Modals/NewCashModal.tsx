@@ -22,7 +22,7 @@ type TCashForm = {
 
 const NewCashModal = ({ isOpen, onClose }: TCustomModal) => {
   const [cashType, setCashType] = useState<"INCOME" | "EXPENSE">("INCOME");
-  const [mutateAsync,{isLoading}]=useCreateCashMutation()
+  const [mutateAsync, { isLoading }] = useCreateCashMutation()
   const {
     register,
     handleSubmit,
@@ -38,28 +38,28 @@ const NewCashModal = ({ isOpen, onClose }: TCustomModal) => {
 
   const isIncome = cashType === "INCOME";
 
-const onSubmit: SubmitHandler<TCashForm> = async (data) => {
-  const payload = {
-    ...data,
-    type: cashType,
+  const onSubmit: SubmitHandler<TCashForm> = async (data) => {
+    const payload = {
+      ...data,
+      type: cashType,
+    };
+
+    try {
+      const result = await mutateAsync(payload).unwrap();
+      showToast({
+        title: result?.message || "ক্যাশ সফলভাবে তৈরি হয়েছে",
+        type: "success",
+      });
+
+      reset();
+      onClose();
+    } catch (error: any) {
+      showToast({
+        title: error?.data?.message || "ক্যাশ তৈরি করতে সমস্যা হয়েছে",
+        type: "error",
+      });
+    }
   };
-
-  try {
-    const result = await mutateAsync(payload).unwrap();
-    showToast({
-      title: result?.message || "ক্যাশ সফলভাবে তৈরি হয়েছে",
-      type: "success",
-    });
-
-    reset();
-    onClose();
-  } catch (error: any) {
-    showToast({
-      title: error?.data?.message || "ক্যাশ তৈরি করতে সমস্যা হয়েছে",
-      type: "error",
-    });
-  }
-};
 
   const handleTypeChange = (type: "INCOME" | "EXPENSE") => {
     setCashType(type);
@@ -219,14 +219,15 @@ const onSubmit: SubmitHandler<TCashForm> = async (data) => {
           <button
             type="button"
             onClick={handleClear}
-            className="px-6 py-2 rounded-lg w-full border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:bg-gray-50"
+            className="px-6 py-2 cursor-pointer rounded-lg w-full border border-gray-300 bg-white text-sm font-medium text-gray-600 hover:bg-gray-50"
           >
             ক্লিয়ার
           </button>
 
           <button
+            disabled={isLoading}
             type="submit"
-            className={`px-6 py-2 rounded-lg w-full text-sm font-medium text-white ${isIncome ? "bg-[#039A63]" : "bg-[#FF480D]"
+            className={`px-6 py-2 cursor-pointer rounded-lg w-full text-sm font-medium text-white ${isIncome ? "bg-[#039A63]" : "bg-[#FF480D]"
               }`}
           >
             সেভ করুন

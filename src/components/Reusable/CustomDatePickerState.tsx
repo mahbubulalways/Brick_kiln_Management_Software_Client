@@ -96,7 +96,7 @@ const CustomDatePickerState = ({
   return (
     <div>
       {label && (
-        <label className="mb-1 block text-sm font-medium">
+        <label className="mb-1 block text-sm font-medium text-gray-600">
           {label}
         </label>
       )}

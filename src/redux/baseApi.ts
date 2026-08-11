@@ -27,7 +27,10 @@ export const baseApi = createApi({
     "DueCollection",
     "LEDGER",
     "PAYMENT",
-    "CASH"
+    "CASH",
+    "LOAD_INFO",
+    "ROUND",
+    "UNLOAD"
   ],
   endpoints: () => ({}),
 });

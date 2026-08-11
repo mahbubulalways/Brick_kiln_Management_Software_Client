@@ -103,7 +103,7 @@ const CustomDatePicker = ({
     <div className="w-full">
 
       {label && (
-        <label className="mb-1 block text-sm font-medium">
+        <label className="mb-1 block text-sm font-medium text-gray-600">
           {label}
 
           {rules && (

@@ -1,10 +1,11 @@
+import { ButtonHTMLAttributes } from "react";
 import { FiPrinter } from "react-icons/fi";
-
-const CustomPrintButton = () => {
+type CustomPrintButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+const CustomPrintButton = ({...props}:CustomPrintButtonProps) => {
   return (
     <button
+    {...props}
       type="button"
-      onClick={() => window.print()}
       className="
         flex
         items-center
@@ -25,7 +26,7 @@ const CustomPrintButton = () => {
       "
     >
       <FiPrinter className="h-4 w-4" />
-      <span className="hidden lg:block">প্রিন্ট</span>
+      <span className="hidden lg:block text-[15px]">প্রিন্ট</span>
     </button>
   );
 };
