@@ -1,53 +1,52 @@
 "use client";
-
-import { useState } from "react";
-
+import { useRef, useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { MoreVertical, Trash } from "lucide-react";
-
+import { MoreVertical, Search, Trash } from "lucide-react";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
 import CustomSelect2 from "@/components/Reusable/CustomSelect2";
 import TableData from "@/components/Reusable/TableData";
 import TableHead from "@/components/Reusable/TableHead";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
-
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 import { TQuery } from "@/interface/query";
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
-
 import { useGetAllRoundQuery } from "@/redux/features/round.features";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
-
 import Swal from "sweetalert2";
-
 import NewUnloadModal from "@/components/Dashboard/Modals/NewUnloadModal";
-
 import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
 import { TClassAndRate } from "@/types/types";
-
 import {
 
+    useDeleteUnloadInfoMutation,
     useGetAllUnloadInfoQuery,
 } from "@/redux/features/unload.features";
 
 import { TUnloadResponse } from "@/interface/unload";
+import { TMetaConfig } from "@/interface/meta";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
+import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
+import UnloadPagePrint from "./UploadPagePrint";
+import UnloadReportModal from "@/components/Dashboard/Modals/ReportModal/UnloadReportModal";
 
 const UnloadPage = ({ limit, page }: TQuery) => {
     const [date, setDate] = useState<Date | undefined>();
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [openReportModal, setOpenReOpenModal] = useState<boolean>(false);
     const [selected, setSelected] = useState("");
-
+    const printRef = useRef<TCommonPrintRef>(null);
     // =========================
     // GET UNLOAD DATA
     // =========================
+
     const {
         isError,
         data,
@@ -65,7 +64,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
     );
 
     const unloads: TUnloadResponse[] = data?.data?.data ?? [];
-
+    const meta = data?.data?.meta as TMetaConfig
     // =========================
     // ROUND
     // =========================
@@ -100,47 +99,47 @@ const UnloadPage = ({ limit, page }: TQuery) => {
     // =========================
     // DELETE
     // =========================
-    // const [
-    //     deleteUnloadInfo,
-    //     { isLoading: deleteLoading },
-    // ] = useDeleteUnloadInfoMutation();
+    const [
+        deleteUnloadInfo,
+        { isLoading: deleteLoading },
+    ] = useDeleteUnloadInfoMutation();
 
-    // const handleDelete = async (id: number) => {
-    //     const result = await Swal.fire({
-    //         title: "আপনি কি নিশ্চিত?",
-    //         text: "এই আনলোডের তথ্য ডিলেট করলে এটি আর ফিরে পাওয়া যাবে না!",
-    //         icon: "warning",
-    //         showCancelButton: true,
-    //         confirmButtonColor: "#039A63",
-    //         cancelButtonColor: "#d33",
-    //         confirmButtonText: "হ্যাঁ, ডিলেট করুন",
-    //         cancelButtonText: "বাতিল",
-    //     });
+    const handleDelete = async (id: number) => {
+        const result = await Swal.fire({
+            title: "আপনি কি নিশ্চিত?",
+            text: "এই আনলোডের তথ্য ডিলেট করলে এটি আর ফিরে পাওয়া যাবে না!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#039A63",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "হ্যাঁ, ডিলেট করুন",
+            cancelButtonText: "বাতিল",
+        });
 
-    //     if (!result.isConfirmed) return;
+        if (!result.isConfirmed) return;
 
-    //     try {
-    //         await deleteUnloadInfo(id).unwrap();
+        try {
+            await deleteUnloadInfo(id).unwrap();
 
-    //         await Swal.fire({
-    //             title: "ডিলেট হয়েছে!",
-    //             text: "আনলোডের তথ্য সফলভাবে ডিলেট করা হয়েছে।",
-    //             icon: "success",
-    //             confirmButtonColor: "#039A63",
-    //             confirmButtonText: "ঠিক আছে",
-    //         });
-    //     } catch (error: any) {
-    //         await Swal.fire({
-    //             title: "ব্যর্থ!",
-    //             text:
-    //                 error?.data?.message ||
-    //                 "আনলোডের তথ্য ডিলেট করা সম্ভব হয়নি।",
-    //             icon: "error",
-    //             confirmButtonColor: "#d33",
-    //             confirmButtonText: "ঠিক আছে",
-    //         });
-    //     }
-    // };
+            await Swal.fire({
+                title: "ডিলেট হয়েছে!",
+                text: "আনলোডের তথ্য সফলভাবে ডিলেট করা হয়েছে।",
+                icon: "success",
+                confirmButtonColor: "#039A63",
+                confirmButtonText: "ঠিক আছে",
+            });
+        } catch (error: any) {
+            await Swal.fire({
+                title: "ব্যর্থ!",
+                text:
+                    error?.data?.message ||
+                    "আনলোডের তথ্য ডিলেট করা সম্ভব হয়নি।",
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "ঠিক আছে",
+            });
+        }
+    };
 
     // =========================
     // LOADING CLASS
@@ -151,6 +150,11 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                 <CustomLoader cls="h-[30vh]" />
             </div>
         );
+    }
+    if (classError) {
+        <div className="bg-white p-5 rounded-md">
+            {SERVER_ERROR_MESSAGE}
+        </div>
     }
 
     // =========================
@@ -199,7 +203,10 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                     />
 
                     {/* REPORT */}
-                    <CustomReportButton />
+                    <CustomPrintButton onClick={() => printRef.current?.print()} />
+                    <CustomReportButton
+                        onClick={() => setOpenReOpenModal(true)}
+                    />
                 </div>
             </div>
 
@@ -442,14 +449,14 @@ const UnloadPage = ({ limit, page }: TQuery) => {
 
                                                         {/* DELETE */}
                                                         <DropdownMenuItem
-                                                            // onClick={() =>
-                                                            //     handleDelete(
-                                                            //         row.id
-                                                            //     )
-                                                            // }
-                                                            // disabled={
-                                                            //     deleteLoading
-                                                            // }
+                                                            onClick={() =>
+                                                                handleDelete(
+                                                                    row.id
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                deleteLoading
+                                                            }
                                                         >
 
                                                             <CustomDropDownMenuItem
@@ -476,15 +483,29 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                         )}
 
                     </tbody>
-
                 </table>
-
+                <TablePagination
+                    page={meta?.page ?? 1}
+                    totalPages={meta?.totalPages ?? 1}
+                    dataLength={unloads?.length}
+                    title="পেমেন্ট"
+                />
             </div>
 
+            {/* PRINT PART */}
+            <CommonPrint
+                ref={printRef}
+                title="load_report"
+            >
+                <UnloadPagePrint
+                    unloadData={unloads}
+                    date={date}
+                    classes={filtered}
+                />
+            </CommonPrint>
             {/* ================= NEW UNLOAD MODAL ================= */}
 
             {isModalOpen && (
-
                 <NewUnloadModal
                     isOpen={
                         isModalOpen
@@ -497,6 +518,14 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                 />
 
             )}
+
+            {openReportModal &&
+                <UnloadReportModal
+                    classes={filtered}
+                    isOpen={openReportModal}
+                    onClose={() => setOpenReOpenModal(false)}
+                />
+            }
 
         </div>
     );

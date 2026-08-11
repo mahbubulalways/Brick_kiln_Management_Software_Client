@@ -8,12 +8,13 @@ type TCustomModal = {
   width?: TModalWidth;
   title?: string;
 };
-type TModalWidth = "sm" | "md" | "lg" | "xl" | "full";
+type TModalWidth = "sm" | "md" | "lg" | "xl" | "full" | "xxl";
 const widthClasses: Record<TModalWidth, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-lg",
   xl: "max-w-xl",
+  xxl: "max-w-3xl",
   full: "max-w-5xl",
 };
 const CustomModal = ({
@@ -28,7 +29,7 @@ const CustomModal = ({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 "
-      // onClick={onClose}
+    // onClick={onClose}
     >
       <div
         className={`relative bg-white w-full ${widthClasses[width]} 

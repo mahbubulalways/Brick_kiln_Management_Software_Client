@@ -7,15 +7,24 @@ const unloadApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // // GET ALL LOAD INFO
         getAllUnloadInfo: builder.query({
-            query: (query:TQuery) => ({
+            query: (query: TQuery) => ({
                 url: "/unload/all",
                 method: "GET",
-                // params: {
-                //     page: query.page,
-                //     limit: query.limit,
-                //     search: query.search,
-                //     date: query.date,
-                // },
+                params: {
+                    page: query.page,
+                    limit: query.limit,
+                    search: query.search,
+                    date: query.date,
+                },
+            }),
+            providesTags: ["UNLOAD"],
+        }),
+
+        // GET REPORT
+        getAllUnloadReport: builder.query({
+            query: () => ({
+                url: "/unload/report",
+                method: "GET",
             }),
             providesTags: ["UNLOAD"],
         }),
@@ -39,28 +48,22 @@ const unloadApi = baseApi.injectEndpoints({
             invalidatesTags: ["UNLOAD"],
         }),
 
-        // UPDATE LOAD INFO
-        // updateLoadInfo: builder.mutation({
-        //     query: (payload) => ({
-        //         url: `/load-info/update/${payload.id}`,
-        //         method: "PATCH",
-        //         body: payload.data,
-        //     }),
-        //     invalidatesTags: ["LOAD_INFO"],
-        // }),
 
-        // // DELETE LOAD INFO
-        // deleteLoadInfo: builder.mutation({
-        //     query: (id) => ({
-        //         url: `/load-info/delete/${id}`,
-        //         method: "DELETE",
-        //     }),
-        //     invalidatesTags: ["LOAD_INFO"],
-        // }),
+
+        // DELETE LOAD INFO
+        deleteUnloadInfo: builder.mutation({
+            query: (id) => ({
+                url: `/unload/delete/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["UNLOAD"],
+        }),
     }),
 });
 
 export const {
-useCreateUnloadInfoMutation,
-useGetAllUnloadInfoQuery
+    useCreateUnloadInfoMutation,
+    useGetAllUnloadInfoQuery,
+    useDeleteUnloadInfoMutation,
+    useGetAllUnloadReportQuery
 } = unloadApi;

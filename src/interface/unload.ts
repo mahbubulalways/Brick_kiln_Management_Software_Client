@@ -6,6 +6,7 @@ export interface TUnloadItem {
   classType: {
     className: string;
     id: number;
+    classType: string
   };
 }
 
