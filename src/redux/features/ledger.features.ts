@@ -21,6 +21,25 @@ const ledgerAPi = baseApi.injectEndpoints({
       providesTags: ["LEDGER"],
     }),
 
+    // GET ALL LEDGER WITH AMOUNT
+    // GET ALL LEDGER
+    getAllLedgerWithAmount: builder.query({
+      query: () => ({
+        url: `/ledger/all-amount`,
+        method: "GET",
+      }),
+      providesTags: ["LEDGER"],
+    }),
+
+    getAllLedgerDetails: builder.query({
+      query: (payload) => ({
+        url: `/ledger/details/${payload.id}?page=${payload?.params?.page}&limit=${payload?.params?.page}&date=${payload.date}`,
+        method: "GET",
+      }),
+      providesTags: ["LEDGER"],
+    }),
+
+
     // GET LEDGER OPTION
     getLedgerOption: builder.query({
       query: () => ({
@@ -47,4 +66,6 @@ export const {
   useCreateLedgerMutation,
   useGetLedgerOptionQuery,
   useGetAllLedgerQuery,
+  useGetAllLedgerWithAmountQuery,
+  useGetAllLedgerDetailsQuery
 } = ledgerAPi;

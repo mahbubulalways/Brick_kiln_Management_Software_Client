@@ -1,9 +1,10 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import LedgerPage from "@/components/Pages/LedgerPage/LedgerPage";
+
 
 const Page = () => {
   return (
     <div>
-      <UnderConstructionPage />
+      <LedgerPage />
     </div>
   );
 };

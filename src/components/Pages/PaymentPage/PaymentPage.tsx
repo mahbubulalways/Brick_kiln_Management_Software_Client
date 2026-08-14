@@ -258,11 +258,14 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
                             title="আপডেট"
                           />
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                        >
+                          <Link href={`/dashboard/ledger/details/${row?.ledger?.id}`}>
                           <CustomDropDownMenuItem
                             Icon={GrDocument}
                             title="খতিয়ান"
-                          />
+                            />
+                            </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           disabled={deleteLoading}
