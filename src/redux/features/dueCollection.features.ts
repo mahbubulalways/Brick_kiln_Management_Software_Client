@@ -83,7 +83,7 @@ const dueCollectionApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload.data,
       }),
-      invalidatesTags: ["DueCollection"],
+      invalidatesTags: ["DueCollection","CUSTOMER"],
     }),
   }),
 });

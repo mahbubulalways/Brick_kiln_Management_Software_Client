@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Hind_Siliguri } from "next/font/google";
+import { Anek_Bangla, Hind_Siliguri } from "next/font/google";
 import Providers from "@/components/Providers/Providers";
 import { Toaster } from "sonner";
 
-const hindSiliguri = Hind_Siliguri({
-  subsets: ["bengali"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
+const anekBangla = Anek_Bangla({
+    subsets: ["bengali"],
+    weight: ["300", "400", "500", "600", "700"],
+    display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +26,8 @@ export default function RootLayout({
     <html lang="bn">
       <body
         cz-shortcut-listen="true"
-        className={`${hindSiliguri.className} antialiased no-scrollbar`}>
+      className={`${anekBangla.className} antialiased no-scrollbar`}
+        >
         <Providers>
           {children}
           <Toaster />

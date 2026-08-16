@@ -1,9 +1,13 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import CarRentPage from "@/components/Pages/CarRentPage/CarRentPage";
+import { TQuerySearch } from "@/interface/query";
+import { modifyQuery } from "@/utils/modifyQuery";
 
-const Page = () => {
+const Page = async ({ searchParams }: TQuerySearch) => {
+  const query = await searchParams
+  const {currentLimit,currentPage,currentSearch } = modifyQuery(query)
   return (
     <div>
-      <UnderConstructionPage />
+      <CarRentPage limit={currentLimit} page={currentPage} search={currentSearch}/>
     </div>
   );
 };

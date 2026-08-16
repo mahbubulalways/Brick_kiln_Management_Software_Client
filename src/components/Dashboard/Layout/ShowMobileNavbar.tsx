@@ -22,7 +22,7 @@ export default function ShowMobileNavbar() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-4 pb-8">
+    <div className="w-full max-w-5xl mx-auto mt-4 pb-8 z-9999">
       {/* Top Summary Section */}
       <div className="grid grid-cols-2  overflow-hidden shadow-sm bg-linear-to-b from-slate-800 to-slate-700 text-white rounded">
         <div className="flex flex-col items-center justify-center py-8 border-r border-white/20">

@@ -30,7 +30,10 @@ export const baseApi = createApi({
     "CASH",
     "LOAD_INFO",
     "ROUND",
-    "UNLOAD"
+    "UNLOAD",
+    "CUSTOMER",
+    "DOCUMENT",
+    "CAR_RENT"
   ],
   endpoints: () => ({}),
 });

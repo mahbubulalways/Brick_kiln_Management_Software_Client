@@ -10,7 +10,7 @@ const ComputerLayout = ({ children }: TChildren) => {
   return (
     <div className="flex flex-col h-full min-h-screen">
       <div
-        className={`transition-all duration-300 sticky top-0 ${
+        className={`transition-all z-50 duration-300 sticky top-0 ${
           isDrawerOpen ? "ml-44 w-[calc(100%-11rem)]" : "w-full"
         } `}
       >

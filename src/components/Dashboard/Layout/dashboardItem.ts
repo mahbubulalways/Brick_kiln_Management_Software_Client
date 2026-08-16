@@ -146,6 +146,18 @@ export const dashboardItems1: TDashboardItem[] = [
     path: "/dashboard/sell-report",
     icon: HiDocumentReport,
   },
+  {
+    id: "20",
+    title: "ডকুমেন্টস",
+    path: "/dashboard/documents",
+    icon: HiDocumentReport,
+  },
+  {
+    id: "21",
+    title: "মালামাল স্টক",
+    path: "/dashboard/assests",
+    icon: HiDocumentReport,
+  },
 ];
 
 export const dashboardItems2: TDashboardItem[] = [
