@@ -15,9 +15,9 @@ const dueMateApi = baseApi.injectEndpoints({
         }),
 
         // GET SINGLE DUE
-        getSingleDue: builder.query({
+        getSingleDueMate: builder.query({
             query: (id) => ({
-                url: `/receivable-payable/single/${id}`,
+                url: `/due-mate/single/${id}`,
                 method: "GET",
             }),
             providesTags: ["DUE_MATE"],
@@ -59,16 +59,39 @@ const dueMateApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["DUE_MATE"],
         }),
+
+        // GET CURRENT AMOUNT
+        getCurrentAmount: builder.query({
+            query: (id) => ({
+                url: `/due-mate/amount/${id}`,
+                method: "GET",
+            }),
+            providesTags: ["DUE_MATE"],
+        }),
+
+        // CREATE TRANSATION
+                // CREATE RECEIVABLE / PAYABLE
+        createTransaction: builder.mutation({
+            query: (payload) => ({
+                url: `/due-mate/transaction/${payload.id}`,
+                method: "POST",
+                body: payload.data,
+            }),
+            invalidatesTags: ["DUE_MATE"],
+        }),
+
     }),
 });
 
 export const {
     useGetAllDueMateQuery,
-    useGetSingleDueQuery,
+    useGetSingleDueMateQuery,
     useGetDueOptionsQuery,
     useCreateDueMutation,
     useUpdateDueMutation,
     useDeleteDueMutation,
+    useGetCurrentAmountQuery,
+    useCreateTransactionMutation
 } = dueMateApi;
 
 

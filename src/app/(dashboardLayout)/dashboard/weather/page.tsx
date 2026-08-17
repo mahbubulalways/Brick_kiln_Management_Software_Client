@@ -1,9 +1,10 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+
+import WeatherPage from "@/components/Pages/WeatherPage/WeatherPage";
 
 const Page = () => {
   return (
     <div>
-      <UnderConstructionPage />
+      <WeatherPage />
     </div>
   );
 };

@@ -200,7 +200,7 @@ export const dashboardItems2: TDashboardItem[] = [
   {
     id: "19",
     title: "ফোন নম্বর",
-    path: "/dashboard/sms",
+    path: "/dashboard/contact",
     icon: CiMobile4,
   },
 ];
