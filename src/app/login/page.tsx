@@ -9,9 +9,14 @@ import { userLogin } from "@/service/actions/userLogin";
 import { storeUserInLocalStorage } from "@/service/auth.services";
 import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
 import { useRouter } from "next/navigation";
+import { getDeviceInfo } from "@/utils/getClientInfo";
 type TLogin = {
-  auth: string;
+  username: string;
   password: string;
+  extra: {
+    device: string;
+    browser: string
+  }
 };
 export default function LoginPage() {
   const router = useRouter();
@@ -24,7 +29,7 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<TLogin>({
     defaultValues: {
-      auth: "admin@gmail.com",
+      username: "mahbub",
       password: "12345678",
     },
   });
@@ -33,6 +38,8 @@ export default function LoginPage() {
     setIsLoading(true);
     setErrorMsg("");
     try {
+      const extraInfo = getDeviceInfo()
+      data.extra = extraInfo
       const result = await userLogin(data);
       console.log(result);
       setIsLoading(false);
@@ -78,7 +85,7 @@ export default function LoginPage() {
               alt="illustration"
               width={350}
               height={350}
-              className="rounded-xl"
+              className="rounded-xl  h-[250px] lg:h-full "
             />
           </div>
 
@@ -98,12 +105,12 @@ export default function LoginPage() {
                 </p>
               )}
               <CustomInputLabel
-                label="ইমেইল বা ফোন নম্বর"
-                name="auth"
-                placeholder="ইমেইল বা ফোন নম্বর লিখুন"
+                label="ইউজারনেম"
+                name="username"
+                placeholder="ইউজারনেম লিখুন"
                 register={register}
-                errMsg="ইমেইল বা ফোন নম্বর আবশ্যক।"
-                error={errors.auth}
+                errMsg="ইউজারনেম আবশ্যক।"
+                error={errors.username}
                 required
               />
 

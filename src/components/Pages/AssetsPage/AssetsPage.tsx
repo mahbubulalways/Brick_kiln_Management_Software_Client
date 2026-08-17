@@ -17,6 +17,7 @@ import AssetIssueList from "./AssetIssueList";
 import DamagedAssetList from "./DamagedAssetList";
 import LostAssetList from "./LostAssetList";
 import AssetHistory from "./AssetHistory";
+import NewProductEntryModal from "@/components/Dashboard/Modals/NewProductEntryModal";
 
 const tabs = [
     {
@@ -55,7 +56,7 @@ const tabs = [
 
 export default function AssetsPage() {
     const [activeTab, setActiveTab] = useState("dashboard");
-
+    const [openNewProduct, setOpenNewProduct] = useState<boolean>(false)
     const renderTabContent = () => {
         switch (activeTab) {
             case "dashboard":
@@ -114,6 +115,7 @@ export default function AssetsPage() {
                         </button>
 
                         <button
+                            onClick={() => setOpenNewProduct(true)}
                             type="button"
                             className="flex items-center gap-2 rounded-lg bg-[#039A63] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#028653]"
                         >
@@ -148,22 +150,20 @@ export default function AssetsPage() {
                                         px-4 py-3
                                         text-sm font-medium
                                         transition-all duration-200
-                                        ${
-                                            isActive
-                                                ? "text-[#039A63]"
-                                                : tab.danger
-                                                    ? "text-red-500 hover:text-red-600"
-                                                    : "text-gray-600 hover:text-gray-900"
+                                        ${isActive
+                                            ? "text-[#039A63]"
+                                            : tab.danger
+                                                ? "text-red-500 hover:text-red-600"
+                                                : "text-gray-600 hover:text-gray-900"
                                         }
                                     `}
                                 >
                                     <Icon
                                         className={`
                                             h-[17px] w-[17px]
-                                            ${
-                                                isActive
-                                                    ? "text-[#039A63]"
-                                                    : ""
+                                            ${isActive
+                                                ? "text-[#039A63]"
+                                                : ""
                                             }
                                         `}
                                     />
@@ -189,6 +189,12 @@ export default function AssetsPage() {
                 </div>
 
             </div>
+            {openNewProduct &&
+                <NewProductEntryModal
+                    isOpen={openNewProduct}
+                    onClose={() => setOpenNewProduct(false)}
+                />
+            }
         </div>
     );
 }

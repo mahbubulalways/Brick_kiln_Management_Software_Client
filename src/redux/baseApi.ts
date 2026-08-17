@@ -33,7 +33,10 @@ export const baseApi = createApi({
     "UNLOAD",
     "CUSTOMER",
     "DOCUMENT",
-    "CAR_RENT"
+    "CAR_RENT",
+    "USER",
+    "TASK",
+    "DUE_MATE"
   ],
   endpoints: () => ({}),
 });

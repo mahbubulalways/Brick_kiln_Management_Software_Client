@@ -1,9 +1,9 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import TaskManagerPage from "@/components/Pages/TaskManagerPage/TaskManagerPage";
 
 const Page = () => {
   return (
     <div>
-      <UnderConstructionPage />
+      <TaskManagerPage />
     </div>
   );
 };

@@ -1,72 +1,161 @@
 "use client";
-import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
+
+import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModal from "@/components/Reusable/CustomModal";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { showToast } from "@/components/Toast/CustomToast";
+import CustomSelect from "@/components/Reusable/CustomSelect";
+import { useCreateNewUserMutation } from "@/redux/features/user.features";
+
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-type SoftwareUserModal = {
+type TSoftwareUserForm = {
   name: string;
-  userName: string;
-  userType: string;
+  username: string;
+  role: "OWNER" | "ADMIN" | "MANAGER";
   password: string;
+
 };
-const SoftwareUserModal = ({ isOpen, onClose }: TCustomModal) => {
-  const { register, handleSubmit } = useForm<SoftwareUserModal>({
-    defaultValues: {},
-  });
-  const onSubmit: SubmitHandler<SoftwareUserModal> = async (data) => {};
+
+const SoftwareUserModal = ({
+  isOpen,
+  onClose,
+}: TCustomModal) => {
+  const [createUser, { isLoading }] = useCreateNewUserMutation();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<TSoftwareUserForm>();
+
+  const userTypeOptions = [
+    {
+      label: "মালিক",
+      value: "OWNER",
+    },
+    {
+      label: "অ্যাডমিন",
+      value: "ADMIN",
+    },
+    {
+      label: "ম্যানেজার",
+      value: "MANAGER",
+    },
+  ];
+
+  const onSubmit: SubmitHandler<TSoftwareUserForm> = async (data) => {
+    try {
+      const result = await createUser({
+        name: data.name,
+        username: data.username,
+        role: data.role,
+        password: data.password,
+      }).unwrap();
+
+      showToast({
+        title: result?.message || "ইউজার সফলভাবে তৈরি হয়েছে।",
+        type: "success",
+      });
+
+      reset();
+      onClose();
+    } catch (error: any) {
+      showToast({
+        title:
+          error?.data?.message ||
+          "ইউজার তৈরি করতে সমস্যা হয়েছে।",
+        type: "error",
+      });
+    }
+  };
+
+
+
   return (
     <CustomModal
       isOpen={isOpen}
       onClose={onClose}
       title="নতুন ইউজার অ্যাড"
-      width="sm"
+      width="md"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col gap-2">
-          <CustomInputLabel
+        <div className="flex flex-col gap-3">
+          {/* Name */}
+          <CustomInput
             name="name"
             label="নাম"
-            placeholder=""
+            placeholder="নাম লিখুন"
             register={register}
-            readonly
             type="text"
+            error={errors.name}
+            rules={{
+              required: "নাম লিখুন",
+            }}
           />
-          <CustomInputLabel
-            name="userName"
+
+          {/* Username */}
+          <CustomInput
+            name="username"
             label="ইউজারনেম"
-            placeholder=""
+            placeholder="ইউজারনেম লিখুন"
             register={register}
-            readonly
             type="text"
+            error={errors.username}
+            rules={{
+              required: "ইউজারনেম লিখুন",
+            }}
           />
-          <CustomInputLabel
-            name="userType"
+
+          {/* User Type */}
+          <CustomSelect
+            name="role"
             label="ইউজারের ধরন"
-            placeholder=""
-            register={register}
-            readonly
-            type="text"
+            control={control}
+            options={userTypeOptions}
+            placeholder="টাইপ সিলেক্ট করুন"
+            error={errors.role}
+            rules={{
+              required: "ইউজারের ধরন নির্বাচন করুন",
+            }}
           />
-          <CustomInputLabel
+
+          {/* Password */}
+          <CustomInput
             name="password"
-            label="পাসওয়ার্ড"
-            placeholder=""
+            label="পাসওয়ার্ড"
+            placeholder="পাসওয়ার্ড লিখুন"
             register={register}
-            readonly
-            type="text"
+            type="password"
+            error={errors.password}
+            rules={{
+              required: "পাসওয়ার্ড লিখুন",
+            }}
           />
         </div>
 
-        <div className="flex items-center justify-between pt-5">
-          <div className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5  text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer">
-            ক্লিয়ার
-          </div>
-          <button className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer">
-            অ্যাড করুন
+        {/* Buttons */}
+        <div className="flex items-center justify-between gap-3 pt-5">
+          <button
+            type="button"
+            onClick={() => reset()}
+            disabled={isLoading}
+            className="w-full cursor-pointer rounded border border-gray-300 bg-white px-6 py-2 text-[14px] font-medium text-gray-500 transition duration-300 hover:border-[#039A63] hover:text-[#039A63] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            ক্লিয়ার
+          </button>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full cursor-pointer rounded bg-[#039A63] px-6 py-2 text-[14px] font-medium text-gray-100 transition duration-300 hover:bg-[#028653] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isLoading ? "অ্যাড হচ্ছে..." : "অ্যাড করুন"}
           </button>
         </div>
       </form>

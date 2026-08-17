@@ -1,9 +1,10 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import ReceivableAndPayablePage from "@/components/Pages/ReceivableAndPayablePage/ReceivableAndPayablePage";
+
 
 const Page = () => {
   return (
     <div>
-      <UnderConstructionPage />
+      <ReceivableAndPayablePage />
     </div>
   );
 };
