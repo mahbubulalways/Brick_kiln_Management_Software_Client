@@ -60,9 +60,9 @@ const CustomStatus: React.FC<CustomStatusProps> = ({
       <div className="mb-3">{current.icon}</div>
 
       {/* Title */}
-      <h2 className="text-xl font-bold text-gray-900">
+      {/* <h2 className="font-bold text-gray-900">
         {title || current.title}
-      </h2>
+      </h2> */}
 
       {/* Description */}
       <p className="mt-2 max-w-md text-sm leading-6 text-gray-500">

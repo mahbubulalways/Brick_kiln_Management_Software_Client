@@ -1,3 +1,4 @@
+import { TQuery } from "@/interface/query";
 import { baseApi } from "../baseApi";
 
 const ledgerAPi = baseApi.injectEndpoints({
@@ -16,6 +17,14 @@ const ledgerAPi = baseApi.injectEndpoints({
     getAllLedger: builder.query({
       query: () => ({
         url: `/ledger/all`,
+        method: "GET",
+      }),
+      providesTags: ["LEDGER"],
+    }),
+    // GET ALL LEDGER
+    getAllLedgerPagination: builder.query({
+      query: (query:TQuery) => ({
+        url: `/ledger/all-ledgers?page=${query.page}&limit=${query.limit}&search=${query.search}`,
         method: "GET",
       }),
       providesTags: ["LEDGER"],
@@ -58,6 +67,33 @@ const ledgerAPi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["LEDGER"],
     }),
+
+    // GET SINGLE
+      getSingleLedger: builder.query({
+      query: (id) => ({
+        url: `/ledger/single/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["LEDGER"],
+    }),
+    // GET SINGLE
+      updateLedger: builder.mutation({
+      query: (payload) => ({
+        url: `/ledger/update/${payload.id}`,
+        method: "PATCH",
+        body:payload.data
+      }),
+      invalidatesTags: ["LEDGER"],
+    }),
+    // GET SINGLE
+      deleteleLedger: builder.mutation({
+      query: (id) => ({
+        url: `/ledger/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["LEDGER"],
+    }),
+
   }),
 });
 
@@ -67,5 +103,9 @@ export const {
   useGetLedgerOptionQuery,
   useGetAllLedgerQuery,
   useGetAllLedgerWithAmountQuery,
-  useGetAllLedgerDetailsQuery
+  useGetAllLedgerDetailsQuery,
+  useGetAllLedgerPaginationQuery,
+  useGetSingleLedgerQuery,
+  useDeleteleLedgerMutation,
+  useUpdateLedgerMutation
 } = ledgerAPi;

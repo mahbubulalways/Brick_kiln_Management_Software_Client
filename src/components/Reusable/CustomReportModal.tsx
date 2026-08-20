@@ -33,9 +33,9 @@ const CustomReportModal = ({
       onClick={onClose}
     >
       <div
-        className={`relative bg-white w-full ${widthClasses[width]} 
-        md:rounded-md rounded-t-2xl shadow-xl
-        h-[90vh] md:h-auto md:max-h-[85vh]
+        className={`relative bg-white mx-3 w-full ${widthClasses[width]} 
+        md:rounded-md rounded-2xl shadow-xl
+       h-[70vh] md:h-[80vh] md:max-h-[80vh]
         flex flex-col overflow-auto animate-zoomSlideIn no-scrollbar`}
         onClick={(e) => e.stopPropagation()}
       >

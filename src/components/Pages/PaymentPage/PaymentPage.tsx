@@ -113,32 +113,53 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
       <span className="bg-green-100 text-center text-green-800 px-3 py-1 rounded   border border-green-300 font-medium lg:hidden block">
         মোট পেমেন্ট: {totalCredit} টাকা
       </span>
-      <div className="flex justify-between items-center pt-2 lg:pt-0 gap-2 lg:gap-5">
-        <div className="flex items-center gap-2 w-auto lg:w-full">
-          <button onClick={() => setIsModalOpen(true)}>
-            <CustomNewButton title="নতুন পেমেন্ট" />
-          </button>
-          <span className="bg-green-100 text-green-800 px-3 py-1 rounded   border border-green-300 font-medium hidden lg:block">
-            মোট পেমেন্ট: {totalCredit} টাকা
-          </span>
-        </div>
+      <div className="flex w-full flex-col gap-2 pt-2 lg:flex-row lg:items-center lg:justify-between lg:gap-5 lg:pt-0">
 
-        <div className="flex w-full items-center justify-end gap-2">
-          <CustomDatePickerState
-            onChange={setDate}
-            value={date}
-            placeholder="তারিখ"
-            height="8"
-          />
-          <SearchBar
-            value={searchItems}
-            onChange={(e) => setSearchItem(e.target.value)}
-            onClear={() => setSearchItem("")}
-          />
-          <CustomPrintButton />
-          <CustomReportButton onClick={() => setReportModalOpen(true)} />
-        </div>
-      </div>
+  {/* Left Section */}
+  <div className="flex w-full items-center gap-2 lg:w-auto">
+    <CustomNewButton
+      title="নতুন পেমেন্ট"
+      onClick={() => setIsModalOpen(true)}
+      className="flex-1 lg:flex-none"
+    />
+
+    {/* Total Payment */}
+    <span className="hidden whitespace-nowrap rounded border border-green-300 bg-green-100 px-3 py-1 font-medium text-green-800 lg:block">
+      মোট পেমেন্ট: {totalCredit} টাকা
+    </span>
+  </div>
+
+  {/* Right Section */}
+  <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
+
+    {/* Date */}
+    <div className="min-w-0">
+      <CustomDatePickerState
+        onChange={setDate}
+        value={date}
+        placeholder="তারিখ"
+        height="8"
+      />
+    </div>
+
+    {/* Search */}
+    <div className="min-w-0 sm:flex-1 lg:flex-none">
+      <SearchBar
+        value={searchItems}
+        onChange={(e) => setSearchItem(e.target.value)}
+        onClear={() => setSearchItem("")}
+      />
+    </div>
+
+    {/* Print */}
+    <CustomPrintButton />
+
+    {/* Report */}
+    <CustomReportButton
+      onClick={() => setReportModalOpen(true)}
+    />
+  </div>
+</div>
 
       <div className="overflow-x-auto pt-2">
         <table className="min-w-full   text-center border-t">
@@ -232,7 +253,7 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
                     className={`border hidden lg:table-cell p-1 lg:p-2 text-center whitespace-nowrap text-sm lg:text-[15px] text-green-600`}
                   >
                     <Link
-                      href={`http://localhost:5000/uploads/${row?.document}`}
+                      href={`${process.env.NEXT_PUBLIC_BACKEND_API}/uploads/${row?.document}`}
                       target="_blank"
                     >
                       <IoDocumentTextOutline size={18} />

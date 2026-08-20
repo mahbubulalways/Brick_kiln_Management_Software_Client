@@ -3,18 +3,24 @@ import { TChildren } from "@/types/project";
 import Seasons from "../NavbarOptions/Seasons";
 import { usePathname } from "next/navigation";
 import DashboardNavbar from "./DashboardNavbar";
+import { FaIndustry } from "react-icons/fa";
 
 const MobileLayout = ({ children }: TChildren) => {
   const pathname = usePathname();
   const isActive = pathname === "/";
   return (
-    <div className="pb-10 ">
+    <div className="pb-2">
       {isActive ? (
-        <div className="flex items-center justify-between px-2 py-2 border-b border-gray-300 shadow">
-          <h1 className="text-lg text-gray-900 pl-3 lg:pl-0">
-            DEMO BRICK FIELD
-          </h1>
+        <div className="flex items-center justify-between px-2 py-4 border-b border-gray-300 shadow">
+          <div className="flex items-center gap-1">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg p-2 bg-orange-50">
+              <FaIndustry className="h-6 w-6 text-orange-700" />
+            </div>
 
+            <h1 className="text-lg font-semibold text-gray-900 pl-1 lg:pl-0">
+              Demo Brick Field
+            </h1>
+          </div>
           <Seasons />
         </div>
       ) : (

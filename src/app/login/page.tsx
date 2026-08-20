@@ -10,6 +10,7 @@ import { storeUserInLocalStorage } from "@/service/auth.services";
 import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
 import { useRouter } from "next/navigation";
 import { getDeviceInfo } from "@/utils/getClientInfo";
+import { SERVER_ERROR_MESSAGE } from "@/constant";
 type TLogin = {
   username: string;
   password: string;
@@ -41,19 +42,17 @@ export default function LoginPage() {
       const extraInfo = getDeviceInfo()
       data.extra = extraInfo
       const result = await userLogin(data);
-      console.log(result);
       setIsLoading(false);
       if (result?.success && result?.redirectPath) {
         storeUserInLocalStorage(result?.data?.token);
         router.push(result.redirectPath);
       } else {
-        setErrorMsg(result?.message || "Something went wrong.");
+        setErrorMsg(result?.message ||SERVER_ERROR_MESSAGE);
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error);
-      setErrorMsg(error?.data?.message || "Something went wrong.");
+      setErrorMsg(error?.data?.message ||SERVER_ERROR_MESSAGE);
       setIsLoading(false);
     }
   };
@@ -85,7 +84,7 @@ export default function LoginPage() {
               alt="illustration"
               width={350}
               height={350}
-              className="rounded-xl  h-[250px] lg:h-full "
+              className="rounded-xl  h-[200px] lg:h-full "
             />
           </div>
 

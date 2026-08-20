@@ -37,9 +37,8 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
   const [sendSms, setSendSms] = useState<boolean>(false);
 
   // GET INVOICE SERIAL FOR INVOICE NO
-  const { data: invoiceSerial, isLoading: serialLoading, isError: invoiceError } =
+  const { data: invoiceSerial, isLoading: serialLoading, isError: invoiceError,error } =
     useGetInvoiceSerialQuery({ refetchOnMountOrArgChange: true });
-
   // GET CLASS AND RATE FOR DROPDOWN
   const { isLoading: classRateLoading, data: fetchedData, isError } =
     useGetAllClassAndRateQuery(undefined);
@@ -293,7 +292,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="flex w-full items-end gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3"
+                  className="flex w-full items-center md:items-end gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3"
                 >
                   {/* Add Button */}
                   <button
@@ -306,7 +305,8 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                   >
                     <Plus size={18} strokeWidth={2.5} />
                   </button>
-                  <div className="flex-1">
+                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                   <div className="flex-1">
                     <CustomSelect
                       name={`invoiceItems.items.${index}.class`}
                       label="শ্রেণি"
@@ -346,6 +346,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                       rules={{ required: "" }}
                     />
                   </div>
+                 </div>
                   {/* Delete Button */}
                   <button
                     type="button"
@@ -366,7 +367,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
             {/* Footer Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {due ? (
-                <div className="hidden lg:flex flex-col items-center justify-center h-auto">
+                <div className=" flex-col items-center justify-center h-auto">
                   <h1 className="text-orange-600 text-sm text-center">
                     বাকি পরিশোধের তারিখ লিখুন
                   </h1>
@@ -451,10 +452,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                 />
               </div>
 
-              <div className="block lg:hidden">
-                <p className="text-xs text-gray-600 pb-1">এসএমএস</p>
-                <p className="bg-gray-200 py-2 px-4 rounded w-full">SMS Off</p>
-              </div>
+             
             </div>
 
             {/* Buttons */}
@@ -467,7 +465,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
               </div>
               <button
                 type="submit"
-                className="text-[14px] bg-[#039A63] px-8 py-1.5 text-white font-medium rounded cursor-pointer"
+                className="text-[14px] bg-[#039A63] disabled:bg-gray-500 px-8 py-1.5 text-white font-medium rounded cursor-pointer"
                 disabled={createInvoiceLoading}
               >
                 {createInvoiceLoading ? "সেভ হচ্ছে..." : "সেভ করুন"}

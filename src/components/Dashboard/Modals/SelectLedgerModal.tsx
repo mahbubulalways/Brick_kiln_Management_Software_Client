@@ -93,12 +93,13 @@ const SelectLedgerModal = ({ isOpen, onClose, setLedger }: TCustomModal) => {
               })}
             </div>
           </ScrollArea>
-          <button onClick={() => setOpenNewModal(true)}>
-            <CustomNewButton title="+ নতুন খতিয়ান অ্যাড" />
-          </button>
+         
+            <CustomNewButton title="+ নতুন খতিয়ান অ্যাড" onClick={() => setOpenNewModal(true)}/>
+        
 
           {openNewModal && (
             <KhotiyanModal
+            showRateQuantity={false}
               isOpen={openNewModal}
               onClose={() => setOpenNewModal(false)}
             />

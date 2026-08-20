@@ -107,35 +107,74 @@ const CashPage = ({ limit, page, search }: TQuery) => {
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       {/* Header */}
-      <div className="flex items-center gap-3 justify-between pt-3 lg:pt-0">
-        <button onClick={() => setIsModalOpen(true)}>
-          <CustomNewButton title="নতুন হিসাব" />
-        </button>
 
-        <div className="flex items-center gap-3 w-full lg:w-auto">
-          {/* Total */}
-          <div className="hidden lg:flex items-center gap-2">
-            <span className="text-green-500 px-3 text-[15px] text-nowrap py-1 rounded border border-green-300 font-medium">
-              আজকের ক্যাশঃ {toBanglaNumber(totalIncome.toLocaleString())} টাকা
-            </span>
+      <div className="hidden  md:block">
+        <div className="flex items-center gap-3 justify-between pt-3 lg:pt-0">
+          <CustomNewButton title="নতুন হিসাব" onClick={() => setIsModalOpen(true)} />
+          <div className="flex items-center gap-3 w-full lg:w-auto">
+            {/* Total */}
+            <div className="hidden lg:flex items-center gap-2">
+              <span className="text-green-500 px-3 text-[15px] text-nowrap py-1 rounded border border-green-300 font-medium">
+                আজকের ক্যাশঃ {toBanglaNumber(totalIncome.toLocaleString())} টাকা
+              </span>
 
-            <span className="text-orange-500 px-3 text-[15px] text-nowrap py-1 rounded border border-orange-300 font-medium">
-              ক্যাশ জেরঃ {toBanglaNumber(totalExpense.toLocaleString())} টাকা
-            </span>
+              <span className="text-orange-500 px-3 text-[15px] text-nowrap py-1 rounded border border-orange-300 font-medium">
+                ক্যাশ জেরঃ {toBanglaNumber(totalExpense.toLocaleString())} টাকা
+              </span>
+            </div>
+
+            <SearchBar value={searchItem} onChange={(e) => setSearchItem(e.target.value)} />
+
+            {/* Date */}
+            <div className="w-full lg:w-auto">
+              <CustomDatePickerState value={date} onChange={setDate} height="8" />
+            </div>
+            <CustomPrintButton
+              onClick={() => printRef.current?.print()}
+            />
+            <CustomReportButton />
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      <div className=" md:hidden block">
+
+        <div className="flex w-full items-center gap-3 ">
+          <div className="min-w-0 flex-1">
+            <CustomNewButton
+              title="নতুন হিসাব"
+              className="w-full"
+              onClick={() => setIsModalOpen(true)}
+            />
           </div>
 
+          <div className="min-w-0 flex-1">
+            <CustomPrintButton
+              className="w-full"
+              onClick={() => printRef.current?.print()}
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <CustomReportButton className="w-full" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 pt-3">
           <SearchBar value={searchItem} onChange={(e) => setSearchItem(e.target.value)} />
 
           {/* Date */}
           <div className="w-full lg:w-auto">
             <CustomDatePickerState value={date} onChange={setDate} height="8" />
           </div>
-          <CustomPrintButton
-            onClick={() => printRef.current?.print()}
-          />
-          <CustomReportButton />
         </div>
       </div>
+
+
+
       <div className="overflow-x-auto mt-2">
         <table className="min-w-full border-t">
           <thead>

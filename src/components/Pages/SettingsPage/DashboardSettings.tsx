@@ -8,8 +8,9 @@ import Khotiyan from "./Khotiyan";
 import SoftwareUser from "./SoftwareUser";
 import PasswordChange from "./PasswordChange";
 import UserLimit from "./UserLimit";
+import { TQuery } from "@/interface/query";
 
-const DashboardSettings = () => {
+const DashboardSettings = ({ limit, page:pagination, search }: TQuery) => {
   const [page, setPage] = useState<number>(1);
   const { setTitle } = useTitleStore();
 
@@ -26,7 +27,7 @@ const DashboardSettings = () => {
       content = <ChangeClassAndRate />;
       break;
     case 3:
-      content = <Khotiyan />;
+      content = <Khotiyan page={pagination} search={search} limit={limit}/>;
       break;
     case 4:
       content = <SoftwareUser />;

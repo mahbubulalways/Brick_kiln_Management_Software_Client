@@ -36,6 +36,7 @@ import {
   User,
   Trash,
 } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BsPencilSquare } from "react-icons/bs";
 import Swal from "sweetalert2";
@@ -56,10 +57,10 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
 
   // FETCH ALL INVOICES
   const formatDate = date?.toISOString() ?? ""
-  const { isLoading: fetchInvoiceLoading, data: invoices } =
+  const { isFetching: fetchInvoiceLoading, data: invoices } =
     useGetAllInvoicesQuery(
-      { limit, page, search,date: formatDate }
-      ,{refetchOnMountOrArgChange: true});
+      { limit, page, search, date: formatDate }
+      , { refetchOnMountOrArgChange: true });
   //  CALL DELETE INVOICE HOOK
   const [deleteInvoice] = useDeleteInvoiceMutation();
 
@@ -106,12 +107,27 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
 
   return (
     <div className="bg-white rounded-md shadow border border-gray-200 ">
-      <div className="flex justify-between items-center p-3 border-b bg-gray-50 gap-5">
-        <div className="flex items-center gap-2 ">
-          <button onClick={() => setIsOpen(true)}>
-            <CustomNewButton title="নতুন চালান" />
-          </button>
-          <div className="flex-1">
+      <div className="flex w-full flex-col gap-3 border-b bg-gray-50 p-3 md:flex-row md:items-center md:justify-between">
+
+        {/* Left Section */}
+        <div className="flex w-full min-w-0 items-center gap-2 md:flex-1">
+
+          {/* New Button */}
+          <CustomNewButton
+            title="নতুন চালান"
+            className="w-full flex-1 md:w-auto md:flex-none"
+            onClick={() => setIsOpen(true)}
+          />
+
+          <div className="w-full block md:hidden flex-1">
+            <CustomReportButton
+              className="w-full md:w-auto md:flex-none"
+              onClick={() => setOpenReportModal(true)}
+            />
+          </div>
+
+          {/* Search */}
+          <div className="min-w-0 flex-1 hidden md:block">
             <SearchBar
               value={searchItems}
               onChange={(e) => setSearchItem(e.target.value)}
@@ -120,11 +136,34 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 ">
-          <CustomDatePickerState value={date} onChange={setDate} />
-          <CustomReportButton onClick={() => setOpenReportModal(true)} />
+        {/* Right Section */}
+        <div className="flex w-full items-center gap-2 md:w-auto">
 
+          {/* Date */}
+          <div className="flex-1 md:flex-none">
+            <CustomDatePickerState
+              value={date}
+              onChange={setDate}
+              height="h-8 lg:h-10"
+            />
+          </div>
+
+          <div className="min-w-0 flex-1 md:hidden block">
+            <SearchBar
+              value={searchItems}
+              onChange={(e) => setSearchItem(e.target.value)}
+              onClear={() => setSearchItem("")}
+            />
+          </div>
+          {/* Report */}
+          <div className="w-full hidden md:block flex-1">
+            <CustomReportButton
+              className="w-full md:w-auto md:flex-none"
+              onClick={() => setOpenReportModal(true)}
+            />
+          </div>
         </div>
+
       </div>
 
       {/* Table */}
@@ -443,10 +482,10 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <CustomDropDownMenuItem
+                            <Link href={`/dashboard/customer/profile/${row?.customer?.id}`}><CustomDropDownMenuItem
                               Icon={User}
                               title="প্রোফাইলে যান"
-                            />
+                            /></Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteInvoice(row?.id)}

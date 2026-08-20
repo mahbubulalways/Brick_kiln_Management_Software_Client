@@ -1,20 +1,8 @@
+import { TPaymentReport } from "@/interface/dashboard";
 import CardContainer from "./CardContainer";
 
-export default function Payment() {
-  const payments = [
-    ["বেতন", "-", "৳ 28,000"],
-    ["গোডাউন", "-", "৳ 25,000"],
-    ["সাদা মাটি", "-", "৳ 10,000"],
-    ["লোড মিশ্র", "-", "৳ 9,700"],
-    ["আনলোড", "54,500", "৳ 8,170"],
-    ["মেল", "-", "৳ 6,500"],
-    ["বেকু", "-", "৳ 5,060"],
-    ["ডেইলি লেবার", "14", "৳ 3,200"],
-    ["খাওয়া ভাড়া", "-", "৳ 3,000"],
-    ["ট্রাক্টর", "-", "৳ 2,150"],
-    ["অফিস খরচ", "-", "৳ 1,140"],
-    ["মটরসাইকেল", "5", "৳ 500"],
-  ];
+export default function Payment({payments}:{payments:TPaymentReport[]}) {
+
 
   return (
     <CardContainer
@@ -37,11 +25,11 @@ export default function Payment() {
           </tr>
         </thead>
         <tbody className="text-start p-2">
-          {payments.map((p, i) => (
+          {payments?.map((p, i) => (
             <tr key={i}>
-              <td className="text-orange-500 p-1 pl-2">{p[0]}</td>
-              <td className="text-orange-500 p-1 text-center">{p[1]}</td>
-              <td className="text-orange-500 p-1 text-end pr-2">{p[2]}</td>
+              <td className="text-orange-500 p-1 pl-2">{p?.ledger}</td>
+              <td className="text-orange-500 p-1 text-center">{p?.amount}</td>
+              <td className="text-orange-500 p-1 text-end pr-2">{p?.paymentGiven}</td>
             </tr>
           ))}
         </tbody>

@@ -54,13 +54,25 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
             <CustomButtonFixed title="বর্তমান সিজন" />
           </button>
 
-          <span className="whitespace-nowrap rounded-md border border-orange-300 bg-orange-50 px-3 py-2 text-sm font-medium text-orange-600">
+          <button
+            type="button"
+            onClick={reactToPrintFn}
+            className="w-full sm:w-auto md:hidden block"
+          >
+            <CustomButtonFixed title="প্রিন্ট করুন" />
+          </button>
+
+          <div>
+            <span className="whitespace-nowrap rounded-md border border-orange-300 bg-orange-50 px-3 py-2 text-sm font-medium text-orange-600">
             মোট বাকি: {totalCredit?.toLocaleString()} টাকা
           </span>
+          </div>
         </div>
 
+
+
         {/* Right */}
-        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:w-auto">
+        <div className="flex w-full gap-2 flex-row sm:items-center lg:w-auto">
           <div className="w-full sm:w-auto sm:min-w-[220px]">
             <SearchBar
               value={searchItem}
@@ -79,7 +91,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
           <button
             type="button"
             onClick={reactToPrintFn}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto hidden md:block"
           >
             <CustomButtonFixed title="প্রিন্ট করুন" />
           </button>

@@ -11,4 +11,5 @@ export interface TDashboardItem {
   path?: string;
   icon: IconType;
   children?: TDashboardItem[];
+  iconColor?:string
 }

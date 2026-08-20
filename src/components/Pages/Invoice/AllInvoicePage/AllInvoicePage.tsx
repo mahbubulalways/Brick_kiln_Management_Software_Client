@@ -23,6 +23,7 @@ import { TQuery } from "@/interface/query";
 import { useGetAllInvoicesQuery } from "@/redux/features/invoice.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
 import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 const AllInvoicePage = ({ limit, page, search }: TQuery) => {
@@ -45,12 +46,12 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
     const invoices = data?.data?.data || []
     const meta = data?.data?.meta as TMetaConfig;
     return (
-        <div className="bg-white rounded-md shadow border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-md shadow border border-gray-200 ">
             {/* Header search & controls */}
-            <div className="flex justify-between items-center p-3  bg-gray-50">
+            <div className="flex justify-between flex-col md:flex-row w-full gap-2 items-center p-3  bg-gray-50">
                 <SearchBar value={searchItems} onChange={(e) => setSearchItem(e.target.value)}
                     onClear={() => setSearchItem("")} />
-                <div className="flex items-center gap-4">
+                <div className="flex items-center w-full gap-4">
                     <CustomDateRangePicker value={dateRange} onChange={setDateRange} />
                     <CustomReportButton
                         onClick={() => setOpenReportModal(true)}
@@ -342,10 +343,10 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                         />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem>
-                                                        <CustomDropDownMenuItem
+                                                       <Link href={`/dashboard/customer/profile/${row?.customer?.id}`}> <CustomDropDownMenuItem
                                                             Icon={User}
                                                             title="প্রোফাইলে যান"
-                                                        />
+                                                        /></Link>
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

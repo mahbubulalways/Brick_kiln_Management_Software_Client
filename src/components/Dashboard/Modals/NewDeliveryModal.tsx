@@ -320,7 +320,7 @@ const NewDeliveryModal = ({
           </div>
 
           {/* Items Table */}
-          <div className="flex items-center my-2 justify-between bg-gray-100 rounded-md p-4 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 my-2 justify-between bg-gray-100 rounded-md p-4 gap-2">
             <div className="flex-1">
               <CustomSelect
                 name={`items.class`}
@@ -361,7 +361,7 @@ const NewDeliveryModal = ({
               /></div>
           </div>
 
-          <div className="grid grid-cols-3 pt-3 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 pt-3 gap-5">
             <div className="flex flex-col gap-1">
               <h1 className=" lg:pb-0.5 flex items-center  font-medium text-gray-600">
                 ড্রাইভারের তথ্যঃ
@@ -419,8 +419,10 @@ const NewDeliveryModal = ({
               </div>
             </div>
 
-            <div className="flex flex-col pt-5 gap-2">
-              <div
+            <div className="grid grid-cols-2 md:grid-cols-1 col-span-2 md:col-span-1 w-full flex-col gap-2 pt-5 sm:flex-row sm:items-center">
+              {/* Clear */}
+              <button
+                type="button"
                 onClick={() =>
                   reset({
                     customer: {
@@ -430,19 +432,25 @@ const NewDeliveryModal = ({
                     },
                   })
                 }
-                className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5 text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer text-center"
+                className="w-full rounded border border-gray-300 bg-white px-5 py-2 text-[14px] font-medium text-gray-500 duration-500 hover:border-[#039A63] hover:text-[#039A63] sm:w-auto sm:flex-1"
               >
                 ক্লিয়ার
-              </div>
+              </button>
+
+              {/* Save */}
               {/* <button
+                type="button"
                 onClick={() => setSaveType("saveOnly")}
-                className="text-[14px] bg-[#039A63] px-8 py-1.5 text-white font-medium rounded cursor-pointer"
+                className="w-full rounded bg-[#039A63] px-5 py-2 text-[14px] font-medium text-white transition hover:bg-[#028a58] sm:w-auto sm:flex-1"
               >
                 সেভ করুন
               </button> */}
+
+              {/* Save + New Delivery */}
               <button
+                type="button"
                 onClick={() => setSaveType("saveAndCreate")}
-                className="text-[14px] bg-[#039A63] px-8 py-1.5 text-white font-medium rounded cursor-pointer"
+                className="w-full rounded bg-[#039A63] px-5 py-2 text-[14px] font-medium text-white transition hover:bg-[#028a58] sm:w-auto sm:flex-1"
                 disabled={createDeliveryLoading}
               >
                 {createDeliveryLoading ? "সেভ হচ্ছে.." : "সেভ + নতুন ডেলিভারি"}

@@ -3,6 +3,7 @@ import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModal from "@/components/Reusable/CustomModal";
 import CustomSelect from "@/components/Reusable/CustomSelect";
 import CustomStatus from "@/components/Reusable/CustomStatus";
+import { showToast } from "@/components/Toast/CustomToast";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 import {
   useCreateLedgerMutation,
@@ -16,14 +17,17 @@ import { toast } from "sonner";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
+  showRateQuantity: boolean
 };
 
 type TKhatiyan = {
   serial: string;
   name: string;
   parentId: number;
+  rate: number;
+  quantity: number
 };
-const KhotiyanModal = ({ isOpen, onClose }: TCustomModal) => {
+const KhotiyanModal = ({ isOpen, onClose, showRateQuantity }: TCustomModal) => {
   const { isError, isLoading, data } = useGetLedgerCountQuery(undefined);
   const {
     isError: optionError,
@@ -62,16 +66,25 @@ const KhotiyanModal = ({ isOpen, onClose }: TCustomModal) => {
     }
     try {
       const result = await mutateAsync(data).unwrap();
-      console.log(result);
       if (result?.success) {
-        toast.success(result?.message);
+        showToast({
+          title: result?.message,
+          type: "success"
+        })
         handleClose();
       } else {
-        toast.error(result?.message);
+        showToast({
+          title: result?.message,
+          type: "error"
+        })
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      toast.error(error?.data?.message || SERVER_ERROR_MESSAGE);
+      showToast({
+        title: error?.data?.message || SERVER_ERROR_MESSAGE,
+        type: "error"
+      })
+
     }
   };
 
@@ -119,6 +132,31 @@ const KhotiyanModal = ({ isOpen, onClose }: TCustomModal) => {
               control={control}
               options={labelValuePairArray}
             />
+
+            {
+              showRateQuantity && <div className="grid grid-cols-2 gap-2">
+                <CustomInput
+                  name="rate"
+                  label="খতিয়ানের রেট"
+                  placeholder="খতিয়ানের রেট"
+                  register={register}
+                  type="number"
+
+                />
+
+                <CustomInput
+                  name="quantity"
+                  label="পরিমাণ ভাজক (যদি থাকে)"
+                  placeholder="পরিমাণ ভাজক"
+                  register={register}
+                  type="number"
+
+                />
+              </div>
+            }
+
+
+
           </div>
 
           <div className="flex items-center justify-between pt-5">

@@ -1,133 +1,333 @@
 "use client";
 
-import { useState } from "react";
-import { dashboardItems1, dashboardItems2 } from "./dashboardItem";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+    ChevronDown,
+    ChevronUp,
+} from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import {
+    dashboardItemsForMobile1,
+    dashboardItemsForMobile2,
+} from "./mobileItems";
+
+import LogoutButton from "./LogoutButton";
+import { useTitleStore } from "@/zustand/store/titleStore";
 
 export default function ShowMobileNavbar() {
-  const [openItemId, setOpenItemId] = useState<string | null>(null);
+    const [openItemId, setOpenItemId] = useState<string | null>(null);
 
-  const handleToggle = (id: string) => {
-    setOpenItemId((prev) => (prev === id ? null : id));
-  };
+    const pathname = usePathname();
+    const { setTitle } = useTitleStore();
 
-  // Split array into chunks of 3 for rows
-  const chunkArray = <T,>(arr: T[], size: number): T[][] => {
-    const chunks: T[][] = [];
-    for (let i = 0; i < arr.length; i += size) {
-      chunks.push(arr.slice(i, i + size));
-    }
-    return chunks;
-  };
+    const handleToggle = (id: string) => {
+        setOpenItemId((prev) =>
+            prev === id ? null : id
+        );
+    };
 
-  return (
-    <div className="w-full max-w-5xl mx-auto mt-4 pb-8 z-9999">
-      {/* Top Summary Section */}
-      <div className="grid grid-cols-2  overflow-hidden shadow-sm bg-linear-to-b from-slate-800 to-slate-700 text-white rounded">
-        <div className="flex flex-col items-center justify-center py-8 border-r border-white/20">
-          <span className="  text-gray-200">বিক্রি</span>
-          <span className="text-4xl font-bold">0</span>
-        </div>
-        <div className="flex flex-col items-center justify-center py-5">
-          <span className="  text-gray-200">ক্যাশ</span>
-          <span className="text-4xl font-bold">0</span>
-        </div>
-      </div>
+    // Split array into chunks of 3
+    const chunkArray = <T,>(
+        arr: T[],
+        size: number
+    ): T[][] => {
+        const chunks: T[][] = [];
 
-      <div className="pt-5">
-        {chunkArray(dashboardItems1, 3).map((row, rowIndex) => (
-          <div key={rowIndex} className="mb-2">
-            <div className="grid grid-cols-3 gap-3">
-              {row.map((item) => {
-                const hasChildren = !!item.children;
-                const hasLink = !!item.path;
+        for (let i = 0; i < arr.length; i += size) {
+            chunks.push(arr.slice(i, i + size));
+        }
 
-                // Parent with only a link
-                if (!hasChildren && hasLink) {
-                  return (
-                    <Link
-                      key={item.id}
-                      href={item.path as string}
-                      className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-center hover:shadow-md transition"
-                    >
-                      <item.icon className="h-6 w-6 text-gray-700" />
-                      <span className="text-gray-800   mt-2 font-medium">
-                        {item.title}
-                      </span>
-                    </Link>
-                  );
-                }
+        return chunks;
+    };
 
-                // Parent with children (may also have link, children take priority)
-                return (
-                  <div
-                    key={item.id}
-                    className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-center hover:shadow-md transition"
-                  >
-                    <button
-                      onClick={() => handleToggle(item.id)}
-                      className="flex flex-col items-center justify-center w-full"
-                    >
-                      <item.icon className="h-6 w-6 text-gray-700" />
-                      <span className="text-gray-800   mt-2 font-medium">
-                        {item.title}
-                      </span>
-                      {hasChildren && (
-                        <>
-                          {openItemId === item.id ? (
-                            <ChevronUp className="h-4 w-4 text-gray-400 mt-1" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4 text-gray-400 mt-1" />
-                          )}
-                        </>
-                      )}
-                    </button>
-                  </div>
-                );
-              })}
+    // Update title according to current pathname
+    useEffect(() => {
+        const allItems = [
+            ...dashboardItemsForMobile1,
+            ...dashboardItemsForMobile2,
+        ];
+
+        for (const item of allItems) {
+            // Parent path
+            if (item.path === pathname) {
+                setTitle(item.title);
+                return;
+            }
+
+            // Child path
+            const activeChild = item.children?.find(
+                (child) => child.path === pathname
+            );
+
+            if (activeChild) {
+                setTitle(activeChild.title);
+                return;
+            }
+        }
+    }, [pathname, setTitle]);
+
+    return (
+        <div className="z-[9999] mx-auto mt-4 w-full max-w-5xl pb-8">
+
+            {/* =========================
+                Top Summary Section
+            ========================== */}
+            <div className="grid grid-cols-2 overflow-hidden rounded bg-gradient-to-b from-slate-900 to-slate-800 text-white shadow-sm">
+
+                <div className="flex flex-col items-center justify-center border-r border-white/20 py-8">
+                    <span className="text-gray-200">
+                        বিক্রি
+                    </span>
+
+                    <span className="text-4xl font-bold">
+                        0
+                    </span>
+                </div>
+
+                <div className="flex flex-col items-center justify-center py-5">
+                    <span className="text-gray-200">
+                        ক্যাশ
+                    </span>
+
+                    <span className="text-4xl font-bold">
+                        0
+                    </span>
+                </div>
+
             </div>
 
-            {/* Expanded Children Row (Full width under the row) */}
-            {row
-              ?.filter((item) => item.id === openItemId && item.children)
-              .map((item) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-3 gap-2 mt-2 bg-gray-50 rounded-xl border border-gray-200 p-2 animate-fadeIn"
-                >
-                  {item.children?.map((child) => (
-                    <Link
-                      key={child.id}
-                      href={child.path!}
-                      className="bg-white text-gray-700   font-medium py-2 rounded-lg border border-gray-200 hover:bg-green-50 transition flex items-center justify-center gap-1"
-                    >
-                      <child.icon className="h-4 w-4 text-gray-500" />
-                      {child.title}
-                    </Link>
-                  ))}
-                </div>
-              ))}
-          </div>
-        ))}
-      </div>
-      {/* Grid Buttons Section 2 */}
+            {/* =========================
+                Main Grid
+            ========================== */}
+            <div className="pt-5">
 
-      <h1 className="text-gray-600 text-center py-5">ONNANO</h1>
-      <div className="grid grid-cols-3 gap-3 ">
-        {dashboardItems2.map((item) => (
-          <Link
-            href={item.path!}
-            key={item.id}
-            className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-center hover:shadow-md transition"
-          >
-            <item.icon className="h-6 w-6 text-gray-700" />
-            <span className="text-gray-800   mt-2 font-medium">
-              {item.title}
-            </span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
+                {chunkArray(
+                    dashboardItemsForMobile1,
+                    3
+                ).map((row, rowIndex) => (
+
+                    <div
+                        key={rowIndex}
+                        className="mb-2"
+                    >
+
+                        <div className="grid grid-cols-3 gap-3">
+
+                            {row.map((item) => {
+
+                                const hasChildren =
+                                    !!item.children?.length;
+
+                                const hasLink =
+                                    !!item.path;
+
+                                /*
+                                 * Item without children
+                                 * and has direct link
+                                 */
+                                if (
+                                    !hasChildren &&
+                                    hasLink
+                                ) {
+                                    return (
+                                        <Link
+                                            key={item.id}
+                                            href={
+                                                item.path as string
+                                            }
+                                            onClick={() =>
+                                                setTitle(
+                                                    item.title
+                                                )
+                                            }
+                                            className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+                                        >
+                                            <item.icon
+                                                className="h-6 w-6"
+                                                style={{
+                                                    color:
+                                                        item.iconColor ||
+                                                        "#374151",
+                                                }}
+                                            />
+
+                                            <span className="mt-2 text-center text-[15px] font-medium text-gray-800">
+                                                {item.title}
+                                            </span>
+                                        </Link>
+                                    );
+                                }
+
+                                /*
+                                 * Parent item with children
+                                 */
+                                return (
+                                    <div
+                                        key={item.id}
+                                        className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+                                    >
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleToggle(
+                                                    item.id
+                                                )
+                                            }
+                                            className="flex w-full flex-col items-center justify-center"
+                                        >
+
+                                            <item.icon
+                                                className="h-6 w-6"
+                                                style={{
+                                                    color:
+                                                        item.iconColor ||
+                                                        "#374151",
+                                                }}
+                                            />
+
+                                            <span className="mt-2 text-center text-[15px] font-medium text-gray-800">
+                                                {item.title}
+                                            </span>
+
+                                            {openItemId ===
+                                            item.id ? (
+                                                <ChevronUp className="mt-1 h-4 w-4 text-gray-400" />
+                                            ) : (
+                                                <ChevronDown className="mt-1 h-4 w-4 text-gray-400" />
+                                            )}
+
+                                        </button>
+                                    </div>
+                                );
+                            })}
+
+                        </div>
+
+                        {/* =========================
+                            Children
+                        ========================== */}
+
+                        {row
+                            .filter(
+                                (item) =>
+                                    item.id ===
+                                        openItemId &&
+                                    item.children?.length
+                            )
+                            .map((item) => (
+
+                                <div
+                                    key={item.id}
+                                    className="mt-2 grid grid-cols-3 gap-2 rounded-xl border border-gray-200 bg-gray-50 p-2"
+                                >
+
+                                    {item.children?.map(
+                                        (child) => (
+
+                                            <Link
+                                                key={child.id}
+                                                href={
+                                                    child.path!
+                                                }
+                                                onClick={() =>
+                                                    setTitle(
+                                                        child.title
+                                                    )
+                                                }
+                                                className="flex items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white py-2 font-medium text-gray-700 transition hover:bg-green-50"
+                                            >
+
+                                                <child.icon
+                                                    className="h-4 w-4"
+                                                    style={{
+                                                        color:
+                                                            child.iconColor ||
+                                                            "#6B7280",
+                                                    }}
+                                                />
+
+                                                <span className="text-[13px]">
+                                                    {
+                                                        child.title
+                                                    }
+                                                </span>
+
+                                            </Link>
+
+                                        )
+                                    )}
+
+                                </div>
+                            ))}
+
+                    </div>
+                ))}
+
+            </div>
+
+            {/* =========================
+                Other Section
+            ========================== */}
+
+            <div className="flex items-center gap-3 px-8 py-5">
+
+                <div className="h-px flex-1 bg-gray-200" />
+
+                <h1 className="whitespace-nowrap text-center text-sm text-gray-600">
+                    অন্যান্য
+                </h1>
+
+                <div className="h-px flex-1 bg-gray-200" />
+
+            </div>
+
+            {/* =========================
+                Other Items
+            ========================== */}
+
+            <div className="grid grid-cols-3 gap-3">
+
+                {dashboardItemsForMobile2.map(
+                    (item) => (
+
+                        <Link
+                            href={item.path!}
+                            key={item.id}
+                            onClick={() =>
+                                setTitle(item.title)
+                            }
+                            className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition hover:shadow-md"
+                        >
+
+                            <item.icon
+                                className="h-6 w-6"
+                                style={{
+                                    color:
+                                        item.iconColor ||
+                                        "#374151",
+                                }}
+                            />
+
+                            <span className="mt-2 text-center text-[15px] font-medium text-gray-800">
+                                {item.title}
+                            </span>
+
+                        </Link>
+
+                    )
+                )}
+
+            </div>
+
+            {/* =========================
+                Logout
+            ========================== */}
+
+            <LogoutButton />
+
+        </div>
+    );
 }

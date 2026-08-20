@@ -240,7 +240,7 @@ const UpdateChalanModal = ({
       {classRateLoading || invoiceLoading ? (
         <>
           {/* <CustomLoader cls="h-[60vh]" /> */}
-           <CustomStatus type="loading" />
+          <CustomStatus type="loading" />
         </>
       ) : (
         <div>
@@ -333,8 +333,9 @@ const UpdateChalanModal = ({
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="flex items-end gap-2 bg-gray-50 rounded-md p-2"
+                  className="flex w-full items-center md:items-end gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3"
                 >
+                  {/* Add Button */}
                   <button
                     type="button"
                     onClick={() =>
@@ -345,46 +346,49 @@ const UpdateChalanModal = ({
                   >
                     <Plus size={18} strokeWidth={2.5} />
                   </button>
-                  <div className="flex-1">
-                    <CustomSelect
-                      name={`invoiceItems.items.${index}.class`}
-                      label="শ্রেণি"
-                      placeholder="শ্রেণি"
-                      control={control}
-                      options={classOptions || []}
-                    />
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="flex-1">
+                      <CustomSelect
+                        name={`invoiceItems.items.${index}.class`}
+                        label="শ্রেণি"
+                        placeholder="শ্রেণি"
+                        control={control}
+                        options={classOptions || []}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <CustomInput
+                        name={`invoiceItems.items.${index}.rate`}
+                        label="রেট"
+                        placeholder="0"
+                        register={register}
+                        type="text"
+                        rules={{ required: "" }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <CustomInput
+                        name={`invoiceItems.items.${index}.quantity`}
+                        label="পরিমাণ"
+                        placeholder="0"
+                        register={register}
+                        type="number"
+                        rules={{ required: "" }}
+                      />
+                    </div>{" "}
+                    <div className="flex-1">
+                      <CustomInput
+                        name={`invoiceItems.items.${index}.price`}
+                        label="মূল্য"
+                        placeholder="0"
+                        register={register}
+                        type="number"
+                        readonly
+                        rules={{ required: "" }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <CustomInput
-                      name={`invoiceItems.items.${index}.rate`}
-                      label="রেট"
-                      placeholder="0"
-                      register={register}
-                      type="text"
-                      rules={{ required: "" }}
-                    />
-                  </div>{" "}
-                  <div className="flex-1">
-                    <CustomInput
-                      name={`invoiceItems.items.${index}.quantity`}
-                      label="পরিমাণ"
-                      placeholder="0"
-                      register={register}
-                      type="number"
-                      rules={{ required: "" }}
-                    />
-                  </div>{" "}
-                  <div className="flex-1">
-                    <CustomInput
-                      name={`invoiceItems.items.${index}.price`}
-                      label="মূল্য"
-                      placeholder="0"
-                      register={register}
-                      type="number"
-                      readonly={true}
-                      rules={{ required: "" }}
-                    />
-                  </div>
+                  {/* Delete Button */}
                   <button
                     type="button"
                     disabled={fields.length === 1}
@@ -403,7 +407,7 @@ const UpdateChalanModal = ({
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {due ? (
-                <div className="hidden lg:flex flex-col items-center justify-center h-auto">
+                <div className=" flex-col items-center justify-center h-auto">
                   <CustomDatePicker control={control}
                     name="invoice.duePaymentDate"
                     placeholder=" বাকি পরিশোধের তারিখ লিখুন"
@@ -487,11 +491,6 @@ const UpdateChalanModal = ({
                   readonly
                 />
               </div>
-
-              <div className="block lg:hidden">
-                <p className="text-xs text-gray-600 pb-1">এসএমএস</p>
-                <p className="bg-gray-200 py-2 px-4 rounded w-full">SMS Off</p>
-              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-5 pt-5">
@@ -503,7 +502,7 @@ const UpdateChalanModal = ({
               </div>
               <button
                 type="submit"
-                className="text-[14px] bg-[#039A63] px-8 py-1.5 text-white font-medium rounded cursor-pointer"
+                className="text-[14px] bg-[#039A63] disabled:bg-gray-500 px-8 py-1.5 text-white font-medium rounded cursor-pointer"
                 disabled={createInvoiceLoading}
               >
                 {createInvoiceLoading ? "সেভ হচ্ছে..." : "সেভ করুন"}

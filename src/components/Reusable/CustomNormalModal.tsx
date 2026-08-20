@@ -32,8 +32,8 @@ const CustomNormalModal = ({
     >
       <div
           className={`relative bg-white w-full ${widthClasses[width]} 
-        md:rounded-md rounded-t-2xl shadow-xl
-        h-[90vh] md:h-auto md:max-h-[90vh]
+        md:rounded-md rounded-2xl shadow-xl
+        h-auto max-h-[90vh]
         flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >

@@ -104,29 +104,58 @@ const LoadPage = ({ limit, page }: TQuery) => {
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       {/* Header */}
-      <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
-        <button onClick={() => setIsModalOpen(true)}>
-          <CustomNewButton title="নতুন লোড" />
-        </button>
+      <div className="hidden md:block">
+        <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
+          <CustomNewButton title="নতুন লোড" onClick={() => setIsModalOpen(true)} />
+          <div className="flex items-center justify-end gap-2">
+            <CustomDatePickerState
+              onChange={setDate}
+              value={date}
+              placeholder="তারিখ"
+              height="8"
+            />
+            <CustomSelect2
+              options={format || []}
+              placeholder="1 নম্বর রাউন্ড"
+              onChange={(value) => setSelected(value)}
+              isError={roundError}
+              isLoading={roundLoading}
 
-        <div className="flex items-center justify-end gap-2">
-          <CustomDatePickerState
-            onChange={setDate}
-            value={date}
-            placeholder="তারিখ"
-            height="8"
-          />
-          <CustomSelect2
-            options={format || []}
-            placeholder="1 নম্বর রাউন্ড"
-            onChange={(value) => setSelected(value)}
-            isError={roundError}
-            isLoading={roundLoading}
-
-          />
-          <CustomPrintButton onClick={() => printRef.current?.print()} />
-          <CustomReportButton />
+            />
+            <CustomPrintButton onClick={() => printRef.current?.print()} />
+            <CustomReportButton />
+          </div>
         </div>
+      </div>
+
+
+      <div className="block md:hidden">
+        <div className="flex justify-between items-center pt-2 lg:pt-0 gap-2">
+          <CustomNewButton title="নতুন লোড" className="w-full" onClick={() => setIsModalOpen(true)} />
+          <CustomPrintButton onClick={() => printRef.current?.print()} />
+          <CustomReportButton className="w-full" />
+
+        </div>
+        <div className="flex items-center gap-2 w-full pt-3">
+  <div className="flex-1 min-w-0">
+    <CustomDatePickerState
+      onChange={setDate}
+      value={date}
+      placeholder="তারিখ"
+      height="8"
+    />
+  </div>
+
+  <div className="flex-1 min-w-0">
+    <CustomSelect2
+      options={format || []}
+      placeholder="1 নম্বর রাউন্ড"
+      onChange={(value) => setSelected(value)}
+      isError={roundError}
+      isLoading={roundLoading}
+    />
+  </div>
+</div>
       </div>
 
       <div className="overflow-x-auto mt-4">

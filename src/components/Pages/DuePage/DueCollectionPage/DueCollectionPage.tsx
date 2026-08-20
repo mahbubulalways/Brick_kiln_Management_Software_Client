@@ -61,9 +61,11 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
       </span>
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
         <div className="flex items-center gap-2 w-auto lg:w-full">
-          <button onClick={() => setIsOpen(true)}>
-            <CustomNewButton title="নতুন বাকি জমা" />
-          </button>
+       
+            <CustomNewButton title="নতুন বাকি জমা"
+            onClick={() => setIsOpen(true)}
+            />
+         
           <span className="bg-green-100 text-green-800 px-3 py-1 rounded text-sm border border-green-300 font-medium hidden lg:block">
             মোট জমাঃ: {totalCredit?.toLocaleString()} টাকা
           </span>
@@ -85,7 +87,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
               <TableHead th="বাকি রইল" />
               <TableHead th="নতুন তারিখ" cls="hidden lg:table-cell" />
               <TableHead th="সিজন" cls="hidden lg:table-cell" />
-              <TableHead th="বাটন" cls="hidden lg:table-cell" />
+              <TableHead th="বাটন" cls="" />
             </tr>
           </thead>
 
@@ -131,7 +133,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                     />
                     <TableData td={row?.season} cls="hidden lg:table-cell" />
 
-                    <td className="border p-2 hidden lg:table-cell">
+                    <td className="border p-2 ">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button className="p-1.5 rounded hover:bg-gray-100 transition">

@@ -12,7 +12,15 @@ const reportAPi = baseApi.injectEndpoints({
             }),
         }),
 
+        // DASHBOARD REPORT
+        dashboardReport: builder.query({
+            query: () => ({
+                url: "report/dashboard",
+              
+            }),
+        }),
+
     }),
 });
 
-export const { useGetSellReportQuery } = reportAPi;
+export const { useGetSellReportQuery,useDashboardReportQuery } = reportAPi;

@@ -1,125 +1,260 @@
+"use client";
+
 import { useState } from "react";
-import { Pencil, Trash2, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { Pencil, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
+
 import KhotiyanModal from "@/components/Dashboard/Modals/KhatiyanModal";
+import UpdateKhotiyanModal from "@/components/Dashboard/Modals/EditModals/UpdateKhotiyanModal";
 
-const Khotiyan = () => {
-  const initialData = [
-    { id: 1, name: "sona", group: "kath" },
-    { id: 2, name: "saiful", group: "kath" },
-    { id: 3, name: "harun", group: "kath" },
-    { id: 4, name: "kabir", group: "kath" },
-    { id: 5, name: "soriful", group: "kath" },
-    { id: 6, name: "vutan", group: "kath" },
-  ];
+import CustomLoader from "@/components/Reusable/CustomLoader";
+import TableHead from "@/components/Reusable/TableHead";
+import TableData from "@/components/Reusable/TableData";
+import { TablePagination } from "@/components/Reusable/TablePagination";
 
-  const [data, setData] = useState(initialData);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(15);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+import {
+  useDeleteleLedgerMutation,
+  useGetAllLedgerPaginationQuery,
+} from "@/redux/features/ledger.features";
 
-  // Pagination logic
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
+import { TQuery } from "@/interface/query";
+import { TMetaConfig } from "@/interface/meta";
+import { SERVER_ERROR_MESSAGE } from "@/constant";
 
-  // Delete function
-  const handleDelete = (id: number) => {
-    if (confirm("আপনি কি নিশ্চিত যে এই শ্রেণিটি মুছে ফেলতে চান?")) {
-      setData(data.filter((row) => row.id !== id));
+type TLedger = {
+  id: number;
+  name: string;
+  parentId?: number | null;
+  parent?: {
+    id: number;
+    name: string;
+  } | null;
+  rate?: number;
+  quantity?: number;
+  serial: number;
+};
+
+const Khotiyan = ({ limit, page, search }: TQuery) => {
+  // Create modal
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Update modal
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [selectedLedgerId, setSelectedLedgerId] = useState<number | null>(
+    null
+  );
+
+  // Get all
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useGetAllLedgerPaginationQuery(
+    { limit, page, search },
+    { refetchOnMountOrArgChange: true }
+  );
+
+  // Delete
+  const [deleteLedger, { isLoading: deleteLoading }] =
+    useDeleteleLedgerMutation();
+
+  const ledgers = (data?.data?.data ?? []) as TLedger[];
+  const meta = data?.data?.meta as TMetaConfig;
+
+  // =========================
+  // DELETE
+  // =========================
+
+  const handleDelete = async (id: number) => {
+    const result = await Swal.fire({
+      title: "আপনি কি নিশ্চিত?",
+      text: "এই খতিয়ানটি ডিলেট করলে এটি আর ফিরে পাওয়া যাবে না!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#039A63",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "হ্যাঁ, ডিলেট করুন",
+      cancelButtonText: "বাতিল",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteLedger(id).unwrap();
+
+      await Swal.fire({
+        title: "ডিলেট হয়েছে!",
+        text: "খতিয়ানটি সফলভাবে ডিলেট করা হয়েছে।",
+        icon: "success",
+        confirmButtonColor: "#039A63",
+        confirmButtonText: "ঠিক আছে",
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        title: "ব্যর্থ!",
+        text:
+          error?.data?.message ||
+          "খতিয়ানটি ডিলেট করা সম্ভব হয়নি।",
+        icon: "error",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "ঠিক আছে",
+      });
     }
   };
 
+  // =========================
+  // EDIT
+  // =========================
+
+  const handleEdit = (id: number) => {
+    setSelectedLedgerId(id);
+    setUpdateOpen(true);
+  };
+
+  // =========================
+  // CLOSE UPDATE MODAL
+  // =========================
+
+  const handleUpdateClose = () => {
+    setUpdateOpen(false);
+    setSelectedLedgerId(null);
+  };
+
   return (
-    <div className="bg-white">
-      <div className="flex items-center justify-between">
+    <div className="rounded-lg bg-white p-2">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold text-gray-900 py-3">
           খতিয়ান অ্যাড/আপডেট
         </h1>
+
         <button
+          type="button"
           onClick={() => setIsOpen(true)}
-          className="  bg-[#039A63] px-4 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
+          className="bg-[#039A63] px-4 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
         >
           + নতুন খতিয়ান
         </button>
       </div>
 
-      <div className="overflow-x-auto border rounded-t-md">
-        <table className="min-w-full  border-collapse">
+      {/* Table */}
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="min-w-full border-collapse">
           <thead>
-            <tr className="bg-[#039A63] text-white text-center">
-              <th className="p-2 border">#</th>
-              <th className="p-2 border">খতিয়ানের নাম</th>
-              <th className="p-2 border">গ্রুপ</th>
-              <th className="p-2 border">বাটন</th>
+            <tr className="bg-[#119f70] text-center text-white">
+              <TableHead th="#" />
+              <TableHead th="খতিয়ানের নাম" />
+              <TableHead th="গ্রুপ" />
+              <TableHead th="রেট" />
+              <TableHead th="পরিমাণ" />
+              <TableHead th="বাটন" />
             </tr>
           </thead>
+
           <tbody className="text-center">
-            {paginatedData.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                <td className="border p-2">{row.id}</td>
-                <td className="border p-2">{row.name}</td>
-                <td className="border p-2">{row.group}</td>
-                <td className="border p-2">
-                  <div className="flex justify-center gap-3">
-                    <button className="text-blue-600 hover:text-blue-800 transition">
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-800 transition"
-                      onClick={() => handleDelete(row.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="border p-8">
+                  <CustomLoader cls="h-[30vh]" />
                 </td>
               </tr>
-            ))}
+            ) : isError ? (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="border p-8 text-center text-sm text-gray-500"
+                >
+                  {SERVER_ERROR_MESSAGE}
+                </td>
+              </tr>
+            ) : !ledgers.length ? (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="border p-8 text-center text-sm text-gray-500"
+                >
+                  কোনো খতিয়ান পাওয়া যায়নি।
+                </td>
+              </tr>
+            ) : (
+              ledgers.map((row) => (
+                <tr
+                  key={row.id}
+                  className="transition-colors hover:bg-gray-50"
+                >
+                  {/* Serial */}
+                  <TableData td={row.serial} />
+
+                  {/* Name */}
+                  <TableData
+                    td={row.name}
+                    cls="font-medium"
+                  />
+
+                  {/* Group */}
+                  <TableData
+                    td={row.parent?.name || "-"}
+                  />
+
+                  {/* Rate */}
+                  <TableData td={row.rate ?? 0} />
+
+                  {/* Quantity */}
+                  <TableData td={row.quantity ?? 0} />
+
+                  {/* Actions */}
+                  <td className="border p-2">
+                    <div className="flex justify-center gap-3">
+                      {/* Edit */}
+                      <button
+                        type="button"
+                        className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                        onClick={() => handleEdit(row.id)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+
+                      {/* Delete */}
+                      <button
+                        type="button"
+                        disabled={deleteLoading}
+                        className="text-red-600 hover:text-red-800 transition cursor-pointer disabled:opacity-50"
+                        onClick={() => handleDelete(row.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
+
+        {/* Pagination */}
+        <TablePagination
+          page={meta?.page ?? 1}
+          totalPages={meta?.totalPages ?? 1}
+          dataLength={ledgers.length}
+          title="খতিয়ান"
+        />
       </div>
 
-      {/* Footer */}
-      <div className="flex justify-between rounded-b-md items-center p-2   text-gray-600 bg-white shadow">
-        <span>মোট খতিয়ান {data.length} টি</span>
-        <div className="flex items-center space-x-3">
-          <span className="border px-2 py-1 rounded bg-green-50 border-green-200">
-            {currentPage}
-          </span>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1   font-medium text-gray-700 hover:bg-gray-50 transition">
-                {rowsPerPage} খতিয়ান / পেজ <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-44 rounded-md border bg-white shadow-md"
-            >
-              {[5, 10, 15, 20].map((num) => (
-                <DropdownMenuItem
-                  key={num}
-                  onSelect={() => {
-                    setRowsPerPage(num);
-                    setCurrentPage(1);
-                  }}
-                  className="cursor-pointer px-4 py-2   text-gray-700 hover:bg-gray-100"
-                >
-                  {num} খতিয়ান / পেজ
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+      {/* CREATE MODAL */}
       {isOpen && (
-        <KhotiyanModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        <KhotiyanModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          showRateQuantity={true}
+        />
       )}
+
+      {/* UPDATE MODAL */}
+      <UpdateKhotiyanModal
+        isOpen={updateOpen}
+        onClose={handleUpdateClose}
+        ledgerId={selectedLedgerId}
+      />
     </div>
   );
 };

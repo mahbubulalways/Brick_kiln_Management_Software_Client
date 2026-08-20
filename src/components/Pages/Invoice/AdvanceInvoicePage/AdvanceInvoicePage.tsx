@@ -44,11 +44,12 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
   return (
     <div className="bg-white rounded-md shadow border border-gray-200 overflow-hidden">
       {/* Header search & controls */}
-      <div className="flex justify-between items-center p-3  bg-gray-50">
+      <div className="flex justify-between items-center p-3 gap-4  bg-gray-50">
         <SearchBar value={searchItems} onChange={(e) => setSearchItems(e.target.value)} />
-        <div className="flex items-center gap-4">
-          <CustomReportButton onClick={() => setOpenReportModal(true)} />
-        </div>
+          <CustomReportButton 
+          onClick={() => setOpenReportModal(true)}
+          className="w-full md:w-max"
+           />
       </div>
 
       {/* Table */}

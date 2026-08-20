@@ -1,16 +1,23 @@
 import Link from "next/link";
 
-const CalculationsCard = () => {
+type TCalculate = {
+  totalSell: number,
+  cashSell: number,
+  dueSell: number,
+  payment: number,
+
+}
+const CalculationsCard = ({ cashSell, dueSell, totalSell, payment }: TCalculate) => {
   const cards = [
     {
       title: "মোট বিক্রি (ভ্যাট সহ)",
-      amount: "৳ 0",
+      amount: `৳${totalSell ?? "00"}`,
       color: "bg-[#007bcd]",
       path: "/dashboard/invoice",
     },
-    { title: "নগদ বিক্রি", amount: "৳ 0", color: "bg-[#159947]", path: "/" },
-    { title: "বাকি বিক্রি", amount: "৳ 0", color: "bg-[#c43bda]", path: "/" },
-    { title: "মোট পেমেন্ট", amount: "৳ 0", color: "bg-[#f26b1a]", path: "/" },
+    { title: "নগদ বিক্রি", amount: `৳${cashSell ?? "00"}`, color: "bg-[#159947]", path: "/" },
+    { title: "বাকি বিক্রি", amount: `৳${dueSell ?? "00"}`, color: "bg-[#c43bda]", path: "/" },
+    { title: "মোট পেমেন্ট", amount: `৳${payment ?? "00"}`, color: "bg-[#f26b1a]", path: "/" },
     { title: "বাকি জমা", amount: "৳ 0", color: "bg-[#10a98b]", path: "/" },
     { title: "মোট ক্যাশ", amount: "৳ 0", color: "bg-[#6463e0]", path: "/" },
   ];
@@ -22,8 +29,8 @@ const CalculationsCard = () => {
           key={index}
           className={`${card.color} text-white rounded-md p-4 flex flex-col justify-center items-start shadow-md w-full`}
         >
-          <p className="font-medium mb-1">{card.title}</p>
-          <p className="text-4xl font-semibold">{card.amount}</p>
+          <p className="font-medium text-[15px]">{card.title}</p>
+          <p className="text-2xl font-semibold">{card.amount}</p>
         </Link>
       ))}
     </div>

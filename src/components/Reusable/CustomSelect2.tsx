@@ -215,33 +215,26 @@ const CustomSelect2 = ({
             setOpen((prev) => !prev);
           }}
           className={`
-            flex
-            h-9
-            w-[100px]
-            
-            lg:w-[150px]
-            
-            cursor-pointer
-            items-center
-            gap-2
-            rounded-lg
-            border
-            border-gray-300
-            px-3
-            py-3
-            bg-white
-            transition
-            ${
-              disabled
-                ? "cursor-not-allowed bg-gray-100 opacity-60"
-                : ""
-            }
-            ${
-              open
-                ? "border-gray-300 focus-within:ring-2 focus-within:ring-[#00664A]"
-                : ""
-            }
-          `}
+  flex
+  h-9
+  w-full
+  cursor-pointer
+  items-center
+  gap-2
+  rounded-lg
+  border
+  border-gray-300
+  px-3
+  py-3
+  bg-white
+  transition
+  ${disabled ? "cursor-not-allowed bg-gray-100 opacity-60" : ""}
+  ${
+    open
+      ? "border-gray-300 focus-within:ring-2 focus-within:ring-[#00664A]"
+      : ""
+  }
+`}
         >
           {/* Searchable */}
           {searchable ? (

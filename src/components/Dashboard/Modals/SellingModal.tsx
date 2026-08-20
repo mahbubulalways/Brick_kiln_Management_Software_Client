@@ -1,6 +1,7 @@
 "use client";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomReportModal from "@/components/Reusable/CustomReportModal";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 import { useGetItemsWithInvoicesQuery } from "@/redux/features/invoice.features";
 import { IChallanItem } from "@/types/types";
 import { TbDatabaseOff } from "react-icons/tb";
@@ -18,7 +19,7 @@ const SellingModal = ({
   startDate,
   endDate = "",
 }: TCustomReportModal) => {
-  const { isLoading, data } = useGetItemsWithInvoicesQuery(
+  const { isLoading, data, isError,error } = useGetItemsWithInvoicesQuery(
     { startDate: startDate as string, endDate: endDate as string },
     {
       refetchOnMountOrArgChange: true,
@@ -48,16 +49,9 @@ const SellingModal = ({
       title="বিক্রির রিপোর্ট"
     >
       {isLoading ? (
-        <>
-          <CustomLoader cls="h-[50vh]" />
-        </>
-      ) : !data?.data?.length ? (
-        <>
-          <div className="flex flex-col gap-2 justify-center items-center h-44 text-gray-600 ">
-            <TbDatabaseOff className="h-6 w-6" />
-            <h1 className="text-sm">কোনো রিপোর্ট পাওয়া যায় নি</h1>
-          </div>
-        </>
+        <CustomStatus type="loading" />
+      ) : isError ? <CustomStatus type="error" /> : !data?.data?.length ? (
+        <CustomStatus type="empty" />
       ) : (
         <div>
           <div className="mx-auto bg-white rounded-lg overflow-hidden border">
