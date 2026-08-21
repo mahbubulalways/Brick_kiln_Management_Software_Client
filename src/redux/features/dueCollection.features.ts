@@ -16,7 +16,7 @@ const dueCollectionApi = baseApi.injectEndpoints({
 
     // GET SINGLE CUSTOMERS DUE
     getCustomerDue: builder.query({
-      query: (id: number) => ({
+      query: (id: string) => ({
         url: `/due/customer-due/${id}`,
         method: "GET",
       }),

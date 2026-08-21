@@ -34,7 +34,7 @@ type PaymentRow = {
 const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [customerId, setCustomerId] = useState<number | undefined>(undefined)
+  const [customerId, setCustomerId] = useState<string | undefined>(undefined)
   const [openDueModal, setOpenDueModal] = useState<boolean>(false);
   const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -115,7 +115,7 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
             ) : (
               dues?.map((row: PaymentRow) => (
                 <tr key={row.id} className="hover:bg-gray-50">
-                  <TableData td={row?.id} />
+                  <TableData td={row?.customerCode} />
                   <TableData td={row?.name} />
                   <TableData td={row?.address} />
                   <TableData
@@ -149,7 +149,7 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
                         className="rounded-md border bg-white shadow-md"
                       >
                         <DropdownMenuItem onClick={() => {
-                          setCustomerId(row?.id)
+                          setCustomerId(row?.customerCode)
                           setOpenDueModal(true)
                         }}>
                           <CustomDropDownMenuItem
@@ -158,7 +158,7 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
                           />
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
-                          setCustomerId(row?.id)
+                          setCustomerId(row?.customerCode)
                           setOpenDueCollectionModal(true)
                         }}>
                           <CustomDropDownMenuItem
@@ -195,7 +195,7 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
           page={meta?.page ?? 1}
           totalPages={meta?.totalPages ?? 1}
           dataLength={dues?.length}
-          title="পেমেন্ট"
+          title="বাকি"
         />
       </div>
       {isOpen && (

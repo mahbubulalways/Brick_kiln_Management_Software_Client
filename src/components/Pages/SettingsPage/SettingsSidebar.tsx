@@ -1,4 +1,5 @@
 "use client";
+
 import { Dispatch, SetStateAction, useState } from "react";
 import {
   FiUser,
@@ -8,47 +9,205 @@ import {
   FiLock,
   FiInfo,
   FiCheckSquare,
+  FiPrinter,
+  FiGrid,
+  FiMessageCircle,
+  FiSettings,
 } from "react-icons/fi";
 
 const menuItems = [
-  { id: 1, label: "ভাটার তথ্য", icon: FiUser },
-  { id: 2, label: "শ্রেণি এবং রেট", icon: FiList },
-  { id: 3, label: "ক্ষতিপান অ্যাড", icon: FiBookOpen },
-  { id: 4, label: "সফটওয়্যার ইউজার", icon: FiUsers },
-  { id: 5, label: "পাসওয়ার্ড পরিবর্তন", icon: FiLock },
-  { id: 6, label: "লিমিট", icon: FiInfo },
-  { id: 7, label: "ইউজার পারমিশন", icon: FiCheckSquare },
+  {
+    id: 1,
+    label: "ভাটার তথ্য",
+    icon: FiUser,
+  },
+  {
+    id: 2,
+    label: "শ্রেণি এবং রেট",
+    icon: FiList,
+  },
+  {
+    id: 3,
+    label: "খতিয়ান অ্যাড",
+    icon: FiBookOpen,
+  },
+  {
+    id: 4,
+    label: "সফটওয়্যার ইউজার",
+    icon: FiUsers,
+  },
+  {
+    id: 5,
+    label: "পাসওয়ার্ড পরিবর্তন",
+    icon: FiLock,
+  },
+  {
+    id: 6,
+    label: "ইউজার লিমিট",
+    icon: FiInfo,
+  },
+  {
+    id: 7,
+    label: "ইউজার পারমিশন",
+    icon: FiCheckSquare,
+  },
+  {
+    id: 8,
+    label: "প্রিন্টার সেটিং",
+    icon: FiPrinter,
+  },
+  {
+    id: 9,
+    label: "স্টক সেটিং",
+    icon: FiGrid,
+  },
+  {
+    id: 10,
+    label: "এসএমএস সেটিং",
+    icon: FiMessageCircle,
+  },
 ];
 
-type TSidebarMenu = { setPage: Dispatch<SetStateAction<number>> };
+type TSidebarMenu = {
+  setPage: Dispatch<SetStateAction<number>>;
+};
 
 const SidebarMenu = ({ setPage }: TSidebarMenu) => {
   const [activeId, setActiveId] = useState(1);
 
+  const handleMenuClick = (id: number) => {
+    setActiveId(id);
+    setPage(id);
+  };
+
   return (
-    <div className="w-44  bg-gray-100 p-3 flex flex-col gap-2 border border-gray-200 rounded-md overflow-hidden select-none">
-      {menuItems.map(({ id, label, icon: Icon }) => {
-        const isActive = id === activeId;
-        return (
-          <button
-            key={id}
-            onClick={() => {
-              setActiveId(id);
-              setPage(id);
-            }}
-            className={`flex flex-col items-center justify-center gap-1 py-3 px-2    transition rounded cursor-pointer 
-              ${
-                isActive
-                  ? "bg-[#039A63] text-white border-l-4 border-l-green-800"
-                  : "bg-white text-gray-600 hover:bg-gray-50"
-              }`}
-          >
-            <Icon className="h-4 w-4" />
-            <span>{label}</span>
-          </button>
-        );
-      })}
-    </div>
+    <aside
+      className="
+                w-full
+                shrink-0
+                bg-white
+                border
+                border-gray-200
+                rounded-md
+                p-3
+                select-none
+
+                md:w-[230px]
+                md:min-h-[calc(100vh-100px)]
+            "
+    >
+      {/* ================= HEADER ================= */}
+      <div
+        className="
+                    hidden
+                    md:flex
+                    items-center
+                    gap-3
+                    px-1
+                    pb-4
+                    mb-3
+                    border-b
+                    border-gray-200
+                "
+      >
+        {/* Settings Icon */}
+        <div
+          className="
+                        flex
+                        h-14
+                        w-14
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-[#111827]
+                        text-white
+                        shadow-sm
+                    "
+        >
+          <FiSettings className="h-7 w-7" />
+        </div>
+
+        {/* Title */}
+        <div className="leading-none">
+          <h1 className="text-[20px] font-bold text-[#111827]">
+            সেটিংস
+          </h1>
+
+          <p className="mt-2 text-[11px] font-semibold tracking-wide text-gray-400">
+            CONTROL PANEL
+          </p>
+        </div>
+      </div>
+
+      {/* ================= MENU ================= */}
+      <nav
+        className="
+        flex
+        flex-col
+        gap-1
+        overflow-visible
+    "
+      >
+        {menuItems.map(({ id, label, icon: Icon }) => {
+          const isActive = id === activeId;
+
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => handleMenuClick(id)}
+              className={`
+                    group
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    rounded-xl
+                    px-4
+                    py-3
+                    text-sm
+                    font-medium
+                    transition-all
+                    duration-200
+                    cursor-pointer
+                    md:py-3.5
+                    ${isActive
+                  ? `
+                                bg-[#039A63]
+                                text-white
+                                shadow-[0_8px_20px_rgba(3,154,99,0.18)]
+                            `
+                  : `
+                                bg-transparent
+                                text-[#64748B]
+                                hover:bg-[#F0FDF8]
+                                hover:text-[#039A63]
+                            `
+                }
+                `}
+            >
+              <Icon
+                className={`
+                        h-[20px]
+                        w-[20px]
+                        shrink-0
+                        transition-colors
+                        ${isActive
+                    ? "text-white"
+                    : "text-[#64748B] group-hover:text-[#039A63]"
+                  }
+                    `}
+              />
+
+              <span className="whitespace-nowrap text-left">
+                {label}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+    </aside>
   );
 };
 

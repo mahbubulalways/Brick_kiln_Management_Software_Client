@@ -7,7 +7,7 @@ import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import { DatePicker } from "@/components/Others/DatePicker";
 import { Input } from "@/components/ui/input";
 import SmsSwitch from "@/components/Reusable/SmsSwitch";
-import { useGetSingleInvoiceQuery, useLazyGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
+import { useLazyGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { IChallanItem } from "@/types/types";
 import CustomSelect from "@/components/Reusable/CustomSelect";
@@ -20,17 +20,16 @@ import { RiErrorWarningFill } from "react-icons/ri";
 import { FaCircleCheck } from "react-icons/fa6";
 import { MdOutlineError } from "react-icons/md";
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
-import CustomStatus from "@/components/Reusable/CustomStatus";
 
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
-  invoiceId?: number;
+  invoiceId: string;
 };
 
 type TDelivery = {
   deliveryNo: string;
-  invoiceId: number | string;
+  invoiceId: string;
   deliveryDate: Date;
   nextDeliveryDate: Date;
   customer: {
@@ -51,6 +50,7 @@ type TDelivery = {
   carNumber?: string;
   note?: string;
   savingType?: string;
+  serial?: string;
 };
 
 const NewDeliveryModal = ({
@@ -87,7 +87,7 @@ const NewDeliveryModal = ({
     formState: { errors },
   } = useForm<Partial<TDelivery>>({
     defaultValues: {
-      invoiceId: invoId || "",
+      invoiceId: "",
       customer: {
         name: "",
         phoneNumber: "",
@@ -109,7 +109,7 @@ const NewDeliveryModal = ({
   const targetClass = watch("items.class");
   const deliveryToday = watch("items.todaysDelivery");
   const willReceiveDelivery = watch("items.quantity");
-  const invoiceId = watch("invoiceId")
+  const serial = watch("serial")
   const items = data?.data?.items;
   const itemName = items?.map((item: IChallanItem) => ({
     label: item?.class,
@@ -121,14 +121,14 @@ const NewDeliveryModal = ({
 
 
 
-
+  console.log(data?.data)
   useEffect(() => {
     if (!data?.data) return;
 
     const firstItem = data.data.items?.[0];
 
     reset({
-      invoiceId: invoId && invoId,
+      serial: data?.data?.serial,
       customer: {
         name: data.data.customer?.name || "",
         phoneNumber: data.data.customer?.phoneNumber || "",
@@ -156,12 +156,12 @@ const NewDeliveryModal = ({
 
 
   useEffect(() => {
-    const id = invoId || invoiceId;
+    const id = invoId || serial;
 
     if (!id) return;
 
-    getSingleInvoice(Number(id));
-  }, [invoId, invoiceId, getSingleInvoice]);
+    getSingleInvoice(id);
+  }, [invoId, serial, getSingleInvoice]);
 
   useEffect(() => {
     if (nextDeliveryNo?.data) {
@@ -190,6 +190,9 @@ const NewDeliveryModal = ({
     formData.savingType = saveType;
     formData.deliveryDate = date;
     formData.nextDeliveryDate = nextDeliveryDate;
+    if (invoId) {
+      formData.invoiceId = invoId
+    }
     (formData.items as IChallanItem).quantity = selectedItem?.quantity;
     if (
       (formData.items?.remainingDelivery as number) > 0 &&
@@ -253,7 +256,7 @@ const NewDeliveryModal = ({
               readonly
             />
             <CustomInput
-              name="invoiceId"
+              name="serial"
               label="চালান নং"
               placeholder="চালান নং"
               register={register}
@@ -448,9 +451,9 @@ const NewDeliveryModal = ({
 
               {/* Save + New Delivery */}
               <button
-                type="button"
+                type="submit"
                 onClick={() => setSaveType("saveAndCreate")}
-                className="w-full rounded bg-[#039A63] px-5 py-2 text-[14px] font-medium text-white transition hover:bg-[#028a58] sm:w-auto sm:flex-1"
+                className="w-full disabled:bg-gray-500 cursor-pointer rounded bg-[#039A63] px-5 py-2 text-[14px] font-medium text-white transition hover:bg-[#028a58] sm:w-auto sm:flex-1"
                 disabled={createDeliveryLoading}
               >
                 {createDeliveryLoading ? "সেভ হচ্ছে.." : "সেভ + নতুন ডেলিভারি"}

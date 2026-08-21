@@ -1,21 +1,30 @@
 import { showToast } from "@/components/Toast/CustomToast";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-
 type HandleApiErrorOptions = {
-  error: unknown;
+  error: any;
   notFoundMessage?: string;
   defaultMessage?: string;
+};
+
+type ApiErrorData = {
+  message?: string;
+};
+
+const isBangla = (text: string) => {
+  return /[\u0980-\u09FF]/.test(text);
 };
 
 export const handleApiError = ({
   error,
   notFoundMessage = "তথ্য পাওয়া যায়নি",
-  defaultMessage = "তথ্য লোড করতে সমস্যা হয়েছে",
+  defaultMessage = "সার্ভারে সমস্যা হয়েছে",
 }: HandleApiErrorOptions) => {
   const apiError = error as FetchBaseQueryError;
 
+  // ==========================================
   // Internet / Server connection error
+  // ==========================================
   if (apiError?.status === "FETCH_ERROR") {
     showToast({
       title: navigator.onLine
@@ -27,7 +36,27 @@ export const handleApiError = ({
     return;
   }
 
-  // Not Found
+  // ==========================================
+  // Backend error message
+  // ==========================================
+  if (apiError?.data && typeof apiError.data === "object") {
+    const data = apiError.data as ApiErrorData;
+    if (data.message && typeof data.message === "string") {
+      // Backend থেকে Bangla message এলে সেটাই দেখাবে
+      if (isBangla(data.message)) {
+        showToast({
+          title: data.message,
+          type: "error",
+        });
+
+        return;
+      }
+    }
+  }
+
+  // ==========================================
+  // 404
+  // ==========================================
   if (apiError?.status === 404) {
     showToast({
       title: notFoundMessage,
@@ -37,7 +66,9 @@ export const handleApiError = ({
     return;
   }
 
-  // Other errors
+  // ==========================================
+  // Other / Prisma / Database / Internal Error
+  // ==========================================
   showToast({
     title: defaultMessage,
     type: "error",

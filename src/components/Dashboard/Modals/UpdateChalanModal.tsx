@@ -226,7 +226,7 @@ const UpdateChalanModal = ({
 
   const handleClose = () => {
     onClose();
-    setInvoiceId(0);
+    setInvoiceId(undefined);
     reset();
   };
 

@@ -11,6 +11,8 @@ import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
 import { useRouter } from "next/navigation";
 import { getDeviceInfo } from "@/utils/getClientInfo";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
+import { getSubdomain } from "@/utils/getSubdomain";
+import { useVerifySubDomainMutation } from "@/redux/features/vata.features";
 type TLogin = {
   username: string;
   password: string;
@@ -23,15 +25,16 @@ export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>();
   const [errorMsg, setErrorMsg] = useState<string>("");
-
+  // const subdomain = getSubdomain()
+  //  const [verifyDomainAsync, {isLoading:verifyLoading, isError}]=useVerifySubDomainMutation()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<TLogin>({
     defaultValues: {
-      username: "mahbub",
-      password: "12345678",
+      username: "hasan",
+      password: "123456",
     },
   });
 
@@ -47,12 +50,12 @@ export default function LoginPage() {
         storeUserInLocalStorage(result?.data?.token);
         router.push(result.redirectPath);
       } else {
-        setErrorMsg(result?.message ||SERVER_ERROR_MESSAGE);
+        setErrorMsg(result?.message || SERVER_ERROR_MESSAGE);
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      setErrorMsg(error?.data?.message ||SERVER_ERROR_MESSAGE);
+      setErrorMsg(error?.data?.message || SERVER_ERROR_MESSAGE);
       setIsLoading(false);
     }
   };

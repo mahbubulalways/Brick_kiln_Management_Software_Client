@@ -51,7 +51,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
             <div className="flex justify-between flex-col md:flex-row w-full gap-2 items-center p-3  bg-gray-50">
                 <SearchBar value={searchItems} onChange={(e) => setSearchItem(e.target.value)}
                     onClear={() => setSearchItem("")} />
-                <div className="flex items-center w-full gap-4">
+                <div className="flex items-center w-full md:w-max gap-4">
                     <CustomDateRangePicker value={dateRange} onChange={setDateRange} />
                     <CustomReportButton
                         onClick={() => setOpenReportModal(true)}

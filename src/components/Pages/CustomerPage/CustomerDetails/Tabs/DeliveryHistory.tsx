@@ -78,236 +78,237 @@ const DeliveryHistory = ({
     }, [deliveries]);
 
     return (
-        <div className="overflow-x-auto">
+        <div>
+            <div className="overflow-x-auto">
 
-            <table className="min-w-full">
+                <table className="min-w-full">
 
-                {/* ================= Header ================= */}
+                    {/* ================= Header ================= */}
 
-                <thead>
-                    <tr className="bg-[#039A63] text-center text-white">
+                    <thead>
+                        <tr className="bg-[#039A63] text-center text-white">
 
-                        <TableHead th="#" />
+                            <TableHead th="#" />
 
-                        <TableHead th="চালান নং" />
+                            <TableHead th="চালান নং" />
 
-                        <TableHead th="কাস্টমার" />
+                            <TableHead th="কাস্টমার" />
 
-                        <TableHead th="ঠিকানা" />
+                            <TableHead th="ঠিকানা" />
 
-                        <TableHead th="শ্রেণি" />
+                            <TableHead th="শ্রেণি" />
 
-                        <TableHead th="ক্রয়" />
+                            <TableHead th="ক্রয়" />
 
-                        <TableHead th="ডেলিভারি" />
+                            <TableHead th="ডেলিভারি" />
 
-                        <TableHead th="ডে. বাকি" />
+                            <TableHead th="ডে. বাকি" />
 
-                        <TableHead th="মোট ডেলিভারি" />
+                            <TableHead th="মোট ডেলিভারি" />
 
-                        <TableHead th="ড্রাইভার" />
+                            <TableHead th="ড্রাইভার" />
 
-                        <TableHead th="তারিখ" />
+                            <TableHead th="তারিখ" />
 
-                        <TableHead th="বাটন" />
+                            <TableHead th="বাটন" />
 
-                    </tr>
-                </thead>
-
-                {/* ================= Body ================= */}
-
-                <tbody className="text-center">
-
-                    {/* Loading */}
-
-                    {isLoading || isFetching ? (
-
-                        <tr>
-                            <td
-                                colSpan={12}
-                                className="py-10"
-                            >
-                                <CustomLoader cls="h-[20vh]" />
-                            </td>
                         </tr>
+                    </thead>
 
-                    ) : !deliveries.length ? (
+                    {/* ================= Body ================= */}
 
-                        /* Empty */
+                    <tbody className="text-center">
 
-                        <tr>
-                            <td
-                                colSpan={12}
-                                className="py-8 text-gray-500"
-                            >
-                                কোনো ডেলিভারি পাওয়া যায়নি
-                            </td>
-                        </tr>
+                        {/* Loading */}
 
-                    ) : (
+                        {isLoading || isFetching ? (
 
-                        deliveries.map(
-                            (row: TDeliveryWithCustomer, index: number) => (
-                                <tr
-                                    key={row?.id}
-                                    className="transition-colors hover:bg-gray-50"
+                            <tr>
+                                <td
+                                    colSpan={12}
+                                    className="py-10"
                                 >
+                                    <CustomLoader cls="h-[20vh]" />
+                                </td>
+                            </tr>
 
-                                    {/* # */}
+                        ) : !deliveries.length ? (
 
-                                    <TableData
-                                        td={
-                                            row?.deliveryNo
-                                        }
-                                    />
+                            /* Empty */
 
-                                    {/* চালান নং */}
+                            <tr>
+                                <td
+                                    colSpan={12}
+                                    className="py-8 text-gray-500"
+                                >
+                                    কোনো ডেলিভারি পাওয়া যায়নি
+                                </td>
+                            </tr>
 
-                                    <TableData
-                                        td={
-                                            row.invoiceId
-                                        }
-                                    />
+                        ) : (
 
-                                    {/* Customer */}
+                            deliveries.map(
+                                (row: TDeliveryWithCustomer, index: number) => (
+                                    <tr
+                                        key={row?.id}
+                                        className="transition-colors hover:bg-gray-50"
+                                    >
 
-                                    <TableData
-                                        td={row?.invoice.customer.name}
-                                    />
+                                        {/* # */}
 
-                                    {/* Address */}
+                                        <TableData
+                                            td={
+                                                row?.deliveryNo
+                                            }
+                                        />
 
-                                    <TableData
-                                        td={row?.invoice.customer.address}
-                                    />
+                                        {/* চালান নং */}
 
-                                    {/* Class */}
+                                        <TableData
+                                            td={
+                                                row.invoiceId
+                                            }
+                                        />
 
-                                    <TableData
-                                        td={
-                                            row.class ||
-                                            "-"
-                                        }
-                                    />
+                                        {/* Customer */}
 
-                                    {/* ক্রয় */}
+                                        <TableData
+                                            td={row?.invoice.customer.name}
+                                        />
 
-                                    <TableData
-                                        td={
-                                            toBanglaNumber(row?.quantity)
-                                        }
-                                    />
+                                        {/* Address */}
 
-                                    {/* Delivery */}
+                                        <TableData
+                                            td={row?.invoice.customer.address}
+                                        />
 
-                                    <TableData
-                                        td={toBanglaNumber(row?.deliveryReceived)}
-                                        cls="text-green-600"
-                                    />
+                                        {/* Class */}
 
-                                    {/* Delivery Remaining */}
+                                        <TableData
+                                            td={
+                                                row.class ||
+                                                "-"
+                                            }
+                                        />
 
-                                    <TableData
-                                        td={toBanglaNumber(row?.deliveryRemaining)}
-                                        cls={
-                                            row?.deliveryRemaining > 0
-                                                ? "text-red-500"
-                                                : "text-green-600"
-                                        }
-                                    />
+                                        {/* ক্রয় */}
 
-                                    {/* Total Delivery */}
+                                        <TableData
+                                            td={
+                                                toBanglaNumber(row?.quantity)
+                                            }
+                                        />
 
-                                    <TableData
-                                        td={toBanglaNumber(row?.deliveryReceived)}
-                                        cls="text-green-600"
-                                    />
+                                        {/* Delivery */}
 
-                                    {/* Driver */}
+                                        <TableData
+                                            td={toBanglaNumber(row?.deliveryReceived)}
+                                            cls="text-green-600"
+                                        />
 
-                                    <TableData
-                                        td={
-                                            row?.driverName ||
-                                            "-"
-                                        }
-                                    />
+                                        {/* Delivery Remaining */}
 
-                                    {/* Date */}
+                                        <TableData
+                                            td={toBanglaNumber(row?.deliveryRemaining)}
+                                            cls={
+                                                row?.deliveryRemaining > 0
+                                                    ? "text-red-500"
+                                                    : "text-green-600"
+                                            }
+                                        />
 
-                                    <TableData
-                                        td={
-                                            formatBanglaDate({ date: row?.deliveryDate, showTime: false })
-                                        }
-                                    />
+                                        {/* Total Delivery */}
 
-                                    {/* Actions */}
+                                        <TableData
+                                            td={toBanglaNumber(row?.deliveryReceived)}
+                                            cls="text-green-600"
+                                        />
 
-                                    <td className="border p-2">
+                                        {/* Driver */}
 
-                                        <DropdownMenu>
+                                        <TableData
+                                            td={
+                                                row?.driverName ||
+                                                "-"
+                                            }
+                                        />
 
-                                            <DropdownMenuTrigger
-                                                asChild
-                                            >
+                                        {/* Date */}
 
-                                                <button className="cursor-pointer rounded p-1.5 hover:bg-gray-100">
+                                        <TableData
+                                            td={
+                                                formatBanglaDate({ date: row?.deliveryDate, showTime: false })
+                                            }
+                                        />
 
-                                                    <MoreVertical
-                                                        size={17}
-                                                        className="text-gray-600"
-                                                    />
+                                        {/* Actions */}
 
-                                                </button>
+                                        <td className="border p-2">
 
-                                            </DropdownMenuTrigger>
+                                            <DropdownMenu>
 
-                                            <DropdownMenuContent
-                                                align="end"
-                                                className="rounded-md border bg-white shadow-md"
-                                            >
-                                                <DropdownMenuItem
-                                                    onClick={() => {
-                                                        setOpenPrintModal(true);
-                                                        setDeliveryId(row?.id);
-                                                    }}
+                                                <DropdownMenuTrigger
+                                                    asChild
                                                 >
-                                                    <CustomDropDownMenuItem
-                                                        Icon={
-                                                            Printer
-                                                        }
-                                                        title="প্রিন্ট"
-                                                    />
 
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => {
-                                                        setOpenDeliveryDetailsModal(true),
+                                                    <button className="cursor-pointer rounded p-1.5 hover:bg-gray-100">
+
+                                                        <MoreVertical
+                                                            size={17}
+                                                            className="text-gray-600"
+                                                        />
+
+                                                    </button>
+
+                                                </DropdownMenuTrigger>
+
+                                                <DropdownMenuContent
+                                                    align="end"
+                                                    className="rounded-md border bg-white shadow-md"
+                                                >
+                                                    <DropdownMenuItem
+                                                        onClick={() => {
+                                                            setOpenPrintModal(true);
                                                             setDeliveryId(row?.id);
-                                                    }}
-                                                >
-                                                    <CustomDropDownMenuItem
-                                                        Icon={
-                                                            Truck
-                                                        }
-                                                        title="ডেলিভারি বিস্তারিত"
-                                                    />
+                                                        }}
+                                                    >
+                                                        <CustomDropDownMenuItem
+                                                            Icon={
+                                                                Printer
+                                                            }
+                                                            title="প্রিন্ট"
+                                                        />
 
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => {
+                                                            setOpenDeliveryDetailsModal(true),
+                                                                setDeliveryId(row?.id);
+                                                        }}
+                                                    >
+                                                        <CustomDropDownMenuItem
+                                                            Icon={
+                                                                Truck
+                                                            }
+                                                            title="ডেলিভারি বিস্তারিত"
+                                                        />
 
-                                        </DropdownMenu>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
 
-                                    </td>
+                                            </DropdownMenu>
 
-                                </tr>
+                                        </td>
+
+                                    </tr>
+                                )
                             )
-                        )
-                    )}
+                        )}
 
-                </tbody>
+                    </tbody>
 
-            </table>
-
+                </table>
+            </div>
             {/* ================= Pagination ================= */}
 
             <TablePagination

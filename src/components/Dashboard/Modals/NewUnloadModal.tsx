@@ -19,6 +19,7 @@ import {
   useGetAllUnloadInfoQuery,
 } from "@/redux/features/unload.features";
 import { TUnloadItem, TUnloadResponse } from "@/interface/unload";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 // =========================
 // MODAL TYPE
@@ -113,6 +114,7 @@ const NewUnloadModal = ({
     reset,
     control,
     setValue,
+    formState: { errors }
   } = useForm<TLoadInfo>({
     defaultValues: {
       date: new Date(),
@@ -149,7 +151,7 @@ const NewUnloadModal = ({
     // =========================
     // FIND SAME ROUND + DATE
     // =========================
-    const roundData = unloads.find((item:TUnloadResponse) => {
+    const roundData = unloads.find((item: TUnloadResponse) => {
       if (!item.date || !item.round) {
         return false;
       }
@@ -174,7 +176,7 @@ const NewUnloadModal = ({
     // =========================
     const classData =
       roundData.unloadItems?.find(
-        (item:TUnloadItem) =>
+        (item: TUnloadItem) =>
           item.classType?.className ===
           selectedClass
       );
@@ -251,78 +253,62 @@ const NewUnloadModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title="নতুন আনলোড"
-    >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="grid grid-cols-2 gap-2">
-
-          {/* =========================
-              ROUND
-          ========================= */}
-          <CustomSelect
-            name="round"
-            label="রাউন্ড"
-            placeholder="রাউন্ড"
-            control={control}
-            options={
-              formatRoundLabelValue
-            }
-            isError={roundError}
-            isLoading={roundLoading}
-            rules={{
-              required: "",
-            }}
-          />
-
-          {/* =========================
-              DATE
-          ========================= */}
-          <CustomDatePicker
-            control={control}
-            name="date"
-            label="আনলোডের তারিখ"
-          />
-
-          {/* =========================
-              CLASS
-          ========================= */}
-          <CustomSelect
-            name="className"
-            label="শ্রেণি"
-            placeholder="শ্রেণি"
-            control={control}
-            options={
-              formatClassLabelValue
-            }
-            isError={classError}
-            isLoading={classLoading}
-            rules={{
-              required: "",
-            }}
-          />
-
-          {/* =========================
-              QUANTITY
-          ========================= */}
-          <CustomInput
-            name="quantity"
-            label="পরিমাণ"
-            placeholder="পরিমাণ"
-            register={register}
-            type="text"
-          />
-        </div>
-
-        {/* =========================
-            BUTTONS
-        ========================= */}
-        <div className="flex items-center justify-between pt-5">
-
-          {/* CLEAR */}
-          <div
-            onClick={handleClear}
-            className="
+    >{
+        classLoading && roundLoading ? <CustomStatus type="loading" /> : <form
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <div className="grid grid-cols-2 gap-2">
+            <CustomSelect
+              name="round"
+              label="রাউন্ড"
+              placeholder="রাউন্ড"
+              control={control}
+              options={formatRoundLabelValue}
+              isError={roundError}
+              isLoading={roundLoading}
+              error={errors.round}
+              rules={{
+                required: "রাউন্ড নির্বাচন করুন",
+              }}
+            />
+            <CustomDatePicker
+              control={control}
+              name="date"
+              label="আনলোডের তারিখ"
+              error={errors.date}
+              rules={{
+                required: "আনলোডের তারিখ নির্বাচন করুন",
+              }}
+            />
+            <CustomSelect
+              name="className"
+              label="শ্রেণি"
+              placeholder="শ্রেণি"
+              control={control}
+              options={formatClassLabelValue}
+              error={errors.className}
+              isError={classError}
+              isLoading={classLoading}
+              rules={{
+                required: "শ্রেণি নির্বাচন করুন",
+              }}
+            />
+            <CustomInput
+              name="quantity"
+              label="পরিমাণ"
+              placeholder="পরিমাণ"
+              register={register}
+              type="text"
+              error={errors.quantity}
+              rules={{
+                required: "পরিমাণ লিখুন",
+              }}
+            />
+          </div>
+          <div className="flex items-center justify-between pt-5">
+            <div
+              onClick={handleClear}
+              className="
               text-[14px]
               border
               border-gray-300
@@ -337,14 +323,12 @@ const NewUnloadModal = ({
               rounded
               cursor-pointer
             "
-          >
-            ক্লিয়ার
-          </div>
-
-          {/* SUBMIT */}
-          <button
-            type="submit"
-            className="
+            >
+              ক্লিয়ার
+            </div>
+            <button
+              type="submit"
+              className="
               text-[14px]
               bg-[#039A63]
               px-8
@@ -355,17 +339,19 @@ const NewUnloadModal = ({
               cursor-pointer
               disabled:opacity-50
             "
-            disabled={
-              isLoading ||
-              unloadLoading
-            }
-          >
-            {isLoading
-              ? "অ্যাড হচ্ছে..."
-              : "অ্যাড করুন"}
-          </button>
-        </div>
-      </form>
+              disabled={
+                isLoading
+              }
+            >
+              {isLoading
+                ? "অ্যাড হচ্ছে..."
+                : "অ্যাড করুন"}
+            </button>
+          </div>
+        </form>
+      }
+
+
     </CustomModal>
   );
 };

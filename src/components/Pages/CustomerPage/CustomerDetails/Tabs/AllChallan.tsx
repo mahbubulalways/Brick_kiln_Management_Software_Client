@@ -48,8 +48,8 @@ const AllChallan = ({
     const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
         useState<boolean>(false);
     const [invoiceId, setInvoiceId] = useState<number>();
-        const [openChalanDetailsModal, setOpenChalanDetailsModal] =
-            useState<boolean>(false);
+    const [openChalanDetailsModal, setOpenChalanDetailsModal] =
+        useState<boolean>(false);
     const {
         data,
         isLoading,
@@ -73,260 +73,260 @@ const AllChallan = ({
         setInvoiceInfo(invoices);
     }, [invoices]);
     return (
-        <div className="overflow-x-auto">
+        <div>
+            <div className="overflow-x-auto">
+                <table className="min-w-full">
 
-            <table className="min-w-full">
+                    {/* ================= Header ================= */}
+                    <thead>
+                        <tr className="bg-[#039A63] text-center text-white">
 
-                {/* ================= Header ================= */}
-                <thead>
-                    <tr className="bg-[#039A63] text-center text-white">
+                            <TableHead th="#" />
 
-                        <TableHead th="#" />
+                            <TableHead th="তারিখ" />
+                            <TableHead th="শ্রেণি" />
 
-                        <TableHead th="তারিখ" />
-                        <TableHead th="শ্রেণি" />
+                            <TableHead th="পরিমাণ" />
 
-                        <TableHead th="পরিমাণ" />
+                            <TableHead
+                                th="রেট"
+                                cls="hidden lg:table-cell"
+                            />
 
-                        <TableHead
-                            th="রেট"
-                            cls="hidden lg:table-cell"
-                        />
+                            <TableHead
+                                th="মূল্য"
+                                cls="hidden lg:table-cell"
+                            />
 
-                        <TableHead
-                            th="মূল্য"
-                            cls="hidden lg:table-cell"
-                        />
+                            <TableHead
+                                th="মোট মূল্য"
+                                cls="hidden lg:table-cell"
+                            />
 
-                        <TableHead
-                            th="মোট মূল্য"
-                            cls="hidden lg:table-cell"
-                        />
+                            <TableHead
+                                th="ছাড়"
+                                cls="hidden lg:table-cell"
+                            />
 
-                        <TableHead
-                            th="ছাড়"
-                            cls="hidden lg:table-cell"
-                        />
+                            <TableHead
+                                th="ভাড়া"
+                                cls="hidden lg:table-cell"
+                            />
 
-                        <TableHead
-                            th="ভাড়া"
-                            cls="hidden lg:table-cell"
-                        />
+                            <TableHead th="সর্বমোট" />
 
-                        <TableHead th="সর্বমোট" />
+                            <TableHead
+                                th="নগদ"
+                                cls="hidden lg:table-cell"
+                            />
 
-                        <TableHead
-                            th="নগদ"
-                            cls="hidden lg:table-cell"
-                        />
+                            <TableHead
+                                th="বাকি"
+                                cls="hidden lg:table-cell"
+                            />
 
-                        <TableHead
-                            th="বাকি"
-                            cls="hidden lg:table-cell"
-                        />
+                            <TableHead th="বাটন" />
 
-                        <TableHead th="বাটন" />
-
-                    </tr>
-                </thead>
-
-                {/* ================= Body ================= */}
-                <tbody className="text-center">
-
-                    {isLoading || isFetching ? (
-
-                        <tr>
-                            <td
-                                colSpan={12}
-                                className="py-10"
-                            >
-                                <CustomLoader cls="h-[20vh]" />
-                            </td>
                         </tr>
+                    </thead>
 
-                    ) : !invoices.length ? (
+                    {/* ================= Body ================= */}
+                    <tbody className="text-center">
 
-                        <tr>
-                            <td
-                                colSpan={12}
-                                className="py-8 text-gray-500"
-                            >
-                                কোনো চালান পাওয়া যায়নি
-                            </td>
-                        </tr>
+                        {isLoading || isFetching ? (
 
-                    ) : (
+                            <tr>
+                                <td
+                                    colSpan={12}
+                                    className="py-10"
+                                >
+                                    <CustomLoader cls="h-[20vh]" />
+                                </td>
+                            </tr>
 
-                        invoices.map((row: any, index: number) => {
+                        ) : !invoices.length ? (
 
-                            const items = row?.items ?? [];
+                            <tr>
+                                <td
+                                    colSpan={12}
+                                    className="py-8 text-gray-500"
+                                >
+                                    কোনো চালান পাওয়া যায়নি
+                                </td>
+                            </tr>
 
-                            return items.map(
-                                (item: any, itemIndex: number) => (
+                        ) : (
 
-                                    <tr
-                                        key={`${row.id}-${item.id}`}
-                                        className="transition-colors hover:bg-gray-50"
-                                    >
+                            invoices.map((row: any, index: number) => {
 
-                                        {/* ================= Serial ================= */}
-                                        {itemIndex === 0 && (
+                                const items = row?.items ?? [];
+
+                                return items.map(
+                                    (item: any, itemIndex: number) => (
+
+                                        <tr
+                                            key={`${row.id}-${item.id}`}
+                                            className="transition-colors hover:bg-gray-50"
+                                        >
+
+                                            {/* ================= Serial ================= */}
+                                            {itemIndex === 0 && (
+                                                <TableData
+                                                    td={row.id}
+                                                    rowSpan={items.length}
+                                                />
+                                            )}
                                             <TableData
-                                                td={row.id }
-                                                rowSpan={items.length}
+                                                td={formatBanglaDate({ date: item.createdAt })}
                                             />
-                                        )}
-                                        <TableData
-                                            td={formatBanglaDate({ date: item.createdAt })}
-                                        />
-                                        {/* ================= Class ================= */}
-                                        <TableData
-                                            td={item.class}
-                                        />
+                                            {/* ================= Class ================= */}
+                                            <TableData
+                                                td={item.class}
+                                            />
 
-                                        {/* ================= Quantity ================= */}
-                                        <TableData
-                                            td={item.quantity?.toLocaleString()}
-                                        />
+                                            {/* ================= Quantity ================= */}
+                                            <TableData
+                                                td={item.quantity?.toLocaleString()}
+                                            />
 
-                                        {/* ================= Rate ================= */}
-                                        <TableData
-                                            td={item.rate}
-                                            cls="hidden lg:table-cell"
-                                        />
+                                            {/* ================= Rate ================= */}
+                                            <TableData
+                                                td={item.rate}
+                                                cls="hidden lg:table-cell"
+                                            />
 
-                                        {/* ================= Item Price ================= */}
-                                        <TableData
-                                            td={`৳ ${item.price?.toLocaleString()}`}
-                                            cls="hidden lg:table-cell"
-                                        />
+                                            {/* ================= Item Price ================= */}
+                                            <TableData
+                                                td={`৳ ${item.price?.toLocaleString()}`}
+                                                cls="hidden lg:table-cell"
+                                            />
 
-                                        {/* ================= Challan Info ================= */}
-                                        {itemIndex === 0 && (
-                                            <>
+                                            {/* ================= Challan Info ================= */}
+                                            {itemIndex === 0 && (
+                                                <>
 
-                                                {/* Product Price */}
-                                                <TableData
-                                                    td={`৳ ${row.productPrice?.toLocaleString()}`}
-                                                    cls="hidden lg:table-cell text-green-600"
-                                                    rowSpan={items.length}
-                                                />
+                                                    {/* Product Price */}
+                                                    <TableData
+                                                        td={`৳ ${row.productPrice?.toLocaleString()}`}
+                                                        cls="hidden lg:table-cell text-green-600"
+                                                        rowSpan={items.length}
+                                                    />
 
-                                                {/* Discount */}
-                                                <TableData
-                                                    td={`৳ ${row.discount?.toLocaleString()}`}
-                                                    cls="hidden lg:table-cell text-orange-500"
-                                                    rowSpan={items.length}
-                                                />
+                                                    {/* Discount */}
+                                                    <TableData
+                                                        td={`৳ ${row.discount?.toLocaleString()}`}
+                                                        cls="hidden lg:table-cell text-orange-500"
+                                                        rowSpan={items.length}
+                                                    />
 
-                                                {/* Car Rent */}
-                                                <TableData
-                                                    td={`৳ ${row.carRent?.toLocaleString()}`}
-                                                    cls="hidden lg:table-cell text-blue-600"
-                                                    rowSpan={items.length}
-                                                />
+                                                    {/* Car Rent */}
+                                                    <TableData
+                                                        td={`৳ ${row.carRent?.toLocaleString()}`}
+                                                        cls="hidden lg:table-cell text-blue-600"
+                                                        rowSpan={items.length}
+                                                    />
 
-                                                {/* Total Price */}
-                                                <TableData
-                                                    td={`৳ ${row.totalPrice?.toLocaleString()}`}
-                                                    rowSpan={items.length}
-                                                />
+                                                    {/* Total Price */}
+                                                    <TableData
+                                                        td={`৳ ${row.totalPrice?.toLocaleString()}`}
+                                                        rowSpan={items.length}
+                                                    />
 
-                                                {/* Cash */}
-                                                <TableData
-                                                    td={`৳ ${row.cash?.toLocaleString()}`}
-                                                    cls="hidden lg:table-cell text-green-600"
-                                                    rowSpan={items.length}
-                                                />
+                                                    {/* Cash */}
+                                                    <TableData
+                                                        td={`৳ ${row.cash?.toLocaleString()}`}
+                                                        cls="hidden lg:table-cell text-green-600"
+                                                        rowSpan={items.length}
+                                                    />
 
-                                                {/* Due */}
-                                                <TableData
-                                                    td={`৳ ${row.due?.toLocaleString()}`}
-                                                    cls={`hidden lg:table-cell ${row.due > 0
-                                                        ? "text-red-500"
-                                                        : "text-green-600"
-                                                        }`}
-                                                    rowSpan={items.length}
-                                                />
+                                                    {/* Due */}
+                                                    <TableData
+                                                        td={`৳ ${row.due?.toLocaleString()}`}
+                                                        cls={`hidden lg:table-cell ${row.due > 0
+                                                            ? "text-red-500"
+                                                            : "text-green-600"
+                                                            }`}
+                                                        rowSpan={items.length}
+                                                    />
 
-                                                {/* ================= Actions ================= */}
-                                                <td
-                                                    className="border p-2"
-                                                    rowSpan={items.length}
-                                                >
-                                                    <DropdownMenu>
+                                                    {/* ================= Actions ================= */}
+                                                    <td
+                                                        className="border p-2"
+                                                        rowSpan={items.length}
+                                                    >
+                                                        <DropdownMenu>
 
-                                                        <DropdownMenuTrigger asChild>
-                                                            <button className="cursor-pointer rounded p-1.5 hover:bg-gray-100">
-                                                                <MoreVertical
-                                                                    size={17}
-                                                                    className="text-gray-600"
-                                                                />
-                                                            </button>
-                                                        </DropdownMenuTrigger>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <button className="cursor-pointer rounded p-1.5 hover:bg-gray-100">
+                                                                    <MoreVertical
+                                                                        size={17}
+                                                                        className="text-gray-600"
+                                                                    />
+                                                                </button>
+                                                            </DropdownMenuTrigger>
 
-                                                        <DropdownMenuContent
-                                                            align="end"
-                                                            className="rounded-md border bg-white shadow-md"
-                                                        >
-
-
-
-                                                            {/* Print */}
-                                                            <DropdownMenuItem
-                                                                onClick={() => {
-                                                                    setOpenPrintModal(true);
-                                                                    setInvoiceId(row.id);
-                                                                }}
+                                                            <DropdownMenuContent
+                                                                align="end"
+                                                                className="rounded-md border bg-white shadow-md"
                                                             >
-                                                                <CustomDropDownMenuItem
-                                                                    Icon={Printer}
-                                                                    title="প্রিন্ট চালান"
-                                                                />
-                                                            </DropdownMenuItem>
 
-                                                            {/* Delivery */}
-                                                            <DropdownMenuItem
-                                                                onClick={() => {
-                                                                    setIsDeliveryModalOpen(true);
-                                                                    setInvoiceId(row.id);
-                                                                }}
-                                                            >
-                                                                <CustomDropDownMenuItem
-                                                                    Icon={Truck}
-                                                                    title="ডেলিভারি দিন"
-                                                                />
-                                                            </DropdownMenuItem>
 
-                                                            {/* Details */}
-                                                            <DropdownMenuItem
-                                                                onClick={() => {
-                                                                    setInvoiceId(row.id);
-                                                                      setOpenChalanDetailsModal(true);
-                                                                }}
-                                                            >
-                                                                <CustomDropDownMenuItem
-                                                                    Icon={Notebook}
-                                                                    title="চালান বিস্তারিত"
-                                                                />
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
 
-                                                    </DropdownMenu>
-                                                </td>
+                                                                {/* Print */}
+                                                                <DropdownMenuItem
+                                                                    onClick={() => {
+                                                                        setOpenPrintModal(true);
+                                                                        setInvoiceId(row.id);
+                                                                    }}
+                                                                >
+                                                                    <CustomDropDownMenuItem
+                                                                        Icon={Printer}
+                                                                        title="প্রিন্ট চালান"
+                                                                    />
+                                                                </DropdownMenuItem>
 
-                                            </>
-                                        )}
+                                                                {/* Delivery */}
+                                                                <DropdownMenuItem
+                                                                    onClick={() => {
+                                                                        setIsDeliveryModalOpen(true);
+                                                                        setInvoiceId(row.id);
+                                                                    }}
+                                                                >
+                                                                    <CustomDropDownMenuItem
+                                                                        Icon={Truck}
+                                                                        title="ডেলিভারি দিন"
+                                                                    />
+                                                                </DropdownMenuItem>
 
-                                    </tr>
-                                )
-                            );
-                        })
-                    )}
+                                                                {/* Details */}
+                                                                <DropdownMenuItem
+                                                                    onClick={() => {
+                                                                        setInvoiceId(row.id);
+                                                                        setOpenChalanDetailsModal(true);
+                                                                    }}
+                                                                >
+                                                                    <CustomDropDownMenuItem
+                                                                        Icon={Notebook}
+                                                                        title="চালান বিস্তারিত"
+                                                                    />
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
 
-                </tbody>
-            </table>
+                                                        </DropdownMenu>
+                                                    </td>
 
+                                                </>
+                                            )}
+
+                                        </tr>
+                                    )
+                                );
+                            })
+                        )}
+
+                    </tbody>
+                </table>
+            </div>
             <TablePagination
                 page={meta?.page ?? 1}
                 totalPages={meta?.totalPages ?? 1}
@@ -350,14 +350,14 @@ const AllChallan = ({
                 />
             )}
 
-             {openChalanDetailsModal && (
-                            <ChalanDetailsModal
-                                invoiceId={invoiceId!}
-                                setInvoiceId={setInvoiceId}
-                                isOpen={openChalanDetailsModal}
-                                onClose={() => setOpenChalanDetailsModal(false)}
-                            />
-                        )}
+            {openChalanDetailsModal && (
+                <ChalanDetailsModal
+                    invoiceId={invoiceId!}
+                    setInvoiceId={setInvoiceId}
+                    isOpen={openChalanDetailsModal}
+                    onClose={() => setOpenChalanDetailsModal(false)}
+                />
+            )}
         </div>
     );
 };

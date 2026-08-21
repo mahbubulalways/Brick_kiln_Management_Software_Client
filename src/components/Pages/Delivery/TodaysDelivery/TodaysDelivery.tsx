@@ -33,8 +33,6 @@ import NewDeliveryModalForInput from "@/components/Dashboard/Modals/NewDeliveryM
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 import Link from "next/link";
 const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
-  const [rowsPerPage, setRowsPerPage] = useState(30);
-  const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
@@ -42,18 +40,12 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [deliveryId, setDeliveryId] = useState<number | undefined>();
   const isoDate = date ? date.toISOString() : "";
-
-  const { data, isFetching,isError } = useGetTodaysDeliveryQuery({ date: isoDate, limit, page }, {
+  const { data, isFetching, isError } = useGetTodaysDeliveryQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
   });
 
   const deliveries = data?.data?.data || [];
   const meta = data?.data?.meta as TMetaConfig;
-  const paginatedData = deliveries?.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-
   const items = deliveries?.map((delivery: TDeliveryResponse) => {
     return {
       class: delivery?.class,
@@ -65,7 +57,7 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
-          <CustomNewButton title="নতুন ডেলিভারি"  onClick={() => setIsOpen(!isOpen)} />
+        <CustomNewButton title="নতুন ডেলিভারি" onClick={() => setIsOpen(!isOpen)} />
         <div className="flex items-center gap-2 ">
           <CustomDatePickerState onChange={setDate} value={date} />
           <CustomReportButton onClick={() => setOpenDeliveryReport(true)} />
@@ -78,7 +70,7 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
           <table className="min-w-full   text-center border-t">
             <thead className="bg-[#039A63] text-white">
               <tr>
-                <TableHead th={"#"} />
+
                 <TableHead th={"চালান নং"} />
                 <TableHead th={"কাস্টমার"} />
                 <TableHead th={"ঠিকানা"} cls="hidden lg:table-cell" />
@@ -99,21 +91,21 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
                     <CustomLoader cls="h-[30vh]" />
                   </td>
                 </tr>
-              ) :isError ?<tr>
-                  <td colSpan={13} className="py-8 text-gray-600">
-                    {SERVER_ERROR_MESSAGE}
-                  </td>
-                </tr> : !paginatedData?.length ? (
+              ) : isError ? <tr>
+                <td colSpan={13} className="py-8 text-gray-600">
+                  {SERVER_ERROR_MESSAGE}
+                </td>
+              </tr> : !deliveries?.length ? (
                 <tr>
                   <td colSpan={13} className="py-8 text-gray-600">
                     {data?.message}
                   </td>
                 </tr>
               ) : (
-                paginatedData?.map((row: TDeliveryResponse) => (
+                deliveries?.map((row: TDeliveryResponse) => (
                   <tr key={row.id} className="hover:bg-gray-50">
-                    <TableData td={row?.id} />
-                    <TableData td={row?.invoiceId} />
+
+                    <TableData td={row?.invoice.serial} />
                     <TableData td={row?.invoice?.customer?.name} />
                     <TableData
                       td={row?.invoice?.customer?.address}
@@ -126,7 +118,7 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
                       td={toBanglaNumber(row?.deliveryRemaining)}
                       cls="hidden lg:table-cell"
                     />
-                    <TableData td={row?.driverName} cls="hidden lg:table-cell" />
+                    <TableData td={row?.driverName || "-"} cls="hidden lg:table-cell" />
                     <TableData td={toBanglaNumber(row?.deliveryReceived)} />
                     <TableData
                       cls="hidden lg:table-cell"

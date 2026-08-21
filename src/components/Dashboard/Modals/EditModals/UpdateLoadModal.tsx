@@ -18,6 +18,7 @@ import { SERVER_ERROR_MESSAGE } from "@/constant";
 import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
 import { TClassAndRate } from "@/types/types";
 import { Dispatch, SetStateAction, useEffect } from "react";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 type TCustomModal = {
     isOpen: boolean;
@@ -37,7 +38,7 @@ export interface TLoadInfo {
 const UpdateLoadModal = ({
     isOpen,
     onClose,
-    id,setId
+    id, setId
 }: TCustomModal) => {
     // ================= API =================
 
@@ -68,6 +69,7 @@ const UpdateLoadModal = ({
     const {
         isLoading: classLoading,
         data: fetchedData,
+        isError
     } = useGetAllClassAndRateQuery(undefined);
 
     const formatLabelValue =
@@ -167,7 +169,7 @@ const UpdateLoadModal = ({
 
     // ================= UI =================
 
-    const handleClose =()=>{
+    const handleClose = () => {
         setId(undefined)
         onClose()
     }
@@ -176,87 +178,89 @@ const UpdateLoadModal = ({
             isOpen={isOpen}
             onClose={handleClose}
             title="লোড আপডেট"
-        >
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="grid grid-cols-2 gap-2">
+        >{
+                singleLoading || classLoading ? <CustomStatus type="loading" /> :
+                    isError || singleError ? <CustomStatus type="error" /> :
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <div className="grid grid-cols-2 gap-2">
 
-                    {/* DATE */}
-                    <CustomDatePicker
-                        control={control}
-                        name="date"
-                        label="তারিখ"
-                    />
+                                {/* DATE */}
+                                <CustomDatePicker
+                                    control={control}
+                                    name="date"
+                                    label="তারিখ"
+                                />
 
-                    {/* ROUND */}
-                    <CustomSelectAdd
-                        name="round"
-                        label="রাউন্ড"
-                        placeholder="রাউন্ড নির্বাচন করুন"
-                        control={control}
-                        clearable={false}
-                        searchable={false}
-                    />
+                                {/* ROUND */}
+                                <CustomSelectAdd
+                                    name="round"
+                                    label="রাউন্ড"
+                                    placeholder="রাউন্ড নির্বাচন করুন"
+                                    control={control}
+                                    clearable={false}
+                                    searchable={false}
+                                />
 
-                    {/* LOAD TYPE */}
-                    <CustomSelect
-                        name="loadType"
-                        label="লোডের ধরণ"
-                        placeholder="লোডের ধরণ"
-                        control={control}
-                        options={[
-                            {
-                                label: "মাঠ থেকে লোড হয়েছে",
-                                value: "মাঠ থেকে লোড হয়েছে",
-                            },
-                            {
-                                label: "স্টক থেকে লোড হয়েছে",
-                                value: "স্টক থেকে লোড হয়েছে",
-                            },
-                            {
-                                label: "পাকা ইট লোড হয়েছে",
-                                value: "পাকা ইট লোড হয়েছে",
-                            },
-                        ]}
-                    />
+                                {/* LOAD TYPE */}
+                                <CustomSelect
+                                    name="loadType"
+                                    label="লোডের ধরণ"
+                                    placeholder="লোডের ধরণ"
+                                    control={control}
+                                    options={[
+                                        {
+                                            label: "মাঠ থেকে লোড হয়েছে",
+                                            value: "মাঠ থেকে লোড হয়েছে",
+                                        },
+                                        {
+                                            label: "স্টক থেকে লোড হয়েছে",
+                                            value: "স্টক থেকে লোড হয়েছে",
+                                        },
+                                        {
+                                            label: "পাকা ইট লোড হয়েছে",
+                                            value: "পাকা ইট লোড হয়েছে",
+                                        },
+                                    ]}
+                                />
 
-                    {/* CLASS TYPE */}
-                    {isPaka && (
-                        <CustomSelect
-                            name="classType"
-                            label="শ্রেণি"
-                            placeholder="শ্রেণি"
-                            control={control}
-                            isLoading={classLoading}
-                            options={formatLabelValue}
-                        />
-                    )}
+                                {/* CLASS TYPE */}
+                                {isPaka && (
+                                    <CustomSelect
+                                        name="classType"
+                                        label="শ্রেণি"
+                                        placeholder="শ্রেণি"
+                                        control={control}
+                                        isLoading={classLoading}
+                                        options={formatLabelValue}
+                                    />
+                                )}
 
-                    {/* QUANTITY */}
-                    <CustomInput
-                        name="quantity"
-                        label="পরিমান"
-                        placeholder="লোডের পরিমাণ"
-                        register={register}
-                        type="text"
-                    />
-                </div>
+                                {/* QUANTITY */}
+                                <CustomInput
+                                    name="quantity"
+                                    label="পরিমান"
+                                    placeholder="লোডের পরিমাণ"
+                                    register={register}
+                                    type="text"
+                                />
+                            </div>
 
-                {/* BUTTONS */}
-                <div className="flex items-center justify-between pt-5">
+                            {/* BUTTONS */}
+                            <div className="flex items-center justify-between pt-5">
 
-                    {/* CLEAR / RESET */}
-                    <div
-                        onClick={() => {
-                            reset({
-                                date: new Date(loadData.date),
-                                round: loadData.roundId,
-                                quantity: Number(loadData.quantity),
-                                loadType: loadData.loadType,
-                                classType:
-                                    loadData.classType || undefined,
-                            });
-                        }}
-                        className="
+                                {/* CLEAR / RESET */}
+                                <div
+                                    onClick={() => {
+                                        reset({
+                                            date: new Date(loadData.date),
+                                            round: loadData.roundId,
+                                            quantity: Number(loadData.quantity),
+                                            loadType: loadData.loadType,
+                                            classType:
+                                                loadData.classType || undefined,
+                                        });
+                                    }}
+                                    className="
               text-[14px]
               border
               border-gray-300
@@ -271,15 +275,15 @@ const UpdateLoadModal = ({
               rounded
               cursor-pointer
             "
-                    >
-                        রিসেট
-                    </div>
+                                >
+                                    রিসেট
+                                </div>
 
-                    {/* UPDATE */}
-                    <button
-                        type="submit"
-                        disabled={updateLoading}
-                        className="
+                                {/* UPDATE */}
+                                <button
+                                    type="submit"
+                                    disabled={updateLoading}
+                                    className="
               text-[14px]
               bg-[#039A63]
               px-8
@@ -291,13 +295,14 @@ const UpdateLoadModal = ({
               disabled:opacity-50
               disabled:cursor-not-allowed
             "
-                    >
-                        {updateLoading
-                            ? "আপডেট হচ্ছে..."
-                            : "আপডেট করুন"}
-                    </button>
-                </div>
-            </form>
+                                >
+                                    {updateLoading
+                                        ? "আপডেট হচ্ছে..."
+                                        : "আপডেট করুন"}
+                                </button>
+                            </div>
+                        </form>
+            }
         </CustomModal>
     );
 };

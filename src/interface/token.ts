@@ -11,4 +11,5 @@ export type JwtTokenPayload = {
   email: string;
   userId: string;
   role: "SUPER_ADMIN" | "ADMIN" | "STAFF";
+  vataId:string
 };

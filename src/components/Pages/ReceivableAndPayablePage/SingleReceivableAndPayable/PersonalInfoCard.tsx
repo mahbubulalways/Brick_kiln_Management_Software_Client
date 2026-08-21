@@ -40,11 +40,11 @@ const PersonalInfoCard = ({
 
             {/* Body */}
             <div className="grid grid-cols-1 gap-x-10 gap-y-7 p-7 md:grid-cols-2">
-                <InfoItem
+                {/* <InfoItem
                     icon={<BadgeInfo size={18} />}
                     label="আইডি"
                     value={id}
-                />
+                /> */}
 
                 <InfoItem
                     icon={<UserRound size={18} />}

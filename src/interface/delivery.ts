@@ -1,3 +1,5 @@
+import { IUser } from "./user";
+
 export type TInvoiceCustomer = {
   id: number;
   name: string;
@@ -9,11 +11,14 @@ export type TInvoiceCustomer = {
 };
 
 export type TDeliveryInvoice = {
-  id: number;
+  id: string;
   customer: TInvoiceCustomer;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+  serial: number
+  challanDate: string,
+  deliveryDate: string
 };
 
 
@@ -29,11 +34,12 @@ export type TDeliveryResponse = {
   deliveryRemaining: number;
   driverName: string;
   driverPhoneNumber: string;
-  invoiceId: number;
+  invoiceId: string;
   invoice: TDeliveryInvoice;
   isDeleted: boolean;
   createdAt: string;
-  
+  deliveryBy:IUser
+
 };
 
 

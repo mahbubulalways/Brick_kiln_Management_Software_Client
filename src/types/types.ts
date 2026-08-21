@@ -1,3 +1,4 @@
+import { IUser } from "@/interface/user";
 import { Dispatch, SetStateAction } from "react";
 
 export type TClassAndRate = {
@@ -44,8 +45,8 @@ export type TChallanCreate = {
 export type TCustomInvoiceModal = {
   isOpen: boolean;
   onClose: () => void;
-  setInvoiceId: Dispatch<SetStateAction<number | undefined>>;
-  invoiceId: number;
+  setInvoiceId: Dispatch<SetStateAction<string | undefined>>;
+  invoiceId: string;
 };
 
 // Types for showing challan
@@ -61,6 +62,7 @@ export interface ICustomer {
   totalPaid: number;
   nextPaymentDate: string;
   note:string
+  customerCode:string;
   remainingDelivery:number
 }
 
@@ -79,16 +81,17 @@ export interface IChallanItem {
 }
 
 export interface IChallanForDataShow {
-  id: number;
+  id: string;
   serial: number;
+  season:string;
   chalanType: string;
   challanDate: string;
   createdAt: string;
   updatedAt: string;
-  createdBy: string;
   customerId: number;
   customer: ICustomer;
   items: IChallanItem[];
+  createdBy:IUser,
   productPrice: number;
   discount: number;
   totalPrice: number;

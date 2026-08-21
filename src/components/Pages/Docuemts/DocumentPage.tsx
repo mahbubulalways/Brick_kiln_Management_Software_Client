@@ -15,6 +15,7 @@ import UploadDocument from "./UploadDocument";
 import { useGetAllDocumentsQuery } from "@/redux/features/document.features";
 import CustomStatus from "@/components/Reusable/CustomStatus";
 import CustomLoader from "@/components/Reusable/CustomLoader";
+import { useRouter } from "next/navigation";
 
 const DocumentPage = () => {
     const [searchItems, setSearchItem] = useState("");
@@ -22,7 +23,7 @@ const DocumentPage = () => {
     const [orientation, setOrientation] = useState<
         "grid" | "list" | "image"
     >("grid");
-
+    const router = useRouter()
     const {
         data,
         isLoading,
@@ -46,7 +47,8 @@ const DocumentPage = () => {
                     <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                         {/* Back */}
                         <button
-                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#dfe3e8] bg-[#f8f9fa] text-[#a0a5ab] transition hover:bg-gray-100 sm:h-10 sm:w-10"
+                        onClick={()=>router.back()}
+                            className="flex cursor-pointer h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#dfe3e8] bg-[#f8f9fa] text-[#a0a5ab] transition hover:bg-gray-100 sm:h-10 sm:w-10"
                         >
                             <ArrowLeft size={19} />
                         </button>
@@ -87,11 +89,10 @@ const DocumentPage = () => {
                         {/* Grid */}
                         <button
                             onClick={() => setOrientation("grid")}
-                            className={`flex h-7 w-8 items-center justify-center rounded-lg sm:h-8 sm:w-9 ${
-                                orientation === "grid"
+                            className={`flex h-7 w-8 items-center justify-center rounded-lg sm:h-8 sm:w-9 ${orientation === "grid"
                                     ? "bg-white text-[#00a474] shadow-sm"
                                     : "text-[#8290a1]"
-                            }`}
+                                }`}
                         >
                             <Grid2X2 size={16} />
                         </button>
@@ -99,11 +100,10 @@ const DocumentPage = () => {
                         {/* List */}
                         <button
                             onClick={() => setOrientation("list")}
-                            className={`flex h-7 w-8 items-center justify-center rounded-lg sm:h-8 sm:w-9 ${
-                                orientation === "list"
+                            className={`flex h-7 w-8 items-center justify-center rounded-lg sm:h-8 sm:w-9 ${orientation === "list"
                                     ? "bg-white text-[#00a474] shadow-sm"
                                     : "text-[#8290a1]"
-                            }`}
+                                }`}
                         >
                             <List size={17} />
                         </button>
@@ -111,11 +111,10 @@ const DocumentPage = () => {
                         {/* Image */}
                         <button
                             onClick={() => setOrientation("image")}
-                            className={`flex h-7 w-8 items-center justify-center rounded-lg sm:h-8 sm:w-9 ${
-                                orientation === "image"
+                            className={`flex h-7 w-8 items-center justify-center rounded-lg sm:h-8 sm:w-9 ${orientation === "image"
                                     ? "bg-white text-[#00a474] shadow-sm"
                                     : "text-[#8290a1]"
-                            }`}
+                                }`}
                         >
                             <ImageIcon size={17} />
                         </button>

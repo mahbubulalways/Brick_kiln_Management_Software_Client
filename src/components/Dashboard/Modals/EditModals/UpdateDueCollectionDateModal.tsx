@@ -17,8 +17,8 @@ type TForm = {
 type TCustomModal = {
     isOpen: boolean;
     onClose: () => void;
-    id: number | undefined,
-    setId: Dispatch<SetStateAction<number | undefined>>
+    id: string | undefined,
+    setId: Dispatch<SetStateAction<string | undefined>>
 };
 
 const UpdateDueCollectionDateModal = ({ isOpen, onClose, id, setId }: TCustomModal) => {

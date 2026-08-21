@@ -42,7 +42,6 @@ const PaymentReportModal = ({
     data,
     isLoading,
     isError,
-    error,
   } = useGetPaymentReportQuery(date!, {
     refetchOnMountOrArgChange: true,
   });

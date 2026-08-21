@@ -138,7 +138,7 @@ const UpdateCustomerModal = ({ id, isOpen, onClose, setId }: TUpdateCustomer) =>
     return (
         <CustomModal isOpen={isOpen} onClose={onClose} title="আপডেট কাস্টমার">
             {
-                isLoading ? <CustomLoader cls="h-[30vh]" /> : isError ? <CustomStatus type="error" /> :
+                isLoading ? <CustomStatus type="loading" /> : isError ? <CustomStatus type="error" /> :
                     <form onSubmit={handleSubmit(handleFormSubmit)}>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 

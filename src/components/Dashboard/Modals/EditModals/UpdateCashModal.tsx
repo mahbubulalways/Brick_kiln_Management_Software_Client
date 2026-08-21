@@ -10,6 +10,7 @@ import {
 } from "@/redux/features/cash.features";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 type TUpdateCashModal = {
     isOpen: boolean;
@@ -42,6 +43,7 @@ const UpdateCashModal = ({
     const {
         data: singleCashResponse,
         isLoading: isSingleLoading,
+        isError
     } = useGetSingleCashQuery(id, {
         skip: !id || !isOpen,
     });
@@ -174,7 +176,11 @@ const UpdateCashModal = ({
             isOpen={isOpen}
             onClose={handleClose}
             title="ক্যাশের হিসাব আপডেট"
-        >
+        >{
+            isLoading ?
+            <CustomStatus type="loading"/>:
+            isError ?   <CustomStatus type="error"/>
+            :
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="w-full relative"
@@ -347,7 +353,7 @@ const UpdateCashModal = ({
                     </button>
 
                     <button
-                        disabled={isLoading}
+                        disabled={isUpdating}
                         type="submit"
                         className={`
               px-6
@@ -374,6 +380,7 @@ const UpdateCashModal = ({
                     <div className="absolute inset-0 w-full  bg-gray-100/60 blur-md"></div>
                 )}
             </form>
+        }
 
         </CustomModal>
     );

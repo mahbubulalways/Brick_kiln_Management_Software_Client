@@ -166,47 +166,86 @@ const UnloadPage = ({ limit, page }: TQuery) => {
     return (
         <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
 
-            {/* ================= HEADER ================= */}
-            <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
+            <div className="hidden md:block w-full">
+                <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
+                    {/* Left */}
+                    <div className="shrink-0">
+                        <CustomNewButton
+                            onClick={() => setIsModalOpen(true)}
+                            title="নতুন আনলোড"
+                        />
+                    </div>
 
-                {/* NEW UNLOAD */}
-                <button
-                    onClick={() =>
-                        setIsModalOpen(true)
-                    }
-                >
+                    {/* Right */}
+                    <div className="flex items-center justify-end gap-2">
+                        <div className="w-[160px]">
+                            <CustomDatePickerState
+                                onChange={setDate}
+                                value={date}
+                                placeholder="তারিখ"
+                                height="8"
+                            />
+                        </div>
+
+                        <div className="w-[160px]">
+                            <CustomSelect2
+                                options={formatRound || []}
+                                placeholder="রাউন্ড"
+                                onChange={(value) => setSelected(value)}
+                                isError={roundError}
+                                isLoading={roundLoading}
+                            />
+                        </div>
+
+                        <div className="shrink-0">
+                            <CustomPrintButton
+                                onClick={() => printRef.current?.print()}
+                            />
+                        </div>
+
+                        <div className="shrink-0">
+                            <CustomReportButton
+                                onClick={() => setOpenReOpenModal(true)}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="block md:hidden">
+                <div className="flex justify-between items-center pt-2 lg:pt-0 gap-2">
                     <CustomNewButton
-                        title="নতুন আনলোড"
-                    />
-                </button>
-
-                {/* FILTERS */}
-                <div className="flex items-center justify-end gap-2">
-
-                    {/* DATE */}
-                    <CustomDatePickerState
-                        onChange={setDate}
-                        value={date}
-                        placeholder="তারিখ"
-                        height="8"
-                    />
-
-                    {/* ROUND */}
-                    <CustomSelect2
-                        options={formatRound || []}
-                        placeholder="রাউন্ড"
-                        onChange={(value) =>
-                            setSelected(value)
+                        onClick={() =>
+                            setIsModalOpen(true)
                         }
-                        isError={roundError}
-                        isLoading={roundLoading}
+                        title="নতুন আনলোড"
+                        className="w-full"
                     />
-
-                    {/* REPORT */}
                     <CustomPrintButton onClick={() => printRef.current?.print()} />
                     <CustomReportButton
+                        className="w-full"
                         onClick={() => setOpenReOpenModal(true)}
                     />
+
+                </div>
+                <div className="flex items-center gap-2 pt-2">
+                    <div className="flex-1">
+                        <CustomDatePickerState
+                            onChange={setDate}
+                            value={date}
+                            placeholder="তারিখ"
+                            height="8"
+                        />
+                    </div>
+
+                    <div className="flex-1">
+                        <CustomSelect2
+                            options={formatRound || []}
+                            placeholder="রাউন্ড"
+                            onChange={(value) => setSelected(value)}
+                            isError={roundError}
+                            isLoading={roundLoading}
+                        />
+                    </div>
                 </div>
             </div>
 

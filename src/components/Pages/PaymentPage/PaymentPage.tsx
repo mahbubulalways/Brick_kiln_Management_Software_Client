@@ -41,7 +41,7 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
   const [selectedPaymentId, setSelectedPaymentId] = useState<number | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const { data, isError, isLoading,isFetching } = useGetPaymentQuery(
+  const { data, isError, isLoading, isFetching } = useGetPaymentQuery(
     {
       limit,
       page,
@@ -115,51 +115,50 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
       </span>
       <div className="flex w-full flex-col gap-2 pt-2 lg:flex-row lg:items-center lg:justify-between lg:gap-5 lg:pt-0">
 
-  {/* Left Section */}
-  <div className="flex w-full items-center gap-2 lg:w-auto">
-    <CustomNewButton
-      title="নতুন পেমেন্ট"
-      onClick={() => setIsModalOpen(true)}
-      className="flex-1 lg:flex-none"
-    />
+        {/* Left Section */}
+        <div className="flex w-full items-center gap-2 lg:w-auto">
+          <CustomNewButton
+            title="নতুন পেমেন্ট"
+            onClick={() => setIsModalOpen(true)}
+            className="flex-1 lg:flex-none"
+          />
 
-    {/* Total Payment */}
-    <span className="hidden whitespace-nowrap rounded border border-green-300 bg-green-100 px-3 py-1 font-medium text-green-800 lg:block">
-      মোট পেমেন্ট: {totalCredit} টাকা
-    </span>
-  </div>
+          {/* Total Payment */}
+          <span className="hidden whitespace-nowrap rounded border border-green-300 bg-green-100 px-3 py-1 font-medium text-green-800 lg:block">
+            মোট পেমেন্ট: {totalCredit} টাকা
+          </span>
+        </div>
 
-  {/* Right Section */}
-  <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
+        {/* Right Section */}
+        <div className="grid w-full md:w-max grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
+          {/* Date */}
+          <div className="">
+            <CustomDatePickerState
+              onChange={setDate}
+              value={date}
+              placeholder="তারিখ"
+              height="8"
+            />
+          </div>
 
-    {/* Date */}
-    <div className="min-w-0">
-      <CustomDatePickerState
-        onChange={setDate}
-        value={date}
-        placeholder="তারিখ"
-        height="8"
-      />
-    </div>
+          {/* Search */}
+          <div className="min-w-0 sm:flex-1 lg:flex-none">
+            <SearchBar
+              value={searchItems}
+              onChange={(e) => setSearchItem(e.target.value)}
+              onClear={() => setSearchItem("")}
+            />
+          </div>
 
-    {/* Search */}
-    <div className="min-w-0 sm:flex-1 lg:flex-none">
-      <SearchBar
-        value={searchItems}
-        onChange={(e) => setSearchItem(e.target.value)}
-        onClear={() => setSearchItem("")}
-      />
-    </div>
+          {/* Print */}
+          <CustomPrintButton />
 
-    {/* Print */}
-    <CustomPrintButton />
-
-    {/* Report */}
-    <CustomReportButton
-      onClick={() => setReportModalOpen(true)}
-    />
-  </div>
-</div>
+          {/* Report */}
+          <CustomReportButton
+            onClick={() => setReportModalOpen(true)}
+          />
+        </div>
+      </div>
 
       <div className="overflow-x-auto pt-2">
         <table className="min-w-full   text-center border-t">
@@ -180,7 +179,7 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
           </thead>
           <tbody>
 
-            {isLoading||isFetching ? (
+            {isLoading || isFetching ? (
               <tr>
                 <td colSpan={11}>
                   <CustomLoader cls="h-[30vh]" />
@@ -282,11 +281,11 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
                         <DropdownMenuItem
                         >
                           <Link href={`/dashboard/ledger/details/${row?.ledger?.id}`}>
-                          <CustomDropDownMenuItem
-                            Icon={GrDocument}
-                            title="খতিয়ান"
+                            <CustomDropDownMenuItem
+                              Icon={GrDocument}
+                              title="খতিয়ান"
                             />
-                            </Link>
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           disabled={deleteLoading}

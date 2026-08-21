@@ -9,6 +9,7 @@ export interface ICustomer {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+  customerCode:string
 }
 
 export interface IDueResponse {

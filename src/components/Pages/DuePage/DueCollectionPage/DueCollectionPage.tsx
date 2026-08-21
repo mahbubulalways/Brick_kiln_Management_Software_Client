@@ -37,7 +37,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
   const [isOpenUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [dueId, setDueId] = useState<number>();
+  const [dueId, setDueId] = useState<string>();
   const isoDate = date ? date.toISOString() : "";
   const { data, isLoading, isError, error } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
@@ -61,11 +61,11 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
       </span>
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
         <div className="flex items-center gap-2 w-auto lg:w-full">
-       
-            <CustomNewButton title="নতুন বাকি জমা"
+
+          <CustomNewButton title="নতুন বাকি জমা"
             onClick={() => setIsOpen(true)}
-            />
-         
+          />
+
           <span className="bg-green-100 text-green-800 px-3 py-1 rounded text-sm border border-green-300 font-medium hidden lg:block">
             মোট জমাঃ: {totalCredit?.toLocaleString()} টাকা
           </span>
@@ -114,7 +114,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                     className="hover:bg-gray-50 cursor-pointer"
                     onClick={() => toggleRow(row.id)}
                   >
-                    <TableData td={row?.id} cls="hidden lg:table-cell" />
+                    <TableData td={row?.customer.customerCode} cls="hidden lg:table-cell" />
                     <TableData td={row.customer?.name} />
                     <TableData td={row.customer?.address} />
                     <TableData
@@ -146,7 +146,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                         >
                           <DropdownMenuItem
                             onClick={() => {
-                              setDueId(row?.id);
+                              setDueId(row?.customer.customerCode);
                               setOpenUpdateModal(true);
                             }}
                           >
@@ -156,7 +156,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => { setOpenPrintModal(true), setDueId(row?.id); }}
+                            onClick={() => { setOpenPrintModal(true), setDueId(row?.customer.customerCode); }}
                           >
                             <CustomDropDownMenuItem
                               Icon={Printer}
@@ -269,7 +269,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           page={meta?.page ?? 1}
           totalPages={meta?.totalPages ?? 1}
           dataLength={dues?.length}
-          title="পেমেন্ট"
+          title="বাকি"
         />
       </div>
 
@@ -280,6 +280,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           onClose={() => setIsOpen(false)}
         />
       )}
+
       {isOpenPrintModal && (
         <PrintDueCollectionModal
           isOpen={isOpenPrintModal}
@@ -288,11 +289,12 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           setDueId={setDueId}
         />
       )}
+
       {isOpenUpdateModal && (
         <UpdateDueCollection
           isOpen={isOpenUpdateModal}
           onClose={() => setOpenUpdateModal(false)}
-          id={dueId as number}
+          id={dueId!}
         />
       )}
       {isOpenThermalPrintModal && (

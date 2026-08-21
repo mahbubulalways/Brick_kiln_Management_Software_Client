@@ -213,7 +213,7 @@ const CashPage = ({ limit, page, search }: TQuery) => {
                         key={idx + 1}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <TableData td={row.id} />
+                        <TableData td={idx + 1} />
 
                         <TableData td={row.source} />
                         <TableData td={row.description} />

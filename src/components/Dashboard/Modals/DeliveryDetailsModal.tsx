@@ -1,10 +1,11 @@
 "use client";
 
-import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import CustomStatus from "@/components/Reusable/CustomStatus";
 import { TDeliveryResponse } from "@/interface/delivery";
+import { TVataInformation } from "@/interface/vata";
 import { useGetSingleDeliveryQuery } from "@/redux/features/delivery.features";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import moment from "moment";
 import { Dispatch, SetStateAction } from "react";
@@ -26,13 +27,14 @@ const DeliveryDetailsModal = ({
         refetchOnMountOrArgChange: true,
     });
 
+    const { data: vataInfo, isLoading: vataLoading, isError: vataError } = useGetVataInfoQuery(undefined)
     const handleClose = () => {
         setDeliveryId(undefined);
         onClose();
     };
 
     const invoice: TDeliveryResponse = data?.data || ({} as TDeliveryResponse);
-
+    const vataInformation = vataInfo?.data as TVataInformation
 
     // Date format
     const formatDate = (date: string | undefined) => {
@@ -56,9 +58,9 @@ const DeliveryDetailsModal = ({
             title="ডেলিভারি বিস্তারিত"
             width="xxl"
         >
-            {isLoading ? (
+            {isLoading || vataLoading ? (
                 <CustomStatus type="loading" />
-            ) : isError ? (<CustomStatus type="error" />) : (
+            ) : isError || vataError ? (<CustomStatus type="error" />) : (
                 <div className="w-full">
                     {/* ================= HEADER ================= */}
                     <div className="mb-4 flex items-center justify-between">
@@ -69,17 +71,17 @@ const DeliveryDetailsModal = ({
 
                             <p className="mt-1 text-[16px] text-gray-500">
                                 ডেলিভারি দিয়েছেন{" "}
-                                <span className="font-medium text-orange-500">Demo</span>
+                                <span className="font-medium text-orange-500">{invoice.deliveryBy.name}</span>
                             </p>
                         </div>
 
                         <div className="text-right">
                             <h2 className="text-[20px] font-medium text-emerald-500">
-                                ডেমো বিক্রয়
+                                {vataInformation?.nameBangla}
                             </h2>
 
                             <p className="mt-1 text-[15px] text-gray-500">
-                                হিল্লিপাড়া,কাটাখালী,গোপালগঞ্জ
+                                {vataInformation?.address}
                             </p>
                         </div>
                     </div>
@@ -91,14 +93,14 @@ const DeliveryDetailsModal = ({
                             <div className="grid grid-cols-[1fr_auto] gap-y-2 text-[17px]">
                                 <span className="font-medium text-gray-700">নাম</span>
                                 <span className="font-medium text-gray-800  text-end">
-                                    মো: মানিক মিয়া
+                                    {invoice?.invoice?.customer.name}
                                 </span>
 
                                 <span className="text-gray-500">ঠিকানা</span>
-                                <span className="text-gray-700  text-end">ঘোষাঘাট</span>
+                                <span className="text-gray-700  text-end">    {invoice?.invoice?.customer.address}</span>
 
                                 <span className="text-gray-500">মোবাইল</span>
-                                <span className="text-gray-700  text-end">০১৯১০৩৪৯৯০১</span>
+                                <span className="text-gray-700  text-end"> {invoice?.invoice?.customer.phoneNumber}</span>
                             </div>
                         </div>
 
@@ -107,17 +109,17 @@ const DeliveryDetailsModal = ({
                             <div className="grid grid-cols-[1fr_auto] gap-y-2 text-[17px]">
                                 <span className="text-gray-500">চালান নং</span>
                                 <span className="text-gray-700 text-end">
-                                    {toBanglaNumber(invoice.invoiceId)}
+                                    {toBanglaNumber(invoice?.invoice?.serial)}
                                 </span>
 
                                 <span className="text-gray-500">চালানের তারিখ</span>
                                 <span className="text-gray-700  text-end" >
-                                    {formatDate(invoice.createdAt)}
+                                    {formatDate(invoice.invoice?.challanDate)}
                                 </span>
 
                                 <span className="text-gray-500">ডেলিভারির তারিখ</span>
                                 <span className="text-gray-700  text-end">
-                                    {formatDate(invoice.deliveryDate)}
+                                    {formatDate(invoice.invoice.deliveryDate)}
                                 </span>
                             </div>
                         </div>

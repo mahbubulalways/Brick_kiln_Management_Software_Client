@@ -171,7 +171,7 @@ const CustomerTabs = ({
                     onClick={() =>
                         handleTabChange("all")
                     }
-                    className={`flex cursor-pointer items-center gap-2 rounded-md px-4 py-1.5 text-sm font-medium transition ${activeTab === "all"
+                    className={`flex cursor-pointer text-[13px] lg:text-[16px] items-center gap-2 rounded-md px-2 md:px-4 py-1.5 text-sm font-medium transition ${activeTab === "all"
                         ? "bg-[#079B67] text-white"
                         : "bg-[#F0F4F8] text-gray-600 hover:bg-gray-200"
                         }`}
@@ -190,7 +190,7 @@ const CustomerTabs = ({
                             "deliveryInfo"
                         )
                     }
-                    className={`flex cursor-pointer items-center gap-2 rounded-md px-4 py-1.5 text-sm font-medium transition ${activeTab === "deliveryInfo"
+                    className={`flex text-[13px] md:text-[16px]  cursor-pointer items-center gap-2 rounded-md px-2 md:px-4 py-1.5 text-sm font-medium transition ${activeTab === "deliveryInfo"
                         ? "bg-[#079B67] text-white"
                         : "bg-[#F0F4F8] text-gray-600 hover:bg-gray-200"
                         }`}
@@ -209,7 +209,7 @@ const CustomerTabs = ({
                             "dueCollection"
                         )
                     }
-                    className={`flex cursor-pointer items-center gap-2 rounded-md px-4 py-1.5 text-sm font-medium transition ${activeTab === "dueCollection"
+                    className={`flex cursor-pointer text-[13px] md:text-[16px]  items-center gap-2 rounded-md px-2 md:px-4 py-1.5 text-sm font-medium transition ${activeTab === "dueCollection"
                         ? "bg-[#079B67] text-white"
                         : "bg-[#F0F4F8] text-gray-600 hover:bg-gray-200"
                         }`}

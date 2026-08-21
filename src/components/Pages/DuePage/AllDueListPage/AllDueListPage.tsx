@@ -212,7 +212,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
         page={meta?.page ?? 1}
         totalPages={meta?.totalPages ?? 1}
         dataLength={dues?.length}
-        title="পেমেন্ট"
+        title="বাকি"
       />
 
 

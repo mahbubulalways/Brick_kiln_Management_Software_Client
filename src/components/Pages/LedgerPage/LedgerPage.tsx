@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { useGetAllLedgerWithAmountQuery } from "@/redux/features/ledger.features";
+import CustomLoader from "@/components/Reusable/CustomLoader";
 
 interface LedgerChild {
     id: number;
@@ -156,12 +157,7 @@ const LedgerPage = () => {
                 {/* ================= LOADING ================= */}
 
                 {isLoading || isFetching ? (
-                    <div className="flex min-h-[250px] items-center justify-center">
-                        <Loader2
-                            size={30}
-                            className="animate-spin text-[#00a86b]"
-                        />
-                    </div>
+                   <CustomLoader cls="h-40vh"/>
                 ) : (
                     <>
                         {/* ================= CARDS ================= */}

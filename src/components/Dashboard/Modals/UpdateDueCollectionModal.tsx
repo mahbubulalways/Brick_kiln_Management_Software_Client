@@ -16,11 +16,11 @@ import { MdOutlineError } from "react-icons/md";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
-  id: number;
+  id: string;
 };
 
 type TDueCollection = {
-  customerId?: string;
+  customerCode: string;
   name: string;
   address: string;
   season: string;
@@ -40,7 +40,7 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
 
   const [date, setDate] = useState<Date | undefined>();
   const [sendSms, setSendSms] = useState(false);
-
+  console.log(data)
   const {
     register,
     handleSubmit,
@@ -53,20 +53,20 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
   // eslint-disable-next-line react-hooks/incompatible-library
   const collect = watch("collect");
 
- useEffect(() => {
-  if (!data?.data) return;
+  useEffect(() => {
+    if (!data?.data) return;
 
-  reset({
-    name: data.data.customer?.name,
-    address: data.data.customer?.address,
-    customerId: data.data.customer?.id,
-    due: data.data.due,
-    collect: data.data.collect,
-    season: data.data.season,
-  });
-  setDate(new Date(data.data.nextDate));
+    reset({
+      name: data.data.customer?.name,
+      address: data.data.customer?.address,
+      customerCode: data.data.customer?.customerCode,
+      due: data.data.due,
+      collect: data.data.collect,
+      season: data.data.season,
+    });
+    setDate(new Date(data.data.nextDate));
 
-}, [data, reset]);
+  }, [data, reset]);
   const newDue = useMemo(
     () => data?.data?.due - (Number(collect) || 0),
     [data?.data?.due, collect]
@@ -119,13 +119,13 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
         <form onSubmit={handleSubmit(onSubmit)} className="pt-5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             <CustomInput
-              name="customerId"
-              type="number"
+              name="customerCode"
+              type="text"
               label="কাস্টমার আইডি"
               placeholder="কাস্টমার আইডি"
               register={register}
               rules={{ required: "কাস্টমার আইডি" }}
-              error={errors.customerId}
+              error={errors.customerCode}
               readonly
             />
             <CustomInput
@@ -214,7 +214,7 @@ const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
                 setDate(undefined);
                 reset((prev) => ({
                   ...prev,
-                  customerId: "",
+                  customerCode: "",
                   name: "",
                   address: "",
                   due: "",

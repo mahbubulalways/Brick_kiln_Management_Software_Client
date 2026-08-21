@@ -2,9 +2,12 @@
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import CustomStatus from "@/components/Reusable/CustomStatus";
+import { TVataInformation } from "@/interface/vata";
 import { useGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import { IChallanForDataShow, TCustomInvoiceModal } from "@/types/types";
 import { formatBanglaDate } from "@/utils/formatBanglaDate";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import moment from "moment";
 // import "moment/locale/bn";
 const ChalanDetailsModal = ({
@@ -16,13 +19,15 @@ const ChalanDetailsModal = ({
   const { data, isLoading, isError } = useGetSingleInvoiceQuery(invoiceId, {
     refetchOnMountOrArgChange: true,
   });
+  const {data:vata, isLoading:vataLoading, isError:vataError,error}=useGetVataInfoQuery(undefined)
 
   const handleClose = () => {
     setInvoiceId(0);
     onClose();
   };
-
+console.log(error)
   const invoice: IChallanForDataShow = data?.data || {};
+  const vataInformation = vata?.data as TVataInformation
   return (
     <CustomModalBottom
       isOpen={isOpen}
@@ -30,9 +35,9 @@ const ChalanDetailsModal = ({
       title="চালান এর বিস্তারিত"
       width="xxl"
     >
-      {isLoading ? (
+      {isLoading||vataLoading ? (
         <CustomStatus type="loading" />
-      ) : isError ?
+      ) : isError||vataError ?
         <CustomStatus type="error" />
         : !invoice ?
           <CustomStatus type="empty" /> : (
@@ -44,13 +49,13 @@ const ChalanDetailsModal = ({
                     চালান নং: {invoice?.serial}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    চালান তৈরি করেছেন: {invoice?.createdBy}
+                    চালান তৈরি করেছেন: {invoice?.createdBy?.name}
                   </p>
                 </div>
                 <div className="text-right">
-                  <h1 className="text-green-600  text-lg">এম.এম.বি ব্রিকস</h1>
+                  <h1 className="text-green-600  text-lg">{vataInformation?.nameBangla}</h1>
                   <p className="text-sm text-gray-600">
-                    বিল্লালপাড়া, চাটমোহর, গোবিন্দগঞ্জ
+                    {vataInformation?.address}
                   </p>
                 </div>
               </div>
@@ -71,27 +76,28 @@ const ChalanDetailsModal = ({
                 </div>
                 <div className="border rounded-md p-3">
                   <p>
-                    <span className="">কাস্টমার আইডি:</span> {invoice?.customer?.id}
+                    <span className="">কাস্টমার আইডি:</span> {invoice?.customer?.customerCode}
                   </p>
                   <p>
                     <span className="">ধরণ:</span> {invoice?.chalanType}
                   </p>
                   <p>
                     <span className="">ডেলিভারি তারিখ:</span>{" "}
-                    {moment(invoice?.deliveryDate).format("L")}
+                    {formatBanglaDate({date:invoice?.deliveryDate})}
                   </p>
                 </div>
                 <div className="border rounded-md p-3">
                   <p>
                     <span className="">তারিখ:</span>{" "}
-                    {moment(invoice?.challanDate).format("L")}
+                    
+                       {formatBanglaDate({date:invoice?.challanDate})}
                   </p>
                   <p>
                     <span className="">সময়: </span>
-                    {moment(invoice?.challanDate).format("LT")}
+                     {formatBanglaDate({date:invoice?.challanDate,showDate:false,showTime:true})}
                   </p>
                   <p>
-                    <span className="">সিজন:</span> ২৪২৫
+                    <span className="">সিজন:</span> {toBanglaNumber(invoice?.season)}
                   </p>
                 </div>
               </div>

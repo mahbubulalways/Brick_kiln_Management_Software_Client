@@ -50,14 +50,14 @@ const invoiceApi = baseApi.injectEndpoints({
 
     // GET SINGLE INVOICE
     getSingleInvoice: builder.query({
-      query: (id: number) => ({
+      query: (id: string) => ({
         url: `/invoice/single-invoice/${id}`,
         method: "GET",
       }),
     }),
     // GET SINGLE INVOICE ITEMS
     getSingleInvoiceItems: builder.query({
-      query: (payload: { invoiceId: number; ids: string }) => ({
+      query: (payload: { invoiceId: string; ids: string }) => ({
         url: `/invoice/single-invoice-items/${payload?.invoiceId}?ids=${payload?.ids}`,
         method: "GET",
       }),
@@ -95,7 +95,7 @@ const invoiceApi = baseApi.injectEndpoints({
 
     //  DELETE INVOICE
     deleteInvoice: builder.mutation({
-      query: (id: number) => ({
+      query: (id: string) => ({
         url: `/invoice/delete-invoice/${id}`,
         method: "PATCH",
       }),

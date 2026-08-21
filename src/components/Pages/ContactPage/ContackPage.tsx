@@ -20,6 +20,7 @@ import { TMetaConfig } from "@/interface/meta";
 import CreateNewContactModal from "@/components/Dashboard/Modals/CreateNewContactModal";
 import UpdateContactModal from "@/components/Dashboard/Modals/EditModals/UpdateContactModa";
 import Swal from "sweetalert2";
+import CustomLoader from "@/components/Reusable/CustomLoader";
 
 
 type TContact = {
@@ -85,8 +86,9 @@ export default function ContackPage({
         <div className="rounded-lg bg-white p-3">
             {/* Top Section */}
             <div className="mb-3 flex items-center justify-between">
-                {/* New Number */}
-                <button
+              
+               <div className="flex-1">
+                 <button
                     type="button"
                     onClick={() => setOpenContactModal(true)}
                     className="flex h-10 items-center gap-1 rounded-md bg-[#079b68] px-5 text-[16px] font-medium text-white hover:bg-[#078b5e]"
@@ -94,13 +96,16 @@ export default function ContackPage({
                     নতুন নম্বর
                     <ChevronDown size={17} />
                 </button>
+               </div>
 
                 {/* Search */}
-                <SearchBar
+               <div className="flex-1">
+                 <SearchBar
                     value={searchItems}
                     onChange={(e) => setSearchItem(e.target.value)}
                     onClear={() => setSearchItem("")}
                 />
+               </div>
             </div>
 
             {/* Reusable Table */}
@@ -120,12 +125,9 @@ export default function ContackPage({
                     <tbody>
                         {isLoading ? (
                             <tr>
-                                <td
-                                    colSpan={6}
-                                    className="py-10 text-center text-gray-500"
-                                >
-                                    লোড হচ্ছে...
-                                </td>
+                              <td colSpan={4}>
+                                 <CustomLoader cls="h-[30vh]"/>
+                              </td>
                             </tr>
                         ) : contacts.length > 0 ? (
                             contacts.map(
@@ -201,7 +203,7 @@ export default function ContackPage({
                 page={meta?.page ?? 1}
                 totalPages={meta?.totalPages ?? 1}
                 dataLength={contacts?.length}
-                title="পেমেন্ট"
+                title="নম্বর"
             />
 
             {openContactModal &&

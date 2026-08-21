@@ -18,8 +18,8 @@ import { useReactToPrint } from "react-to-print";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
-  id: number | undefined;
-  setDueId: Dispatch<SetStateAction<number | undefined>>;
+  id: string | undefined;
+  setDueId: Dispatch<SetStateAction<string | undefined>>;
 };
 
 const PrintDueCollectionModal = ({

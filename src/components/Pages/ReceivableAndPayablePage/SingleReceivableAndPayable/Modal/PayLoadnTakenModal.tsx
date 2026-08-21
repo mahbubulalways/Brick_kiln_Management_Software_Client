@@ -10,6 +10,7 @@ import { useCreateTransactionMutation, useGetCurrentAmountQuery } from "@/redux/
 import { showToast } from "@/components/Toast/CustomToast";
 import { FaCircleCheck } from "react-icons/fa6";
 import { MdOutlineError } from "react-icons/md";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 type TNewTransactionGiven = {
   remaining: string;
@@ -81,9 +82,9 @@ const PayLoanTakenModal = ({
   const onSubmit: SubmitHandler<TNewTransactionGiven> = async (formData) => {
     formData.type = "PAYMENT"
 
-    const payload={
+    const payload = {
       id,
-      data:formData
+      data: formData
     }
     try {
       const result = await createTransaction(payload).unwrap()
@@ -119,66 +120,70 @@ const PayLoanTakenModal = ({
       onClose={onClose}
       title="টাকা ফেরত দেওয়ার হিসাব"
       width="md"
-    >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col gap-3">
+    >{
+        isLoading ? <CustomStatus type="loading" /> :
+          isError ? <CustomStatus type="error" /> :
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="flex flex-col gap-3">
 
-          <CustomInput
-            name="remaining"
-            label="মোট টাকা পাওনা"
-            placeholder="মোট টাকা পাওনা"
-            register={register}
-            type="number"
-          />
+                <CustomInput
+                  name="remaining"
+                  label="মোট টাকা পাওনা"
+                  placeholder="মোট টাকা পাওনা"
+                  register={register}
+                  type="number"
+                />
 
-          <CustomInput
-            name="amount"
-            label="টাকা ফেরত দিলাম"
-            placeholder="টাকা ফেরত দিলাম"
-            register={register}
-            type="number"
-          />
+                <CustomInput
+                  name="amount"
+                  label="টাকা ফেরত দিলাম"
+                  placeholder="টাকা ফেরত দিলাম"
+                  register={register}
+                  type="number"
+                />
 
-          <CustomInput
-            name="currentAmount"
-            label="পাওনা টাকা বাকি রইল"
-            placeholder="পাওনা টাকা বাকি রইল"
-            register={register}
-            type="number"
-          />
+                <CustomInput
+                  name="currentAmount"
+                  label="পাওনা টাকা বাকি রইল"
+                  placeholder="পাওনা টাকা বাকি রইল"
+                  register={register}
+                  type="number"
+                />
 
-          <CustomDatePicker
-            control={control}
-            name="transactionDate"
-            label="পরবর্তি পরিশোধের তারিখ"
-            placeholder="পরবর্তী পরিশোধের তারিখ"
-          />
+                <CustomDatePicker
+                  control={control}
+                  name="transactionDate"
+                  label="পরবর্তি পরিশোধের তারিখ"
+                  placeholder="পরবর্তী পরিশোধের তারিখ"
+                />
 
-          <CustomTextArea
-            name="description"
-            register={register}
-            placeholder="টাকা দেওয়ার সময়ের কিছু বর্ণনা লিখে রাখুন যা পরবর্তিতে আপনাকে মনে করিয়ে দিতে সাহায্য করবে"
-            label="বর্ণনা"
-          />
-        </div>
+                <CustomTextArea
+                  name="description"
+                  register={register}
+                  placeholder="টাকা দেওয়ার সময়ের কিছু বর্ণনা লিখে রাখুন যা পরবর্তিতে আপনাকে মনে করিয়ে দিতে সাহায্য করবে"
+                  label="বর্ণনা"
+                />
+              </div>
 
-        <div className="flex items-center justify-between pt-5">
-          <button
-            type="button"
-            onClick={() => reset()}
-            className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5 text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer"
-          >
-            ক্লিয়ার
-          </button>
+              <div className="flex items-center justify-between pt-5">
+                <button
+                  type="button"
+                  onClick={() => reset()}
+                  className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5 text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer"
+                >
+                  ক্লিয়ার
+                </button>
 
-          <button
-            type="submit"
-            className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
-          >
-            যোগ করুন
-          </button>
-        </div>
-      </form>
+                <button
+                  type="submit"
+                  disabled={transactionLoading}
+                  className={`text-[14px] disabled:bg-gray-500 disabled:cursor-default bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer`}
+                >
+                  যোগ করুন
+                </button>
+              </div>
+            </form>
+      }
     </CustomModal>
   );
 };

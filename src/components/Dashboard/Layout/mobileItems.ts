@@ -2,7 +2,7 @@ import { TDashboardItem } from "@/types/project";
 
 import { BsCash, BsTruck, BsClipboardData } from "react-icons/bs";
 import { CiMobile4 } from "react-icons/ci";
-import { FaBalanceScale, FaSms, FaTasks, FaMoneyBillWave } from "react-icons/fa";
+import { FaBalanceScale, FaSms, FaTasks, FaMoneyBillWave, FaVideo } from "react-icons/fa";
 import { GrDashboard } from "react-icons/gr";
 import { HiDocumentReport } from "react-icons/hi";
 import { LiaTruckLoadingSolid } from "react-icons/lia";
@@ -212,7 +212,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
     {
         id: "1111",
         title: "দেনা-পাওনা",
-        path: "/dashboard/customer",
+        path: "/dashboard/loan",
         icon: FaMoneyBillWave,
         iconColor: "#DC2626",
     },
@@ -285,7 +285,7 @@ export const dashboardItemsForMobile2: TDashboardItem[] = [
         id: "18",
         title: "ভিডিও দেখুন",
         path: "/dashboard/video",
-        icon: FaSms,
+        icon: FaVideo,
         iconColor: "#E11D48",
     },
 

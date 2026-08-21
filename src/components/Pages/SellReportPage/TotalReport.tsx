@@ -75,7 +75,7 @@ const TotalReport = ({ data }: Props) => {
                 TOTAL SUMMARY
             ================================================= */}
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
                 {/* TOTAL AREA */}
 
@@ -131,9 +131,8 @@ const TotalReport = ({ data }: Props) => {
                 TABLE CARD
             ================================================= */}
 
-            <div className="rounded-md border bg-white shadow-sm">
+            <div className="rounded-md border bg-white shadow-sm pb-8">
                 <div className="overflow-x-auto rounded-t-md">
-
                     <table className="min-w-full border-collapse">
 
                         <thead>
@@ -266,7 +265,6 @@ const TotalReport = ({ data }: Props) => {
                         )}
 
                     </table>
-
                 </div>
             </div>
         </div>

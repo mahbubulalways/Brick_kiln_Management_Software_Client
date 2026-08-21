@@ -1,6 +1,6 @@
 "use client";
 
-import  { useState } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 
 import ReceivableAndPayableModal from "@/components/Dashboard/Modals/ReceivableAndPayableModal";
@@ -28,7 +28,7 @@ export default function ReceivableAndPayablePage() {
 
     // Error
     if (isError) {
-       return <CustomStatus  type="error"/>
+        return <CustomStatus type="error" />
     }
 
     const allDues =
@@ -55,29 +55,45 @@ export default function ReceivableAndPayablePage() {
     );
 
     return (
-        <div className="rounded bg-white p-5">
+        <div >
             {/* Top Section */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                {/* দেনা-পাওনা */}
                 <button
                     type="button"
                     onClick={() => setModalOpen(true)}
-                    className="cursor-pointer rounded-md bg-[#039a63] px-5 py-2 text-sm font-medium text-white transition hover:bg-[#028756]"
+                    className="
+      w-full cursor-pointer
+      rounded-md bg-[#039a63]
+      px-5 py-2
+      text-sm font-medium text-white
+      transition hover:bg-[#028756]
+      sm:w-auto
+    "
                 >
                     দেনা-পাওনা
                 </button>
 
                 {/* Search */}
-                <div className="relative w-full max-w-sm">
+                <div className="relative w-full sm:max-w-sm">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
 
                     <input
                         type="text"
                         value={searchTerm}
-                        onChange={(e) =>
-                            setSearchTerm(e.target.value)
-                        }
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="নাম, ফোন বা ঠিকানা দিয়ে খুঁজুন..."
-                        className="h-10 w-full rounded-md border border-gray-300 bg-white pl-9 pr-4 text-sm outline-none transition focus:border-[#039a63] focus:ring-1 focus:ring-[#039a63]"
+                        className="
+        h-10 w-full
+        rounded-md border border-gray-300
+        bg-white
+        pl-9 pr-4
+        text-sm
+        outline-none
+        transition
+        focus:border-[#039a63]
+        focus:ring-1 focus:ring-[#039a63]
+      "
                     />
                 </div>
             </div>
@@ -89,7 +105,7 @@ export default function ReceivableAndPayablePage() {
             />
 
             {/* Lists */}
-            <div className="grid grid-cols-1 gap-5 pt-8 xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-10 md:gap-5 pt-8 xl:grid-cols-2">
                 <GivenDueList dues={givenDues} />
 
                 <TakenDueList dues={takenDues} />

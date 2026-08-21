@@ -14,6 +14,7 @@ import {
     useGetSingleCarRentQuery,
     useUpdateCarRentMutation,
 } from "@/redux/features/carRent.features";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 type TCustomModal = {
     isOpen: boolean;
@@ -37,6 +38,7 @@ const UpdateCarRentModal = ({
     const {
         data: carRentData,
         isLoading: isFetching,
+        isError
     } = useGetSingleCarRentQuery(id!, {
         skip: !id || !isOpen,
     });
@@ -124,12 +126,8 @@ const UpdateCarRentModal = ({
             width="sm"
         >
             {isFetching ? (
-                <div className="flex items-center justify-center py-10">
-                    <p className="text-sm text-gray-500">
-                        তথ্য লোড হচ্ছে...
-                    </p>
-                </div>
-            ) : (
+                <CustomStatus type="loading"/>
+            ) : isError ?   <CustomStatus type="error"/>: (
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-2">
 

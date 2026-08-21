@@ -62,26 +62,30 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
     }
 
     return (
-        <div className="w-full min-h-screen bg-[#F4F7FA] p-4">
+        <div>
             <div className="w-full overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
                 {/* ================= Header ================= */}
-                <div className="flex flex-col gap-3 border-b border-gray-200 p-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex  gap-3 border-b border-gray-200 p-4 md:flex-row md:items-center md:justify-between">
                     {/* Customer Count */}
-                    <div className="flex w-fit items-center gap-2 rounded-lg border border-[#079B67] bg-white px-5 py-1.5">
-                        <span className="text-[15px] font-medium text-[#079B67]">
+                   <div className="flex-1">
+                     <div className="flex w-fit items-center gap-2 rounded-lg border border-[#079B67] bg-white px-1.5 md:px-5 py-1 md:py-1.5">
+                        <span className="text-[13px] md:text-[15px] font-medium text-[#079B67]">
                             কাস্টমারঃ
                         </span>
 
-                        <span className="text-[17px] font-semibold text-[#079B67]">
+                        <span className="text-[13px] md:text-[17px] font-semibold text-[#079B67]">
                             {toBanglaNumber(customers?.length)} জন
                         </span>
                     </div>
+                   </div>
 
-                    <SearchBar
+                    <div className="flex-1">
+                        <SearchBar
                         value={searchItems}
                         onChange={(e) => setSearchItem(e.target.value)}
                         onClear={() => setSearchItem("")}
                     />
+                    </div>
                 </div>
 
                 {/* ================= Table ================= */}
@@ -263,13 +267,13 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
                             )}
                         </tbody>
                     </table>
-                    <TablePagination
-                        page={meta?.page ?? 1}
-                        totalPages={meta?.totalPages ?? 1}
-                        dataLength={customers?.length}
-                        title="পেমেন্ট"
-                    />
                 </div>
+                <TablePagination
+                    page={meta?.page ?? 1}
+                    totalPages={meta?.totalPages ?? 1}
+                    dataLength={customers?.length}
+                    title="কাস্টমার"
+                />
             </div>
             {
                 openUpdateCustomer

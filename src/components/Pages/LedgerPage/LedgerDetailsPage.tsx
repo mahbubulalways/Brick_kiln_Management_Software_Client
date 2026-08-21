@@ -119,20 +119,21 @@ const LedgerDetailsPage = ({ id, params }: { id: string, params: TQuery }) => {
 
     return (
         <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex gap-2 items-center justify-between mb-2 flex-col w-full md:flex-row">
 
                 {/* LEFT */}
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full">
 
                     {/* খতিয়ান */}
 
-                    <Link href={`/dashboard/ledger`}>
+                    <Link href={`/dashboard/ledger`} className="w-full md:w-max">
 
                         <button
 
                             type="button"
                             className="
+                            w-full
                 flex-1
                 py-1
                 cursor-pointer
@@ -164,6 +165,8 @@ const LedgerDetailsPage = ({ id, params }: { id: string, params: TQuery }) => {
                     <button
                         type="button"
                         className="
+                        w-full
+                        md:w-max
 
                 px-4
                 py-1
@@ -190,177 +193,49 @@ const LedgerDetailsPage = ({ id, params }: { id: string, params: TQuery }) => {
                 </div>
 
 
-                <div className="flex items-center gap-2">
+                <div className="flex w-full items-center justify-between gap-2">
+                    {/* Summary */}
+                    <div className="hidden md:block">
+                        <div className="flex items-center gap-2">
+                            {/* মোট পেমেন্ট */}
+                            <div className="flex items-center gap-2 whitespace-nowrap rounded border border-[#B5F1D5] bg-[#E9FFF5] px-3 py-1 text-[14px] font-normal text-[#039A63]">
+                                <span>মোট পেমেন্ট:</span>
+                                <span>৳ {toBanglaNumber(totalPaymentAmount)}</span>
+                            </div>
 
-                    {/* মোট পেমেন্ট */}
+                            {/* পরিমাণ */}
+                            <div className="flex items-center gap-2 whitespace-nowrap rounded border border-[#FFD7A5] bg-[#FFF4E7] px-3 py-1 text-[14px] font-normal text-[#FF8A00]">
+                                <span>পরিমাণ:</span>
+                                <span>{toBanglaNumber(totalQuantity)}</span>
+                            </div>
 
-                    <div
-                        className="
-            px-3
-            py-1
-            rounded
-            text-[14px]
-            bg-[#E9FFF5]
-            border
-            border-[#B5F1D5]
-            flex
-            items-center
-            gap-2
-            text-[#039A63]
-            font-normal
-            whitespace-nowrap
-        "
-                    >
-                        <span>মোট পেমেন্ট:</span>
+                            {/* মোট বিল */}
+                            <div className="flex items-center gap-2 whitespace-nowrap rounded border border-[#B5F1D5] bg-[#E9FFF5] px-3 py-1 text-[14px] font-normal text-[#039A63]">
+                                <span>মোট বিল:</span>
+                                <span>৳ {toBanglaNumber(totalBill)}</span>
+                            </div>
 
-                        <span>
-                            ৳ {toBanglaNumber(totalPaymentAmount)}
-                        </span>
+                            {/* অগ্রিম */}
+                            <div className="flex items-center gap-2 whitespace-nowrap rounded border border-[#FFD7A5] bg-[#FFF4E7] px-3 py-1 text-[14px] font-normal text-[#FF8A00]">
+                                <span>অগ্রিম:</span>
+                                <span>৳ {toBanglaNumber(totalAdvance)}</span>
+                            </div>
+
+                            {/* অগ্রিম বাকি */}
+                            <div className="flex items-center gap-2 whitespace-nowrap rounded border border-[#FFD1D1] bg-[#FFF0F0] px-3 py-1 text-[14px] font-normal text-[#FF480D]">
+                                <span>অগ্রিম বাকি:</span>
+                                <span>৳ {toBanglaNumber(totalAdvanceDue)}</span>
+                            </div>
+                        </div>
                     </div>
 
-
-                    {/* পরিমাণ */}
-
-                    <div
-                        className="
-            px-3
-            py-1
-            rounded
-            text-[14px]
-            bg-[#FFF4E7]
-            border
-            border-[#FFD7A5]
-            flex
-            items-center
-            gap-2
-            text-[#FF8A00]
-            font-normal
-            whitespace-nowrap
-        "
-                    >
-                        <span>পরিমাণ:</span>
-
-                        <span>
-                            {toBanglaNumber(totalQuantity)}
-                        </span>
-                    </div>
-
-
-                    {/* মোট বিল */}
-
-                    <div
-                        className="
-            px-3
-            py-1
-            rounded
-            text-[14px]
-            bg-[#E9FFF5]
-            border
-            border-[#B5F1D5]
-            flex
-            items-center
-            gap-2
-            text-[#039A63]
-            font-normal
-            whitespace-nowrap
-        "
-                    >
-                        <span>মোট বিল:</span>
-
-                        <span>
-                            ৳ {toBanglaNumber(totalBill)}
-                        </span>
-                    </div>
-
-
-                    {/* পেমেন্ট */}
-
-                    <div
-                        className="
-            px-3
-            py-1
-            rounded
-            text-[14px]
-            bg-[#FFF0F0]
-            border
-            border-[#FFD1D1]
-            flex
-            items-center
-            gap-2
-            text-[#FF480D]
-            font-normal
-            whitespace-nowrap
-        "
-                    >
-                        <span>পেমেন্ট:</span>
-
-                        <span>
-                            ৳ {toBanglaNumber(totalPayment)}
-                        </span>
-                    </div>
-
-
-                    {/* অগ্রিম */}
-
-                    <div
-                        className="
-            px-3
-            py-1
-            rounded
-            text-[14px]
-            bg-[#FFF4E7]
-            border
-            border-[#FFD7A5]
-            flex
-            items-center
-            gap-2
-            text-[#FF8A00]
-            font-normal
-            whitespace-nowrap
-        "
-                    >
-                        <span>অগ্রিম:</span>
-
-                        <span>
-                            ৳ {toBanglaNumber(totalAdvance)}
-                        </span>
-                    </div>
-
-
-                    {/* অগ্রিম বাকি */}
-
-                    <div
-                        className="
-            px-3
-            py-1
-            rounded
-            text-[14px]
-            bg-[#FFF0F0]
-            border
-            border-[#FFD1D1]
-            flex
-            items-center
-            gap-2
-            text-[#FF480D]
-            font-normal
-            whitespace-nowrap
-        "
-                    >
-                        <span>অগ্রিম বাকি:</span>
-
-                        <span>
-                            ৳ {toBanglaNumber(totalAdvanceDue)}
-                        </span>
-                    </div>
-                    {/* DATE */}
-                    <div>
-
+                    {/* Date Range */}
+                    <div className="w-full md:w-[280px] md:shrink-0">
                         <CustomDateRangePicker
                             value={dateRange}
                             onChange={setDateRange}
                         />
                     </div>
-
                 </div>
             </div>
             <div className="overflow-x-auto pt-2">
@@ -470,13 +345,14 @@ const LedgerDetailsPage = ({ id, params }: { id: string, params: TQuery }) => {
 
                     </tbody>
                 </table>
-                <TablePagination
-                    page={meta?.page ?? 1}
-                    totalPages={meta?.totalPages ?? 1}
-                    dataLength={payments?.length}
-                    title="পেমেন্ট"
-                />
+
             </div>
+            <TablePagination
+                page={meta?.page ?? 1}
+                totalPages={meta?.totalPages ?? 1}
+                dataLength={payments?.length}
+                title="পেমেন্ট"
+            />
         </div>
     );
 };

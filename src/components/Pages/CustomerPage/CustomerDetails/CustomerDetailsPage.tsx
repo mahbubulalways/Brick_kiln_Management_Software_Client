@@ -7,8 +7,8 @@ import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import CustomerTabs from "./Tabs/CustomerTab";
 import { TQuery } from "@/interface/query";
-
-
+import CustomLoader from "@/components/Reusable/CustomLoader";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 const InfoRow = ({
   label,
@@ -20,17 +20,26 @@ const InfoRow = ({
   orange?: boolean;
 }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex w-full items-start gap-2">
       <span
-        className={`min-w-[105px] rounded-md bg-[#F0F4F8] px-2 py-1 text-[14px] ${orange ? "text-[#FF5A00]" : "text-gray-700"
-          }`}
+        className={`
+          min-w-[100px] shrink-0 rounded-md
+          bg-[#F0F4F8]
+          px-2 py-1
+          text-[13px] sm:text-[14px]
+          ${orange ? "text-[#FF5A00]" : "text-gray-700"}
+        `}
       >
         {label}
       </span>
 
       <span
-        className={`text-[15px] ${orange ? "text-[#FF5A00]" : "text-gray-700"
-          }`}
+        className={`
+          min-w-0 flex-1 break-words
+          px-1 py-1
+          text-[14px] sm:text-[15px]
+          ${orange ? "text-[#FF5A00]" : "text-gray-700"}
+        `}
       >
         {value}
       </span>
@@ -38,7 +47,13 @@ const InfoRow = ({
   );
 };
 
-const CustomerDetailsPage = ({ id, query }: { id: string, query: TQuery }) => {
+const CustomerDetailsPage = ({
+  id,
+  query,
+}: {
+  id: string;
+  query: TQuery;
+}) => {
   const {
     data,
     isError,
@@ -51,49 +66,84 @@ const CustomerDetailsPage = ({ id, query }: { id: string, query: TQuery }) => {
   const customer = data?.data as TCustomer | undefined;
 
   if (isLoading) {
-    return (
-      <div className="p-4">
-        <div className="h-32 animate-pulse rounded-xl bg-white" />
-      </div>
-    );
+    return <CustomLoader cls="h-[70vh]" />;
   }
 
   if (isError || !customer) {
-    return (
-      <div className="p-4">
-        <div className="rounded-xl bg-red-50 p-5 text-center text-red-500">
-          কাস্টমারের তথ্য পাওয়া যায়নি।
-        </div>
-      </div>
-    );
+    return <CustomStatus type="error" />;
   }
 
   return (
-    <div className="w-full bg-white p-4">
-      <div className="rounded-xl  bg-white p-3">
+    <div className="w-full bg-white p-2 sm:p-3 md:p-4">
+      <div className="rounded-xl bg-white p-2 sm:p-3">
 
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-5">
+        {/* =========================
+            TOP INFORMATION
+        ========================= */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
 
-          {/* ID */}
-          <div className="flex  flex-col items-center justify-center rounded-lg bg-[#FCE4DE]">
-            <div className="text-[32px] text-[#FF4B12]">
+          {/* =========================
+              CUSTOMER ID
+          ========================= */}
+          <div
+            className="
+              flex min-h-[130px]
+              flex-col items-center justify-center
+              rounded-xl
+              bg-[#FCE4DE]
+              p-4
+              md:min-h-full
+              lg:col-span-1
+            "
+          >
+            <div className="text-[28px] font-medium text-[#FF4B12] sm:text-[32px]">
               {customer.id}
             </div>
 
             <button
               type="button"
-              className=" flex h-7 items-center gap-1.5 rounded-md bg-[#F45A0A] px-3 text-[13px] text-white hover:bg-[#E34E04]"
+              className="
+                mt-2
+                flex h-8 items-center gap-1.5
+                rounded-md
+                bg-[#F45A0A]
+                px-3
+                text-[13px] text-white
+                transition-colors
+                hover:bg-[#E34E04]
+              "
             >
               <Printer size={15} />
               প্রিন্ট
             </button>
           </div>
 
-          {/* Customer */}
-          <div className="flex flex-col justify-center gap-2">
-            <InfoRow label="নাম" value={customer.name} />
+          {/* =========================
+              CUSTOMER INFO
+          ========================= */}
+          <div
+            className="
+              flex flex-col justify-center gap-2
+              rounded-xl
+              border border-gray-100
+              bg-gray-50/50
+              p-3
+              md:p-4
+            "
+          >
+            <h3 className="mb-1 text-sm font-semibold text-gray-800 md:hidden">
+              গ্রাহকের তথ্য
+            </h3>
 
-            <InfoRow label="ঠিকানা" value={customer.address} />
+            <InfoRow
+              label="নাম"
+              value={customer.name}
+            />
+
+            <InfoRow
+              label="ঠিকানা"
+              value={customer.address}
+            />
 
             <InfoRow
               label="ফোন নম্বর"
@@ -101,46 +151,103 @@ const CustomerDetailsPage = ({ id, query }: { id: string, query: TQuery }) => {
             />
           </div>
 
-          {/* Delivery */}
-          <div className="flex flex-col justify-center gap-2">
+          {/* =========================
+              DELIVERY
+          ========================= */}
+          <div
+            className="
+              flex flex-col justify-center gap-2
+              rounded-xl
+              border border-gray-100
+              bg-gray-50/50
+              p-3
+              md:p-4
+            "
+          >
+            <h3 className="mb-1 text-sm font-semibold text-gray-800 md:hidden">
+              ইট ও ডেলিভারি
+            </h3>
+
             <InfoRow
               label="মোট ইট ক্রয়"
-              value={toBanglaNumber(customer.totalPurchasedQuantity)}
+              value={toBanglaNumber(
+                customer.totalPurchasedQuantity
+              )}
             />
 
             <InfoRow
               label="ডেলিভারি"
-              value={toBanglaNumber(customer.totalDeliveredQuantity)}
+              value={toBanglaNumber(
+                customer.totalDeliveredQuantity
+              )}
             />
 
             <InfoRow
               label="ডেলিভারি বাকি"
-              value={toBanglaNumber(customer.totalRemainingQuantity)}
+              value={toBanglaNumber(
+                customer.totalRemainingQuantity
+              )}
               orange
             />
           </div>
 
-          {/* Money */}
-          <div className="flex flex-col justify-center gap-2">
+          {/* =========================
+              MONEY
+          ========================= */}
+          <div
+            className="
+              flex flex-col justify-center gap-2
+              rounded-xl
+              border border-gray-100
+              bg-gray-50/50
+              p-3
+              md:p-4
+            "
+          >
+            <h3 className="mb-1 text-sm font-semibold text-gray-800 md:hidden">
+              আর্থিক তথ্য
+            </h3>
+
             <InfoRow
               label="মোট মূল্য"
-              value={toBanglaNumber(customer.totalAmount)}
+              value={toBanglaNumber(
+                customer.totalAmount
+              )}
             />
 
             <InfoRow
               label="পরিশোধ"
-              value={toBanglaNumber(customer.totalPaid)}
+              value={toBanglaNumber(
+                customer.totalPaid
+              )}
             />
 
             <InfoRow
               label="টাকা বাকি"
-              value={toBanglaNumber(customer.totalDue)}
+              value={toBanglaNumber(
+                customer.totalDue
+              )}
               orange
             />
           </div>
 
-          {/* Other Info */}
-          <div className="flex flex-col justify-center gap-2">
+          {/* =========================
+              OTHER INFO
+          ========================= */}
+          <div
+            className="
+              flex flex-col justify-center gap-2
+              rounded-xl
+              border border-gray-100
+              bg-gray-50/50
+              p-3
+              md:p-4
+            "
+          >
+            <h3 className="mb-1 text-sm font-semibold text-gray-800 md:hidden">
+              অন্যান্য তথ্য
+            </h3>
+
             <InfoRow
               label="পরিশোধের তারিখ"
               value={formatBanglaDate({
@@ -161,14 +268,26 @@ const CustomerDetailsPage = ({ id, query }: { id: string, query: TQuery }) => {
           </div>
         </div>
 
+        {/* =========================
+            FETCHING INDICATOR
+        ========================= */}
         {isFetching && !isLoading && (
-          <div className="mt-2 h-1 w-full overflow-hidden bg-gray-100">
+          <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-gray-100">
             <div className="h-full w-1/3 animate-pulse bg-[#079B67]" />
           </div>
         )}
       </div>
 
-      <CustomerTabs id={Number(customer?.id)} customer={customer} query={query}/>
+      {/* =========================
+          TABS
+      ========================= */}
+      <div className="mt-2 sm:mt-3">
+        <CustomerTabs
+          id={Number(customer.id)}
+          customer={customer}
+          query={query}
+        />
+      </div>
     </div>
   );
 };

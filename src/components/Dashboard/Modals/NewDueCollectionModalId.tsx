@@ -17,11 +17,11 @@ import { RiErrorWarningFill } from "react-icons/ri";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
-  id?:number
+  id?:string
 };
 
 type TDueCollection = {
-  customerId?: string;
+  customerCode?: string;
   name: string;
   address: string;
   season: string;
@@ -29,7 +29,7 @@ type TDueCollection = {
   collect?: number | string;
   newDue?: number;
   nextDate?: Date;
-  invoiceId: number;
+  invoiceId: string;
 };
 const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
   const [collectionDue, { isLoading }] = useCollectionDueMutation();
@@ -49,7 +49,7 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
   const collect = watch("collect");
 
   const { data, isFetching, isError } = useGetCustomerDueQuery(
-    Number(id),
+   id!,
     {
       skip: !id,
       refetchOnMountOrArgChange: true,
@@ -73,7 +73,7 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
 
   reset((prev) => ({
     ...prev,
-    customerId:id as any,
+    customerCode:data.data?.customerCode as any,
     name: data.data.name || "",
     address: data.data.address || "",
     due:
@@ -137,13 +137,14 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
         <form onSubmit={handleSubmit(onSubmit)} className="pt-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             <CustomInput
-              name="customerId"
+              name="customerCode"
               label="কাস্টমার আইডি"
               placeholder="কাস্টমার আইডি"
               register={register}
               type="text"
               rules={{ required: "কাস্টমার আইডি" }}
-              error={errors.customerId}
+              error={errors.customerCode}
+              readonly
 
             />
             <CustomInput

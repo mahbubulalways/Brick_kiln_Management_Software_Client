@@ -251,7 +251,7 @@ const LoadPage = ({ limit, page }: TQuery) => {
           page={meta?.page ?? 1}
           totalPages={meta?.totalPages ?? 1}
           dataLength={loads?.length}
-          title="পেমেন্ট"
+          title="লোড"
         />
       </div>
       <CommonPrint

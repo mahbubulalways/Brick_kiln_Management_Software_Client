@@ -51,7 +51,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
   const [openThermalModal, setOpenThermalModal] = useState<boolean>(false);
-  const [invoiceId, setInvoiceId] = useState<number>();
+  const [invoiceId, setInvoiceId] = useState<string|undefined>("");
   const [openChalanDetailsModal, setOpenChalanDetailsModal] =
     useState<boolean>(false);
 
@@ -68,7 +68,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const meta = invoices?.data?.meta as TMetaConfig;
 
   //  DELETE INVOICE PART
-  const handleDeleteInvoice = async (invoiceId: number) => {
+  const handleDeleteInvoice = async (invoiceId: string) => {
     Swal.fire({
       title: "আপনি কি নিশ্চিত?",
       text: "একবার মুছে ফেলা হলে এটি আর ফিরিয়ে আনা যাবে না।",
@@ -558,7 +558,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
         <NewDeliveryModal
           isOpen={isDeliveryModalOpen}
           onClose={() => setIsDeliveryModalOpen(false)}
-          invoiceId={invoiceId}
+          invoiceId={invoiceId!}
         />
       )}
     </div>

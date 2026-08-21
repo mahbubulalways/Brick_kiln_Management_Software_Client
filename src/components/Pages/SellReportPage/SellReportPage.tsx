@@ -11,6 +11,8 @@ import {
     YAxis,
 } from "recharts";
 import TotalReport from "./TotalReport";
+import CustomLoader from "@/components/Reusable/CustomLoader";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 export type TAreaSale = {
     rank: number;
@@ -131,31 +133,19 @@ const SellReportPage = () => {
 
     if (isLoading) {
         return (
-            <div className="flex min-h-[400px] items-center justify-center rounded-xl border border-gray-200 bg-white">
-                <p className="text-sm text-gray-500">
-                    রিপোর্ট লোড হচ্ছে...
-                </p>
-            </div>
+            <CustomLoader cls="h-[70vh]"/>
         );
     }
 
     if (isError) {
         return (
-            <div className="flex min-h-[400px] items-center justify-center rounded-xl border border-gray-200 bg-white">
-                <p className="text-sm text-red-500">
-                    রিপোর্ট লোড করা যায়নি।
-                </p>
-            </div>
+           <CustomStatus type="error"/>
         );
     }
 
     if (!areaReport.length) {
         return (
-            <div className="flex min-h-[400px] items-center justify-center rounded-xl border border-gray-200 bg-white">
-                <p className="text-sm text-gray-500">
-                    কোনো বিক্রয় তথ্য পাওয়া যায়নি।
-                </p>
-            </div>
+              <CustomStatus type="empty"/>
         );
     }
 

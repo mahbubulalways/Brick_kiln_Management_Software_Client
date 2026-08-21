@@ -103,24 +103,35 @@ export default function CarRentPage({
         <div className="w-full rounded-md bg-white">
 
             {/* Header */}
-            <div className="flex items-center justify-between px-3 py-2">
-                <h2 className="text-xl font-semibold text-[#039A63] sm:text-2xl">
+            <div className="flex flex-col gap-3 px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+                {/* Title */}
+                <h2 className="text-lg font-semibold text-[#039A63] sm:text-2xl">
                     গাড়ি ভাড়ার তালিকা
                 </h2>
 
-                <div className="flex items-center gap-3">
-                    <SearchBar
-                        value={searchItems}
-                        onChange={(e) =>
-                            setSearchItem(e.target.value)
-                        }
-                        onClear={() => setSearchItem("")}
-                    />
+                {/* Search + Button */}
+                <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
+                    <div className="min-w-0 flex-1 sm:w-[240px] sm:flex-none">
+                        <SearchBar
+                            value={searchItems}
+                            onChange={(e) =>
+                                setSearchItem(e.target.value)
+                            }
+                            onClear={() => setSearchItem("")}
+                        />
+                    </div>
 
                     <button
                         type="button"
                         onClick={() => setOpenCarRent(true)}
-                        className="shrink-0 rounded-md bg-[#039A63] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#028653]"
+                        className="
+                shrink-0 rounded-md
+                bg-[#039A63]
+                px-3 py-2
+                text-xs font-medium text-white
+                transition hover:bg-[#028653]
+                sm:px-4 sm:text-sm
+            "
                     >
                         + নতুন ভাড়া
                     </button>
@@ -265,7 +276,7 @@ export default function CarRentPage({
                     page={meta?.page ?? 1}
                     totalPages={meta?.totalPages ?? 1}
                     dataLength={carRentData?.length}
-                    title="পেমেন্ট"
+                    title="ভাড়া"
                 />
             </div>
 

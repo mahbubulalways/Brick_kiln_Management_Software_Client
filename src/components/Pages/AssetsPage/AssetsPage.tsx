@@ -83,49 +83,62 @@ export default function AssetsPage() {
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#f8fafb] p-4">
+        <div>
 
             {/* Main Container */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
 
                 {/* ================= HEADER ================= */}
-                <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+               <div className="flex flex-col gap-3 border-b border-gray-200 px-3 py-3 sm:px-5 sm:py-4 md:flex-row md:items-center md:justify-between">
+  {/* Logo / Title */}
+  <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e9f8f2] sm:h-9 sm:w-9">
+      <Grid2X2 className="h-4 w-4 text-[#039A63] sm:h-5 sm:w-5" />
+    </div>
 
-                    {/* Logo / Title */}
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e9f8f2]">
-                            <Grid2X2 className="h-5 w-5 text-[#039A63]" />
-                        </div>
+    <h1 className="text-lg font-bold text-[#039A63] sm:text-2xl">
+      অ্যাসেট ম্যানেজমেন্ট
+    </h1>
+  </div>
 
-                        <h1 className="text-2xl font-bold text-[#039A63]">
-                            অ্যাসেট ম্যানেজমেন্ট
-                        </h1>
-                    </div>
+  {/* Header Buttons */}
+  <div className="flex w-full items-center gap-2 sm:gap-3 md:w-auto">
+    <button
+      type="button"
+      className="
+        flex w-full items-center justify-center
+        gap-2 rounded-lg
+        border border-gray-300
+        bg-white px-3 py-2
+        text-xs font-medium text-gray-700
+        transition hover:bg-gray-50
+        sm:px-4 sm:text-sm
+        md:w-auto
+      "
+    >
+      <ExternalLink className="h-4 w-4" />
+      এক্সপোর্ট
+    </button>
 
-                    {/* Header Buttons */}
-                    <div className="flex items-center gap-3">
-
-                        <button
-                            type="button"
-                            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
-                        >
-                            <ExternalLink className="h-4 w-4" />
-
-                            এক্সপোর্ট
-                        </button>
-
-                        <button
-                            onClick={() => setOpenNewProduct(true)}
-                            type="button"
-                            className="flex items-center gap-2 rounded-lg bg-[#039A63] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#028653]"
-                        >
-                            <Plus className="h-4 w-4" />
-
-                            নতুন স্টক
-                        </button>
-
-                    </div>
-                </div>
+    <button
+      onClick={() => setOpenNewProduct(true)}
+      type="button"
+      className="
+        flex w-full items-center justify-center
+        gap-2 rounded-lg
+        bg-[#039A63]
+        px-3 py-2
+        text-xs font-medium text-white
+        transition hover:bg-[#028653]
+        sm:px-4 sm:text-sm
+        md:w-auto
+      "
+    >
+      <Plus className="h-4 w-4" />
+      নতুন স্টক
+    </button>
+  </div>
+</div>
 
                 {/* ================= NAVIGATION ================= */}
                 <div className="border-b border-gray-200 px-5">

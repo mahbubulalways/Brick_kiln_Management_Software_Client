@@ -204,7 +204,7 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
           page={meta?.page ?? 1}
           totalPages={meta?.totalPages ?? 1}
           dataLength={todaysDelivery?.length}
-          title="পেমেন্ট"
+          title="ডেলিভারি"
         />
       </div>
       {isOpen && (

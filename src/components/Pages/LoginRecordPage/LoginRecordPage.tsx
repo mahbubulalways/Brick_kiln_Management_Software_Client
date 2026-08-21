@@ -17,7 +17,7 @@ import { TablePagination } from "@/components/Reusable/TablePagination";
 export default function LoginRecordPage({ limit, page }: TQuery) {
     const {
         data,
-        isLoading,
+        isFetching,
         isError,
     } = useGetUserLoginHistoryQuery({ limit, page }, { refetchOnMountOrArgChange: true });
 
@@ -40,7 +40,7 @@ export default function LoginRecordPage({ limit, page }: TQuery) {
         <div className="rounded-lg bg-white p-2">
             {/* Title */}
             <div className="mb-4 rounded-md bg-[#fff1f1] py-4 text-center shadow-sm">
-                <h1 className="text-2xl font-bold text-[#ff4b00]">
+                <h1 className="text-lg md:text-2xl font-bold text-[#ff4b00]">
                     ইউজারের লগইন - লগআউট রেকর্ড
                 </h1>
             </div>
@@ -61,9 +61,9 @@ export default function LoginRecordPage({ limit, page }: TQuery) {
 
                     <tbody className="text-center">
                         {/* Loading */}
-                        {isLoading ? (
+                        {isFetching ? (
                             <tr>
-                                <td colSpan={5} className="border p-8">
+                                <td colSpan={6} className="border p-8">
                                     <CustomLoader cls="h-[30vh]" />
                                 </td>
                             </tr>
@@ -71,7 +71,7 @@ export default function LoginRecordPage({ limit, page }: TQuery) {
                             /* Error */
                             <tr>
                                 <td
-                                    colSpan={5}
+                                    colSpan={6}
                                     className="border p-8 text-center text-sm text-gray-500"
                                 >
                                     {SERVER_ERROR_MESSAGE}
@@ -81,7 +81,7 @@ export default function LoginRecordPage({ limit, page }: TQuery) {
                             /* Empty */
                             <tr>
                                 <td
-                                    colSpan={5}
+                                    colSpan={6}
                                     className="border p-8 text-center text-sm text-gray-500"
                                 >
                                     কোনো লগইন রেকর্ড পাওয়া যায়নি।
@@ -140,13 +140,14 @@ export default function LoginRecordPage({ limit, page }: TQuery) {
                         )}
                     </tbody>
                 </table>
-                <TablePagination
+                
+            </div>
+            <TablePagination
                     page={meta?.page ?? 1}
                     totalPages={meta?.totalPages ?? 1}
                     dataLength={activity?.length}
-                    title="পেমেন্ট"
+                    title="রেকর্ড"
                 />
-            </div>
         </div>
     );
 }

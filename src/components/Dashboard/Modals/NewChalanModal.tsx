@@ -178,6 +178,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
     }
   };
 
+
   return (
     <CustomModalBottom
       isOpen={isOpen}
@@ -210,8 +211,8 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                   placeholder="000"
                   {...register("invoice.serial")}
                   defaultValue={
-                    invoiceSerial?.data?.totalInvoice
-                      ? invoiceSerial?.data?.totalInvoice 
+                   invoiceSerial?.data?.invoiceSerial
+                      ?invoiceSerial?.data?.invoiceSerial 
                       : 1
                   }
                 />

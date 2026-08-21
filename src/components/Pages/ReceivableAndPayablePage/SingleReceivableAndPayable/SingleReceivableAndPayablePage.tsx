@@ -13,6 +13,7 @@ import NewTransactionGivenModal from "./Modal/NewTransactionGivenModal";
 import PayLoanGivenModal from "./Modal/PayLoanGivenModal";
 import NewTransactionTakenModal from "./Modal/NewTransactionTakenModal";
 import PayLoanTakenModal from "./Modal/PayLoadnTakenModal";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 
 
 
@@ -22,8 +23,8 @@ export default function SingleReceivableAndPayablePage({
     id: string;
 }) {
 
-    const [openNewTransactionGiven, setOpenNewTransactionGiven] = useState<boolean>(false) 
-    const [openNewTransactionTaken, setOpenNewTransactionTaken] = useState<boolean>(false) 
+    const [openNewTransactionGiven, setOpenNewTransactionGiven] = useState<boolean>(false)
+    const [openNewTransactionTaken, setOpenNewTransactionTaken] = useState<boolean>(false)
     const [openPayLoanGiven, setOpenPayLoadnGiven] = useState<boolean>(false)
     const [openPayLoanTaken, setOpenPayLoadnTaken] = useState<boolean>(false)
     const {
@@ -47,32 +48,14 @@ export default function SingleReceivableAndPayablePage({
 
     if (isError || !data?.data) {
         return (
-            <div className="flex min-h-[500px] items-center justify-center rounded-2xl bg-[#f4f7fa]">
-                <div className="text-center">
-                    <p className="text-lg font-semibold text-red-500">
-                        তথ্য লোড করা যায়নি
-                    </p>
-
-                    <p className="mt-1 text-sm text-gray-500">
-                        আবার চেষ্টা করুন।
-                    </p>
-
-                    <button
-                        type="button"
-                        onClick={() => refetch()}
-                        className="mt-4 rounded-md bg-[#039a63] px-5 py-2 text-sm font-medium text-white"
-                    >
-                        আবার চেষ্টা করুন
-                    </button>
-                </div>
-            </div>
+            <CustomStatus type="error" />
         );
     }
 
     const due = data?.data || {};
 
     return (
-        <div className="min-h-screen bg-[#f4f7fa] p-4 md:p-6">
+        <div>
             {/* Page Title */}
             <div className="mb-6 flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-[#172b4d]">
