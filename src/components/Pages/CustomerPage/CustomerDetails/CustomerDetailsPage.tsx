@@ -73,6 +73,7 @@ const CustomerDetailsPage = ({
     return <CustomStatus type="error" />;
   }
 
+
   return (
     <div className="w-full bg-white p-2 sm:p-3 md:p-4">
       <div className="rounded-xl bg-white p-2 sm:p-3">
@@ -97,7 +98,7 @@ const CustomerDetailsPage = ({
             "
           >
             <div className="text-[28px] font-medium text-[#FF4B12] sm:text-[32px]">
-              {customer.id}
+              {customer.customerCode}
             </div>
 
             <button
@@ -283,7 +284,7 @@ const CustomerDetailsPage = ({
       ========================= */}
       <div className="mt-2 sm:mt-3">
         <CustomerTabs
-          id={Number(customer.id)}
+          id={customer.id}
           customer={customer}
           query={query}
         />

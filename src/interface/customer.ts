@@ -10,5 +10,6 @@ export interface TCustomer {
   totalPaid: number;
   totalDue: number;
   note: string;
+  customerCode:string;
   nextPaymentDate: string ;
 }

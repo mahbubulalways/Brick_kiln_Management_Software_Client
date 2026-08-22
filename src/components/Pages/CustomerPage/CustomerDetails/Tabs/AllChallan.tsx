@@ -47,7 +47,7 @@ const AllChallan = ({
     const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
     const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
         useState<boolean>(false);
-    const [invoiceId, setInvoiceId] = useState<number>();
+    const [invoiceId, setInvoiceId] = useState<string>();
     const [openChalanDetailsModal, setOpenChalanDetailsModal] =
         useState<boolean>(false);
     const {

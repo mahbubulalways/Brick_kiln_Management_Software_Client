@@ -133,12 +133,12 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
                                         className="border-b cursor-pointer border-gray-200 transition-colors hover:bg-gray-50"
                                     >
                                         {/* ================= ID ================= */}
-                                        <td onClick={() => router.push(`/dashboard/customer/profile/${customer.id}`)}
+                                        <td onClick={() => router.push(`/dashboard/customer/profile/${customer.customerCode}`)}
 
                                             className="p-3 align-top">
                                             <div className="flex min-h-27 flex-col items-center justify-center rounded-lg bg-[#FCE4DE]">
                                                 <span className="text-[30px] font-medium leading-none text-[#FF4B12]">
-                                                    {toBanglaNumber(customer.id)}
+                                                    {toBanglaNumber(customer.customerCode)}
                                                 </span>
 
                                                 <span className="mt-2 text-sm font-medium text-[#FF7448]">
@@ -149,7 +149,7 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
 
                                         {/* ================= Customer Info ================= */}
                                         <td
-                                            onClick={() => router.push(`/dashboard/customer/profile/${customer.id}`)}
+                                            onClick={() => router.push(`/dashboard/customer/profile/${customer.customerCode}`)}
                                             className="p-4 align-top">
                                             <div className="space-y-2">
                                                 <InfoRow
@@ -172,7 +172,7 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
 
                                         {/* ================= Delivery ================= */}
                                         <td
-                                            onClick={() => router.push(`/dashboard/customer/profile/${customer.id}`)}
+                                            onClick={() => router.push(`/dashboard/customer/profile/${customer.customerCode}`)}
                                             className="p-4 align-top">
                                             <div className="space-y-2">
                                                 <InfoRow
@@ -202,7 +202,7 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
 
                                         {/* ================= Money ================= */}
                                         <td
-                                            onClick={() => router.push(`/dashboard/customer/profile/${customer.id}`)}
+                                            onClick={() => router.push(`/dashboard/customer/profile/${customer.customerCode}`)}
                                             className="p-4 align-top">
                                             <div className="space-y-2">
                                                 <InfoRow
