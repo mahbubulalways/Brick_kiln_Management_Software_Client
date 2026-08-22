@@ -13,7 +13,7 @@ export interface ICustomer {
 }
 
 export interface IDueResponse {
-  id: number;
+  id: string;
   customerId: number;
   customer: ICustomer;
   collect: number;

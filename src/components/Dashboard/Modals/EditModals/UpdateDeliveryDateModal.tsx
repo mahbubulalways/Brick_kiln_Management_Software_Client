@@ -8,8 +8,8 @@ type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
   id: number;
-  itemIds: number[];
-  setItemIds: Dispatch<SetStateAction<number[]>>;
+  itemIds: string[];
+  setItemIds: Dispatch<SetStateAction<string[]>>;
 };
 
 const UpdateDeliveryDateModal = ({

@@ -1,8 +1,21 @@
 "use client";
 
-import CustomInput from "@/components/Reusable/CustomInput";
+import CustomLoader from "@/components/Reusable/CustomLoader";
+import CustomStatus from "@/components/Reusable/CustomStatus";
+import { TVataInformation } from "@/interface/vata";
+import { useGetMyVataInformationQuery } from "@/redux/features/vata.features";
+import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { FiHome, FiSave, FiInfo } from "react-icons/fi";
+import {
+    FiInfo,
+    FiUser,
+    FiPhone,
+    FiMapPin,
+    FiCreditCard,
+    FiCalendar,
+    FiMessageSquare,
+} from "react-icons/fi";
+import { MdOutlineStorefront } from "react-icons/md";
 
 type TVataInfo = {
     vataId: string;
@@ -18,240 +31,231 @@ type TVataInfo = {
 };
 
 const VataInformation = () => {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<TVataInfo>({
-        defaultValues: {
-            vataId: "12321",
-            nameEn: "DEMO",
-            nameBn: "এম.এম.বি ব্রিকস",
-            address: "হিলালিপাড়া,কাটাবাড়ি,গোবিন্দগঞ্জ",
-            mobileNumber: "01901349901, 01901349906",
-            ownerName: "মোঃ মানিক মিয়া",
-            ownerPhoneNumber: "01918908070",
-            // smsRate: "৳ 0.35",
-            // softwareFee: "৳ 1500",
-            // nextPaymentDate: "05-10-2033",
-        },
-    });
+    const { isError, isLoading, data } = useGetMyVataInformationQuery(undefined)
 
-    const onSubmit: SubmitHandler<TVataInfo> = async (data) => {
-        console.log(data);
-    };
+    const information = data?.data as TVataInformation
 
+    if (isLoading) {
+        return <CustomLoader cls="h-[50vh]" />
+    }
+    if (isError) {
+        return <CustomStatus type="error" />
+    }
     return (
-        <div className="w-full">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-5">
-                <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E9F9F2] text-[#039A63]">
-                        <FiHome className="h-5 w-5" />
-                    </div>
+        <div className="w-full bg-white px-1 md:p-5 rounded">
+            {/* ================= HEADER ================= */}
+            <div className="mb-5 flex items-center gap-3 border-b border-gray-200 pb-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#039A63] text-white shadow-sm">
+                    <FiInfo className="h-5 w-5" />
+                </div>
 
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">
-                            ভাটার তথ্য
-                        </h1>
+                <div>
+                    <h1 className="text-xl font-bold text-gray-900">
+                        প্রতিষ্ঠানের তথ্য
+                    </h1>
 
-                        <p className="text-xs text-gray-500 mt-1">
-                            আপনার ভাটার মৌলিক তথ্য দেখুন ও পরিচালনা করুন
-                        </p>
-                    </div>
+                    <p className="mt-1 text-sm text-gray-400">
+                        ভাটার প্রোফাইল এবং বিলিং তথ্য। যে কোনো তথ্য আপডেটের জন্য
+                        হেল্পলাইনে যোগাযোগ করুন
+                    </p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
-                {/* Basic Information */}
-                <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-                    <div className="flex items-center gap-2 border-b border-gray-100 bg-gray-50/70 px-5 py-3.5">
-                        <div className="h-2 w-2 rounded-full bg-[#039A63]" />
+            <form >
+                {/* ================= MAIN GRID ================= */}
+                <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(320px,0.95fr)]">
+                    {/* =====================================================
+              LEFT SIDE
+          ====================================================== */}
+                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                        {/* Header */}
+                        <div className="mb-5 flex items-center gap-2 border-b border-gray-100 pb-4">
+                            <MdOutlineStorefront className="h-5 w-5 text-blue-500" />
 
-                        <h2 className="text-sm font-semibold text-gray-800">
-                            ভাটার মৌলিক তথ্য
-                        </h2>
-                    </div>
+                            <h2 className="text-lg font-semibold text-gray-700">
+                                বিজনেসের বিবরণ
+                            </h2>
+                        </div>
 
-                    <div className="p-5">
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <CustomInput
-                                name="vataId"
-                                label="ভাটার আইডি"
-                                error={errors.vataId!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="number"
-                            />
+                            {/* ================= BANGLA NAME ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <MdOutlineStorefront className="h-4 w-4 text-gray-400" />
 
-                            <CustomInput
-                                name="nameBn"
-                                label="ভাটার নাম (বাংলায়)"
-                                error={errors.nameBn!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
+                                    <span className="text-sm font-medium text-gray-400">
+                                        ভাটা নাম (বাংলা)
+                                    </span>
+                                </div>
 
-                            <CustomInput
-                                name="nameEn"
-                                label="ভাটার নাম (ইংরেজি)"
-                                error={errors.nameEn!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
+                                <p className="text-base font-semibold text-gray-700">
+                                    {information?.nameBangla}
+                                </p>
+                            </div>
 
-                            <CustomInput
-                                name="address"
-                                label="ভাটার ঠিকানা (চালানে রয়েছে)"
-                                error={errors.address!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
+                            {/* ================= ENGLISH NAME ================= */}
+                            <div className="rounded-xl border border-blue-100 bg-white p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <MdOutlineStorefront className="h-4 w-4 text-blue-400" />
 
-                            <CustomInput
-                                name="ownerName"
-                                label="মালিকের নাম"
-                                error={errors.ownerName!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
+                                    <span className="text-sm font-medium text-gray-400">
+                                        ভাটার নাম (ইংরেজি)
+                                    </span>
+                                </div>
 
-                            <CustomInput
-                                name="ownerPhoneNumber"
-                                label="মালিকের ফোন নম্বর"
-                                error={errors.ownerPhoneNumber!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
+                                <p className="text-base font-semibold text-gray-700">
+                                    {information?.nameEnglish}
+                                </p>
+                            </div>
+
+                            {/* ================= ADDRESS ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 md:col-span-2">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiMapPin className="h-4 w-4 text-gray-400" />
+
+                                    <span className="text-sm font-medium text-gray-400">
+                                        ঠিকানা (চালান অনুযায়ী)
+                                    </span>
+                                </div>
+
+                                <p className="text-base font-semibold text-gray-700">
+                                    {information?.address}
+                                </p>
+                            </div>
+
+                            {/* ================= OWNER NAME ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiUser className="h-4 w-4 text-gray-400" />
+
+                                    <span className="text-sm font-medium text-gray-400">
+                                        মালিকের নাম
+                                    </span>
+                                </div>
+
+                                <p className="text-base font-semibold text-gray-700">
+                                    {information?.ownerName}
+                                </p>
+                            </div>
+
+                            {/* ================= OWNER PHONE ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiPhone className="h-4 w-4 text-gray-400" />
+
+                                    <span className="text-sm font-medium text-gray-400">
+                                        ব্যক্তিগত যোগাযোগ
+                                    </span>
+                                </div>
+
+                                <p className="text-base font-semibold text-gray-700">
+                                    {information?.ownerPhoneNumber}
+                                </p>
+                            </div>
+
+                            {/* ================= MOBILE NUMBERS ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 md:col-span-2">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiPhone className="h-4 w-4 text-gray-400" />
+
+                                    <span className="text-sm font-medium text-gray-400">
+                                        ইনভয়েস ফোন নম্বর
+                                    </span>
+                                </div>
+
+                                <p className="text-base font-semibold text-gray-700">
+                                    {information?.challansPhoneNumber}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Contact Information */}
-                <div className="rounded-xl border border-gray-200 bg-white overflow-hidden mt-5">
-                    <div className="flex items-center gap-2 border-b border-gray-100 bg-gray-50/70 px-5 py-3.5">
-                        <div className="h-2 w-2 rounded-full bg-[#039A63]" />
+                    {/* =====================================================
+              RIGHT SIDE - BILLING
+          ====================================================== */}
+                    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                        {/* Header */}
+                        <div className="mb-5 flex items-center gap-2 border-b border-gray-100 pb-4">
+                            <FiCreditCard className="h-5 w-5 text-[#039A63]" />
 
-                        <h2 className="text-sm font-semibold text-gray-800">
-                            যোগাযোগের তথ্য
-                        </h2>
-                    </div>
+                            <h2 className="text-lg font-semibold text-gray-700">
+                                বিলিং তথ্য
+                            </h2>
+                        </div>
 
-                    <div className="p-5">
-                        <CustomInput
-                            name="mobileNumber"
-                            label="ফোন নম্বর (চালানে থাকবে)"
-                            error={errors.mobileNumber!}
-                            placeholder="019XXXXXXXX, 018XXXXXXXX"
-                            register={register}
-                            readonly
-                            type="text"
-                        />
+                        <div className="space-y-4">
+                            {/* ================= CLIENT ID ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiCreditCard className="h-4 w-4 text-gray-400" />
 
-                        <div className="mt-3 flex items-start gap-2 rounded-lg bg-[#F0FDF8] border border-[#D1FAE5] px-3 py-2.5">
-                            <FiInfo className="mt-0.5 h-4 w-4 shrink-0 text-[#039A63]" />
+                                    <span className="text-sm font-medium text-gray-400">
+                                        ক্লায়েন্ট আইডি
+                                    </span>
+                                </div>
 
-                            <div className="text-xs leading-5 text-gray-600">
-                                <p>
-                                    একটি নম্বর লেখার পর কমা (,) দিয়ে অন্য নম্বর
-                                    লিখবেন।
+                                <span className="inline-flex rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-600">
+                                    {information?.vataId}
+                                </span>
+                            </div>
+
+                            {/* ================= SOFTWARE FEE ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiCreditCard className="h-4 w-4 text-gray-400" />
+
+                                    <span className="text-sm font-medium text-gray-400">
+                                        মাসিক সফটওয়্যার ফি
+                                    </span>
+                                </div>
+
+                                <p className="text-base font-semibold text-gray-700">
+                                    ৳   {information?.softwareFee}
                                 </p>
+                            </div>
 
-                                <p className="text-gray-500">
-                                    সর্বোচ্চ ৪টি নম্বর লিখতে পারবেন এবং নম্বরগুলো
-                                    ইংরেজিতে লিখবেন।
+                            {/* ================= SMS RATE ================= */}
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiMessageSquare className="h-4 w-4 text-gray-400" />
+
+                                    <span className="text-sm font-medium text-gray-400">
+                                        এসএমএস রেট (প্রতি টি)
+                                    </span>
+                                </div>
+
+                                <p className="text-base font-semibold text-gray-700">
+                                    ৳   {information?.smsRate}
                                 </p>
+                            </div>
+
+                            {/* ================= NEXT PAYMENT ================= */}
+                            <div className="rounded-xl border border-orange-100 bg-orange-50 p-5">
+                                <div className="mb-2 text-center">
+                                    <span className="text-sm font-semibold text-orange-500">
+                                        পরবর্তী পেমেন্ট
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center justify-center gap-2">
+                                    <FiCalendar className="h-6 w-6 text-orange-500" />
+
+                                    <p className="text-2xl font-semibold text-orange-500">
+                                        {formatBanglaDate({ date: information?.nextPaymentDate! })}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Payment Information */}
-                {/* <div className="rounded-xl border border-gray-200 bg-white overflow-hidden mt-5">
-                    <div className="flex items-center gap-2 border-b border-gray-100 bg-gray-50/70 px-5 py-3.5">
-                        <div className="h-2 w-2 rounded-full bg-[#039A63]" />
+                {/* ================= FOOTER ================= */}
+                <div className="mt-5 flex items-start gap-2 border-t border-gray-200 pt-4">
+                    <FiInfo className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
 
-                        <h2 className="text-sm font-semibold text-gray-800">
-                            পেমেন্ট ও সফটওয়্যার তথ্য
-                        </h2>
-                    </div>
-
-                    <div className="p-5">
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <CustomInput
-                                name="smsRate"
-                                label="SMS রেট"
-                                error={errors.smsRate!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
-
-                            <CustomInput
-                                name="softwareFee"
-                                label="সফটওয়্যার ফি"
-                                error={errors.softwareFee!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
-
-                            <CustomInput
-                                name="nextPaymentDate"
-                                label="পরবর্তী পেমেন্টের তারিখ"
-                                error={errors.nextPaymentDate!}
-                                placeholder=""
-                                register={register}
-                                readonly
-                                type="text"
-                            />
-                        </div>
-                    </div>
-                </div> */}
-
-                {/* Footer */}
-                <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-5">
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm leading-5 text-gray-400">
                         ভাটার তথ্য পরিবর্তনের প্রয়োজন হলে অ্যাডমিনের সাথে যোগাযোগ করুন।
                     </p>
-
-                    <button
-                        type="submit"
-                        className="
-                            inline-flex
-                            items-center
-                            justify-center
-                            gap-2
-                            rounded-lg
-                            bg-[#039A63]
-                            px-6
-                            py-2.5
-                            text-sm
-                            font-semibold
-                            text-white
-                            shadow-sm
-                            transition
-                            hover:bg-[#028653]
-                            active:scale-[0.98]
-                            cursor-pointer
-                        "
-                    >
-                        <FiSave className="h-4 w-4" />
-                        সেভ করুন
-                    </button>
                 </div>
             </form>
         </div>

@@ -28,6 +28,13 @@ const vataApi = baseApi.injectEndpoints({
                 url: `/vata/info`,
             }),
         }),
+        
+        // GET VATA INFO
+         getMyVataInformation: builder.query({
+            query: () => ({
+                url: `/vata/me`,
+            }),
+        }),
 
     }),
 });
@@ -35,5 +42,6 @@ const vataApi = baseApi.injectEndpoints({
 export const {
     useCreateNewVataMutation,
     useVerifySubDomainMutation,
-    useGetVataInfoQuery
+    useGetVataInfoQuery,
+    useGetMyVataInformationQuery
 } = vataApi;

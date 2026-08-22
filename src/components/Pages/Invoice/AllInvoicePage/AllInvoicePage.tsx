@@ -33,7 +33,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
     const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
         useState<boolean>(false);
     const [searchItems, setSearchItem] = useState("");
-    const [invoiceId, setInvoiceId] = useState<number>();
+    const [invoiceId, setInvoiceId] = useState<number|undefined>(undefined);
     const [openChalanDetailsModal, setOpenChalanDetailsModal] =
         useState<boolean>(false);
     const [dateRange, setDateRange] = useState("");
@@ -179,7 +179,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                     className="hidden lg:block"
                                                                     onClick={() => {
                                                                         setOpenPrintModal(true);
-                                                                        setInvoiceId(row?.id);
+                                                                        setInvoiceId(row?.serial);
                                                                     }}
                                                                 >
                                                                     <CustomDropDownMenuItem
@@ -193,7 +193,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                     className="lg:hidden block"
                                                                     onClick={() => {
                                                                         setOpenThermalModal(true);
-                                                                        setInvoiceId(row?.id);
+                                                                        setInvoiceId(row?.serial);
                                                                     }}
                                                                 >
                                                                     <CustomDropDownMenuItem
@@ -205,7 +205,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                 <DropdownMenuItem
                                                                     onClick={() => {
                                                                         setIsDeliveryModalOpen(true);
-                                                                        setInvoiceId(row?.id);
+                                                                        setInvoiceId(row?.serial);
                                                                     }}
                                                                 >
                                                                     <CustomDropDownMenuItem
@@ -215,7 +215,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuItem
                                                                     onClick={() => {
-                                                                        setInvoiceId(row?.id);
+                                                                        setInvoiceId(row?.serial);
                                                                         setOpenChalanDetailsModal(true);
                                                                     }}
                                                                 >
@@ -298,7 +298,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                         className="hidden lg:block"
                                                         onClick={() => {
                                                             setOpenPrintModal(true);
-                                                            setInvoiceId(row?.id);
+                                                            setInvoiceId(row?.serial);
                                                         }}
                                                     >
                                                         <CustomDropDownMenuItem
@@ -312,7 +312,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                         className="lg:hidden block"
                                                         onClick={() => {
                                                             setOpenThermalModal(true);
-                                                            setInvoiceId(row?.id);
+                                                            setInvoiceId(row?.serial);
                                                         }}
                                                     >
                                                         <CustomDropDownMenuItem
@@ -323,7 +323,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                     <DropdownMenuItem
                                                         onClick={() => {
                                                             setIsDeliveryModalOpen(true);
-                                                            setInvoiceId(row?.id);
+                                                            setInvoiceId(row?.serial);
                                                         }}
                                                     >
                                                         <CustomDropDownMenuItem
@@ -334,7 +334,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                     <DropdownMenuItem
                                                         onClick={() => {
                                                             setOpenChalanDetailsModal(true);
-                                                            setInvoiceId(row?.id);
+                                                            setInvoiceId(row?.serial);
                                                         }}
                                                     >
                                                         <CustomDropDownMenuItem

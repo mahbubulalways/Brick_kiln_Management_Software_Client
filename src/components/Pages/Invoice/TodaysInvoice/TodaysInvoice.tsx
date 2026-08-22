@@ -51,7 +51,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
   const [openThermalModal, setOpenThermalModal] = useState<boolean>(false);
-  const [invoiceId, setInvoiceId] = useState<string|undefined>("");
+  const [invoiceId, setInvoiceId] = useState<number|undefined>(undefined);
   const [openChalanDetailsModal, setOpenChalanDetailsModal] =
     useState<boolean>(false);
 
@@ -104,6 +104,8 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
       }
     });
   };
+
+
 
   return (
     <div className="bg-white rounded-md shadow border border-gray-200 ">
@@ -211,7 +213,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                       {index === 0 && (
                         <>
                           <TableData
-                            td={index + 1}
+                            td={row?.serial}
                             rowSpan={row?.items?.length}
                           />
                           <TableData
@@ -284,7 +286,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                                 <DropdownMenuItem
                                   onClick={() => {
                                     setOpenUpdateModal(true);
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                   }}
                                 >
                                   <CustomDropDownMenuItem
@@ -298,7 +300,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                                   className="hidden lg:block"
                                   onClick={() => {
                                     setOpenPrintModal(true);
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                   }}
                                 >
                                   <CustomDropDownMenuItem
@@ -312,7 +314,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                                   className="lg:hidden block"
                                   onClick={() => {
                                     setOpenThermalModal(true);
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                   }}
                                 >
                                   <CustomDropDownMenuItem
@@ -324,7 +326,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                                 <DropdownMenuItem
                                   onClick={() => {
                                     setIsDeliveryModalOpen(true);
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                   }}
                                 >
                                   <CustomDropDownMenuItem
@@ -334,7 +336,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                     setOpenChalanDetailsModal(true);
                                   }}
                                 >
@@ -369,7 +371,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                     key={row?.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    <TableData td={idx + 1} />
+                    <TableData td={row.serial} />
                     <TableData td={row?.customer?.name} />
                     <TableData
                       td={row?.customer?.address}
@@ -423,7 +425,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                           <DropdownMenuItem
                             onClick={() => {
                               setOpenUpdateModal(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -437,7 +439,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                             className="hidden lg:block"
                             onClick={() => {
                               setOpenPrintModal(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -451,7 +453,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                             className="lg:hidden block"
                             onClick={() => {
                               setOpenThermalModal(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -462,7 +464,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                           <DropdownMenuItem
                             onClick={() => {
                               setIsDeliveryModalOpen(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -473,7 +475,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                           <DropdownMenuItem
                             onClick={() => {
                               setOpenChalanDetailsModal(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem

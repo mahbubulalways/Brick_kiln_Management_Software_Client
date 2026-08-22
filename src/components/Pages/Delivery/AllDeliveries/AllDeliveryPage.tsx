@@ -36,7 +36,7 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
   const [InvoiceIdDelivery, setInvoiceIDelivery] = useState<number>();
   const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
   const [InvoiceId, setInvoiceId] = useState<number>();
-  const [itemIds, setItemIds] = useState<number[]>([]);
+  const [itemIds, setItemIds] = useState<string[]>([]);
   const [filterRange, setFilterRange] = useState("");
 
 
@@ -101,7 +101,7 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
                       {/* Show challan info only for the first item row */}
                       {index === 0 ? (
                         <>
-                          <TableData td={row?.id} rowSpan={row.items.length} />
+                          <TableData td={row?.serial} rowSpan={row.items.length} />
                           <TableData
                             td={row?.customer?.name}
                             rowSpan={row.items.length}
@@ -173,7 +173,7 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
                               <DropdownMenuItem
                                 onClick={() => {
                                   setIsOpenDateChangeModal(true);
-                                  setInvoiceId(row?.id);
+                                  setInvoiceId(row?.serial);
                                   setItemIds(row.items.map((itm) => itm.id));
                                 }}
                               >
@@ -185,7 +185,7 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
 
                               <DropdownMenuItem onClick={() => {
                                 setIsOpen(true);
-                                setInvoiceIDelivery(row?.id);
+                                setInvoiceIDelivery(row?.serial);
                               }}>
                                 <CustomDropDownMenuItem
                                   Icon={Truck}
@@ -218,7 +218,7 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
         />
       </div>
       {isOpen && (
-        <NewDeliveryModal isOpen={isOpen} onClose={() => setIsOpen(false)} invoiceId={InvoiceIdDelivery} />
+        <NewDeliveryModal isOpen={isOpen} onClose={() => setIsOpen(false)} invoiceId={InvoiceIdDelivery!} />
       )}
       {openDateChangeModal && (
         <UpdateDeliveryDateModal

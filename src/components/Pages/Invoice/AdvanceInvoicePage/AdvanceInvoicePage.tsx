@@ -172,7 +172,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                                   className="hidden lg:block"
                                   onClick={() => {
                                     setOpenPrintModal(true);
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                   }}
                                 >
                                   <CustomDropDownMenuItem
@@ -186,7 +186,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                                   className="lg:hidden block"
                                   onClick={() => {
                                     setOpenThermalModal(true);
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                   }}
                                 >
                                   <CustomDropDownMenuItem
@@ -203,7 +203,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onClick={() => {
-                                    setInvoiceId(row?.id);
+                                    setInvoiceId(row?.serial);
                                     setOpenChalanDetailsModal(true);
                                   }}
                                 >
@@ -286,7 +286,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                             className="hidden lg:block"
                             onClick={() => {
                               setOpenPrintModal(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -300,7 +300,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                             className="lg:hidden block"
                             onClick={() => {
                               setOpenThermalModal(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -311,7 +311,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                           <DropdownMenuItem 
                             onClick={() => {
                               setIsDeliveryModalOpen(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -322,7 +322,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                           <DropdownMenuItem
                             onClick={() => {
                               setOpenChalanDetailsModal(true);
-                              setInvoiceId(row?.id);
+                              setInvoiceId(row?.serial);
                             }}
                           >
                             <CustomDropDownMenuItem
@@ -389,7 +389,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
         <NewDeliveryModal
           isOpen={isDeliveryModalOpen}
           onClose={() => setIsDeliveryModalOpen(false)}
-          invoiceId={invoiceId}
+          invoiceId={invoiceId!}
         />
       )}
     </div>

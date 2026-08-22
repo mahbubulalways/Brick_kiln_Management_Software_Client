@@ -24,12 +24,12 @@ import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
-  invoiceId: string;
+  invoiceId: number;
 };
 
 type TDelivery = {
   deliveryNo: string;
-  invoiceId: string;
+  invoiceId: number;
   deliveryDate: Date;
   nextDeliveryDate: Date;
   customer: {
@@ -50,7 +50,7 @@ type TDelivery = {
   carNumber?: string;
   note?: string;
   savingType?: string;
-  serial?: string;
+  serial?: number;
 };
 
 const NewDeliveryModal = ({
@@ -87,7 +87,7 @@ const NewDeliveryModal = ({
     formState: { errors },
   } = useForm<Partial<TDelivery>>({
     defaultValues: {
-      invoiceId: "",
+      invoiceId: 0,
       customer: {
         name: "",
         phoneNumber: "",
@@ -121,7 +121,6 @@ const NewDeliveryModal = ({
 
 
 
-  console.log(data?.data)
   useEffect(() => {
     if (!data?.data) return;
 

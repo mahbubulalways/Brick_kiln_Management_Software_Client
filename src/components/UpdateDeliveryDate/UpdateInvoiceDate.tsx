@@ -83,8 +83,11 @@ const UpdateInvoiceDate = ({ invoiceId, handleCloseModal }: { invoiceId: number;
           >
             ক্লিয়ার
           </div>
-          <button className="bg-[#039A63] px-2 text-sm py-1 rounded text-white gap-2 cursor-pointer">
-            পরিবর্তন
+          <button
+            disabled={isLoading}
+            className="bg-[#039A63] px-2 text-sm py-1 rounded text-white gap-2 cursor-pointer"
+          >
+            {isLoading ? "পরিবর্তন হচ্ছে..." : "পরিবর্তন"}
           </button>
         </div>
       </form>

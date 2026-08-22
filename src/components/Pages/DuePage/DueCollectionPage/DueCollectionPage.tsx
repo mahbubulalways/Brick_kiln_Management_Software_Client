@@ -35,9 +35,10 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
   const [isOpenThermalPrintModal, setOpenThermalPrintModal] =
     useState<boolean>(false);
   const [isOpenUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
-  const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [dueId, setDueId] = useState<string>();
+  const [customerId, setCustomerId] = useState<string>();
+  const [deuId, setDeuId] = useState<string>();
   const isoDate = date ? date.toISOString() : "";
   const { data, isLoading, isError, error } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
@@ -49,7 +50,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
     (sum: number, r: IDueResponse) => sum + r?.collect,
     0,
   );
-  const toggleRow = (id: number) => {
+  const toggleRow = (id: string) => {
     setExpandedRow((prev) => (prev === id ? null : id));
   };
 
@@ -112,7 +113,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                 <React.Fragment key={row?.id}>
                   <tr
                     className="hover:bg-gray-50 cursor-pointer"
-                    onClick={() => toggleRow(row.id)}
+                    onClick={() => toggleRow(row?.customer.customerCode)}
                   >
                     <TableData td={row?.customer.customerCode} cls="hidden lg:table-cell" />
                     <TableData td={row.customer?.name} />
@@ -146,7 +147,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                         >
                           <DropdownMenuItem
                             onClick={() => {
-                              setDueId(row?.customer.customerCode);
+                              setDeuId(row?.id);
                               setOpenUpdateModal(true);
                             }}
                           >
@@ -155,8 +156,12 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                               title="আপডেট জমা"
                             />
                           </DropdownMenuItem>
+
                           <DropdownMenuItem
-                            onClick={() => { setOpenPrintModal(true), setDueId(row?.customer.customerCode); }}
+                            onClick={() => {
+                              setOpenPrintModal(true),
+                                setDeuId(row?.id);
+                            }}
                           >
                             <CustomDropDownMenuItem
                               Icon={Printer}
@@ -180,7 +185,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                     </td>
                   </tr>
 
-                  {expandedRow === row?.id && (
+                  {expandedRow === String(row?.id) && (
                     <tr className="lg:hidden">
                       <td
                         colSpan={100}
@@ -280,13 +285,13 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           onClose={() => setIsOpen(false)}
         />
       )}
-
+      
       {isOpenPrintModal && (
         <PrintDueCollectionModal
           isOpen={isOpenPrintModal}
           onClose={() => setOpenPrintModal(false)}
-          id={dueId}
-          setDueId={setDueId}
+          id={deuId}
+          setDueId={setDeuId}
         />
       )}
 
@@ -294,7 +299,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
         <UpdateDueCollection
           isOpen={isOpenUpdateModal}
           onClose={() => setOpenUpdateModal(false)}
-          id={dueId!}
+          id={deuId!}
         />
       )}
       {isOpenThermalPrintModal && (

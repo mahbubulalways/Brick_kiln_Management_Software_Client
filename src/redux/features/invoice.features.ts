@@ -50,14 +50,14 @@ const invoiceApi = baseApi.injectEndpoints({
 
     // GET SINGLE INVOICE
     getSingleInvoice: builder.query({
-      query: (id: string) => ({
+      query: (id: number) => ({
         url: `/invoice/single-invoice/${id}`,
         method: "GET",
       }),
     }),
     // GET SINGLE INVOICE ITEMS
     getSingleInvoiceItems: builder.query({
-      query: (payload: { invoiceId: string; ids: string }) => ({
+      query: (payload: { invoiceId: number; ids: string }) => ({
         url: `/invoice/single-invoice-items/${payload?.invoiceId}?ids=${payload?.ids}`,
         method: "GET",
       }),

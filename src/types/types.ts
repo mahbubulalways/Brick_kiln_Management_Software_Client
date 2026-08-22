@@ -45,8 +45,8 @@ export type TChallanCreate = {
 export type TCustomInvoiceModal = {
   isOpen: boolean;
   onClose: () => void;
-  setInvoiceId: Dispatch<SetStateAction<string | undefined>>;
-  invoiceId: string;
+  setInvoiceId: Dispatch<SetStateAction<number | undefined>>;
+  invoiceId: number;
 };
 
 // Types for showing challan
@@ -67,7 +67,7 @@ export interface ICustomer {
 }
 
 export interface IChallanItem {
-  id: number;
+  id: string;
   challanId: number;
   class: string;
   deliveryDate: string;
@@ -108,5 +108,6 @@ export interface IChallanForDataShow {
 export type TTodaySDelivery = {
   customer: ICustomer;
   id: number;
+  serial:number;
   items: IChallanItem[];
 };

@@ -36,7 +36,7 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState<string>("");
   const [InvoiceId, setInvoiceId] = useState<number>();
   const [InvoiceIdDelivery, setInvoiceIDelivery] = useState<number>();
-  const [itemIds, setItemIds] = useState<number[]>([]);
+  const [itemIds, setItemIds] = useState<string[]>([]);
   const [deliveryDate, setDeliveryDate] = useState<Date | undefined>(
     new Date()
   );
@@ -111,7 +111,7 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
                       {/* Top-level delivery info */}
                       {index === 0 && (
                         <>
-                          <TableData td={row.id} rowSpan={row.items.length} />
+                          <TableData td={row.serial} rowSpan={row.items.length} />
                           <TableData
                             td={row.customer?.name}
                             rowSpan={row.items.length}
@@ -162,7 +162,7 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
                               <DropdownMenuItem
                                 onClick={() => {
                                   setIsOpenDateChangeModal(true);
-                                  setInvoiceId(row?.id);
+                                  setInvoiceId(row?.serial);
                                   setItemIds(row.items.map((itm) => itm.id));
                                 }}
                               >
@@ -175,7 +175,7 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
                               <DropdownMenuItem
                                 onClick={() => {
                                   setIsOpen(true);
-                                  setInvoiceIDelivery(row?.id);
+                                  setInvoiceIDelivery(row?.serial);
                                 }}
                               >
                                 <CustomDropDownMenuItem
@@ -211,9 +211,10 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
         <NewDeliveryModal
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
-          invoiceId={InvoiceIdDelivery}
+          invoiceId={InvoiceIdDelivery!}
         />
       )}
+      
       {openDateChangeModal && (
         <UpdateDeliveryDateModal
           isOpen={openDateChangeModal}
@@ -222,7 +223,8 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
           itemIds={itemIds}
           setItemIds={setItemIds}
         />
-      )}{" "}
+      )}
+
       {openDeliveryReport && (
         <DeliveryReportModal
           isOpen={openDeliveryReport}

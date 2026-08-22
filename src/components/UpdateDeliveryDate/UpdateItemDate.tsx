@@ -23,15 +23,16 @@ const UpdateItemDate = ({
   handleCloseModal,
 }: {
   invoiceId: number;
-  itemIds: number[];
+  itemIds: string[];
   handleCloseModal: () => void;
 }) => {
   const ids = getQueryIds(itemIds);
-
-  const { isLoading, data } = useGetSingleInvoiceItemsQuery({
+  const { isLoading, data,error } = useGetSingleInvoiceItemsQuery({
     invoiceId,
     ids,
   });
+
+
   const { handleSubmit, control, reset, watch } = useForm<any>({});
   const [newDeliveryDate, setNewDeliveryDate] = useState<Date>();
   const [updateItemsDeliveryDate, { isLoading: updateLoading }] =

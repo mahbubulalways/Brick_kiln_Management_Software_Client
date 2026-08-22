@@ -39,6 +39,8 @@ const UpdateDueCollectionDateModal = ({ isOpen, onClose, id, setId }: TCustomMod
     }, [data, reset]);
 
 
+    console.log(error)
+
     const onSubmit: SubmitHandler<TForm> = async (data) => {
         const payload={
             id, data

@@ -38,7 +38,7 @@ const UpdateChalanModal = ({
   // const [duePayDate, setDuepayDate] = useState<Date | undefined>(new Date());
   const [sendSms, setSendSms] = useState<boolean>(false);
   // FETCH SINGLE INVOICE
-  const { data: invoice, isLoading: invoiceLoading } = useGetSingleInvoiceQuery(
+  const { data: invoice, isLoading: invoiceLoading, isError: invoiceError } = useGetSingleInvoiceQuery(
     invoiceId,
     {
       refetchOnMountOrArgChange: true,
@@ -46,7 +46,7 @@ const UpdateChalanModal = ({
   );
 
   // GET CLASS AND RATE FOR DROPDOWN
-  const { isLoading: classRateLoading, data: fetchedData } =
+  const { isLoading: classRateLoading, data: fetchedData, isError: classError } =
     useGetAllClassAndRateQuery(undefined);
   const classAndRate = fetchedData?.data || [];
 
@@ -159,6 +159,7 @@ const UpdateChalanModal = ({
 
   //* FORM SUBMIT
   const onSubmit: SubmitHandler<TChallanCreate> = async (data) => {
+    // console.log(watchItems)
     const allValid = watchItems.every((item) =>
       Object.entries(item)
         .filter(([key]) => key !== "delivered")
@@ -239,10 +240,9 @@ const UpdateChalanModal = ({
     >
       {classRateLoading || invoiceLoading ? (
         <>
-          {/* <CustomLoader cls="h-[60vh]" /> */}
           <CustomStatus type="loading" />
         </>
-      ) : (
+      ) : invoiceError || classError ? <CustomStatus type="error" /> : (
         <div>
           <div className="flex flex-col lg:flex-row justify-between gap-4 mb-4">
             <div className="flex items-stretch sm:items-center gap-2 w-full lg:w-auto">

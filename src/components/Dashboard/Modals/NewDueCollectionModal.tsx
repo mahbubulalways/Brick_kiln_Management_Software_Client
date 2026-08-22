@@ -50,7 +50,7 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
   const collect = watch("collect");
 
   const { data, isFetching, isError, error } = useGetCustomerDueQuery(
-    Number(customerId),
+   customerId!,
     {
       skip: !customerId,
       refetchOnMountOrArgChange: true,
@@ -238,7 +238,7 @@ const NewDueCollectionModal = ({ isOpen, onClose }: TCustomModal) => {
             >
               ক্লিয়ার
             </div>
-            <button className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer w-full">
+            <button disabled={isLoading} className="text-[14px] disabled:bg-gray-500 bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer w-full">
               অ্যাড করুন
             </button>
           </div>

@@ -29,7 +29,7 @@ import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollect
 const AllDueListPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
   const [dateRange, setDateRange] = useState("");
-  const [customerId, setCustomerId] = useState<number | undefined>(undefined)
+  const [customerId, setCustomerId] = useState<string | undefined>(undefined)
   const [openDueModal, setOpenDueModal] = useState<boolean>(false);
   const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
   const { data, isLoading, isError } = useGetAllDueListQuery({ date: dateRange, limit, page, search }, {
@@ -64,8 +64,8 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
 
           <div>
             <span className="whitespace-nowrap rounded-md border border-orange-300 bg-orange-50 px-3 py-2 text-sm font-medium text-orange-600">
-            মোট বাকি: {totalCredit?.toLocaleString()} টাকা
-          </span>
+              মোট বাকি: {totalCredit?.toLocaleString()} টাকা
+            </span>
           </div>
         </div>
 
@@ -136,7 +136,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
               <>
                 {dues?.map((row: ICustomer) => (
                   <tr key={row?.id} className="hover:bg-gray-50">
-                    <TableData td={row?.id} />
+                    <TableData td={row?.customerCode} />
                     <TableData td={row?.name} />
                     <TableData td={row?.address} />
                     <TableData
@@ -164,7 +164,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
                           className="rounded-md border bg-white shadow-md"
                         >
                           <DropdownMenuItem onClick={() => {
-                            setCustomerId(row?.id)
+                            setCustomerId(row?.customerCode)
                             setOpenDueModal(true)
                           }}>
                             <CustomDropDownMenuItem
@@ -173,7 +173,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => {
-                            setCustomerId(row?.id)
+                            setCustomerId(row?.customerCode)
                             setOpenDueCollectionModal(true)
                           }}>
                             <CustomDropDownMenuItem
@@ -224,6 +224,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
           onClose={() => setOpenDueModal(false)}
           setId={setCustomerId} />
       }
+      
       {openDueCollectionModal &&
         <NewDueCollectionModalId
           id={customerId}

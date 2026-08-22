@@ -443,7 +443,7 @@ const NewDeliveryModalForInput = ({
           </div>
         </form>
         {(isLoading || deliveryNoLoading) && (
-          <div className="absolute inset-0 w-full  bg-gray-100/50 blur-md"></div>
+          <div className="absolute inset-0 w-full  bg-gray-100/60 blur-md"></div>
         )}
       </div>
     </CustomModalBottom>

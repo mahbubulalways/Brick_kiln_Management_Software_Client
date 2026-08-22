@@ -11,6 +11,15 @@ const roundApi = baseApi.injectEndpoints({
             providesTags: ["CUSTOMER"],
         }),
 
+        // GET OLD
+        getOldCustomer: builder.query({
+            query: (search) => ({
+                url: `/customer/old?search=${search}`,
+
+            }),
+            providesTags: ["CUSTOMER"],
+        }),
+
         getSingleCutomerInfo: builder.query({
             query: (id: number) => ({
                 url: `/customer/info/${id}`,
@@ -91,6 +100,7 @@ export const {
     useGetSingleCustomerDeliveryQuery,
     useGetSingleCustomerDueCollectionQuery,
     useGetSingleCutomerInfoQuery,
-    useUpdateCustomerMutation
+    useUpdateCustomerMutation,
+   useLazyGetOldCustomerQuery
 
 } = roundApi;

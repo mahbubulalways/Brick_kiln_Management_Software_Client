@@ -1,5 +1,5 @@
 // utils/getQueryIds.ts
-export const getQueryIds = (ids: number[]): string => {
+export const getQueryIds = (ids: string[]): string => {
   if (!ids?.length) return "";
   return ids.join(",");
 };

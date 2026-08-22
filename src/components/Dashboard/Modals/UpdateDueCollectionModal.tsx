@@ -31,10 +31,10 @@ type TDueCollection = {
   invoiceId: number;
 };
 const UpdateDueCollection = ({ isOpen, onClose, id }: TCustomModal) => {
-  const { isLoading, data } = useGetSingleDueQuery(id, {
+  const { isLoading, data ,error} = useGetSingleDueQuery(id, {
     refetchOnMountOrArgChange: true,
   });
-
+console.log(error)
   const [updateDueCollection, { isLoading: updateLoading }] =
     useUpdateDueCollectionMutation();
 
