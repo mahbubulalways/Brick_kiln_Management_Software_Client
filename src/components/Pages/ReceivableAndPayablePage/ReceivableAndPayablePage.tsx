@@ -55,7 +55,7 @@ export default function ReceivableAndPayablePage() {
     );
 
     return (
-        <div >
+        <div className="bg-white min-h-screen p-2 rounded-xl">
             {/* Top Section */}
             <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 {/* দেনা-পাওনা */}

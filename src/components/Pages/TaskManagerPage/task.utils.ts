@@ -33,7 +33,7 @@ export const getDateRange = (
     // Today
     // =========================
     if (type === "today") {
-        return `${start.toISOString()}_${todayEnd.toISOString()}`;
+        return `${new Date().toISOString()}`;
     }
 
     // =========================

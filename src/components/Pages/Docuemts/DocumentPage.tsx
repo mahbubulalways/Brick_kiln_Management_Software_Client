@@ -31,6 +31,8 @@ const DocumentPage = () => {
         refetch,
     } = useGetAllDocumentsQuery(undefined);
 
+
+
     const filteredDocuments = data?.data?.filter((document: any) =>
         document?.name
             ?.toLowerCase()

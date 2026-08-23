@@ -28,6 +28,7 @@ import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import ChalanPrintModal from "@/components/Dashboard/PrintModal/ChalanPrint/ChalanPrintModal";
 import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
 import ChalanDetailsModal from "@/components/Dashboard/Modals/ChalanDetailsModal";
+import { IChallanForDataShow, IChallanItem } from "@/types/types";
 
 interface AllChallanProps {
     customerId: number;
@@ -47,7 +48,7 @@ const AllChallan = ({
     const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
     const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
         useState<boolean>(false);
-    const [invoiceId, setInvoiceId] = useState<string>();
+    const [invoiceId, setInvoiceId] = useState<number>();
     const [openChalanDetailsModal, setOpenChalanDetailsModal] =
         useState<boolean>(false);
     const {
@@ -66,7 +67,7 @@ const AllChallan = ({
         }
     );
 
-    const invoices = useMemo(() => data?.data?.data ?? [], [data?.data?.data]);
+    const invoices: IChallanForDataShow[] = useMemo(() => data?.data?.data ?? [], [data?.data?.data]);
     const meta = data?.data?.meta as TMetaConfig;
 
     useEffect(() => {
@@ -157,9 +158,9 @@ const AllChallan = ({
 
                         ) : (
 
-                            invoices.map((row: any, index: number) => {
+                            invoices.map((row: IChallanForDataShow, index: number) => {
 
-                                const items = row?.items ?? [];
+                                const items: IChallanItem[] = row?.items ?? [];
 
                                 return items.map(
                                     (item: any, itemIndex: number) => (
@@ -172,7 +173,7 @@ const AllChallan = ({
                                             {/* ================= Serial ================= */}
                                             {itemIndex === 0 && (
                                                 <TableData
-                                                    td={row.id}
+                                                    td={row.serial}
                                                     rowSpan={items.length}
                                                 />
                                             )}
@@ -276,7 +277,7 @@ const AllChallan = ({
                                                                 <DropdownMenuItem
                                                                     onClick={() => {
                                                                         setOpenPrintModal(true);
-                                                                        setInvoiceId(row.id);
+                                                                        setInvoiceId(row.serial);
                                                                     }}
                                                                 >
                                                                     <CustomDropDownMenuItem
@@ -289,7 +290,7 @@ const AllChallan = ({
                                                                 <DropdownMenuItem
                                                                     onClick={() => {
                                                                         setIsDeliveryModalOpen(true);
-                                                                        setInvoiceId(row.id);
+                                                                        setInvoiceId(row.serial);
                                                                     }}
                                                                 >
                                                                     <CustomDropDownMenuItem
@@ -301,7 +302,7 @@ const AllChallan = ({
                                                                 {/* Details */}
                                                                 <DropdownMenuItem
                                                                     onClick={() => {
-                                                                        setInvoiceId(row.id);
+                                                                        setInvoiceId(row.serial);
                                                                         setOpenChalanDetailsModal(true);
                                                                     }}
                                                                 >
@@ -346,7 +347,7 @@ const AllChallan = ({
                 <NewDeliveryModal
                     isOpen={isDeliveryModalOpen}
                     onClose={() => setIsDeliveryModalOpen(false)}
-                    invoiceId={invoiceId}
+                    invoiceId={invoiceId!}
                 />
             )}
 

@@ -2,99 +2,87 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  CircleCheckIcon,
-  CircleHelpIcon,
-  CircleIcon,
-  LogOut,
-  Settings,
-  User,
-} from "lucide-react";
+import { CircleHelpIcon, CircleIcon, LogOut, User } from "lucide-react";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // ✅ shadcn avatar component
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/ui/avatar";
+
 import { deleteCookie } from "@/service/deleteCookie";
 import { logoutUserFromSystem } from "@/service/auth.services";
 import { useRouter } from "next/navigation";
 
 export function ProfileMenu() {
-  const router = useRouter();
-  const handleLogout = () => {
-    deleteCookie();
-    logoutUserFromSystem();
-    router.push("/login");
-  };
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Avatar className="w-10 h-10 cursor-pointer ">
-          <AvatarImage src="/avatar.jpg" alt="User Avatar" />
-          <AvatarFallback className="bg-gray-200">
-            <User className="w-5 h-5 text-gray-600" />
-          </AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
+    const router = useRouter();
 
-      {/* Dropdown Content */}
-      <DropdownMenuContent
-        align="start"
-        className="w-44 p-2 rounded-lg shadow-md bg-white"
-      >
-        {/* Menu Items */}
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/profile" className="menu-item">
-            <User size={16} />
-            My Profile
-          </Link>
-        </DropdownMenuItem>
+    const handleLogout = () => {
+        deleteCookie();
+        logoutUserFromSystem();
+        router.push("/login");
+    };
 
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings" className="menu-item">
-            <Settings size={16} />
-            Settings
-          </Link>
-        </DropdownMenuItem>
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Avatar className="h-10 w-10 cursor-pointer">
+                    <AvatarImage src="/avatar.jpg" alt="User Avatar" />
 
-        <DropdownMenuItem asChild>
-          <Link href="/help" className="menu-item">
-            <CircleHelpIcon size={16} />
-            Help
-          </Link>
-        </DropdownMenuItem>
+                    <AvatarFallback className="bg-gray-200">
+                        <User className="h-5 w-5 text-gray-600" />
+                    </AvatarFallback>
+                </Avatar>
+            </DropdownMenuTrigger>
 
-        <DropdownMenuItem asChild>
-          <Link href="/tasks" className="menu-item">
-            <CircleIcon size={16} />
-            To Do
-          </Link>
-        </DropdownMenuItem>
+            <DropdownMenuContent
+                align="start"
+                className="w-52 rounded-lg bg-white p-2 shadow-md"
+            >
+                {/* সাধারণ জিজ্ঞাসা */}
+                <DropdownMenuItem asChild>
+                    <Link
+                        href="/dashboard/faq"
+                        className="flex w-full cursor-pointer items-center gap-2"
+                    >
+                        <CircleHelpIcon size={17} />
+                        <span>সাধারণ জিজ্ঞাসা</span>
+                    </Link>
+                </DropdownMenuItem>
 
-        <DropdownMenuItem asChild>
-          <Link href="/done" className="menu-item">
-            <CircleCheckIcon size={16} />
-            Done
-          </Link>
-        </DropdownMenuItem>
+                {/* আমাদের সম্পর্কে জানুন */}
+                <DropdownMenuItem asChild>
+                    <Link
+                        href="/dashboard/about"
+                        className="flex w-full cursor-pointer items-center gap-2"
+                    >
+                        <CircleIcon size={17} />
+                        <span>আমাদের সম্পর্কে জানুন</span>
+                    </Link>
+                </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <button
-            onClick={handleLogout}
-            className="menu-item text-red-500 hover:text-red-600"
-          >
-            <LogOut size={16} className="text-red-500" />
-            Logout
-          </button>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+                {/* লগআউট */}
+                <DropdownMenuItem asChild>
+                    <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex w-full cursor-pointer items-center gap-2 text-red-500 hover:text-red-600"
+                    >
+                        <LogOut size={17} className="text-red-500" />
+                        <span>লগআউট</span>
+                    </button>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
 }

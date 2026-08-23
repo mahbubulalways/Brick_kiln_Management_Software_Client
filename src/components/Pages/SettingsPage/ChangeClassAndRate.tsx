@@ -1,131 +1,216 @@
-"use client"
+"use client";
+
 import { useState } from "react";
+import Swal from "sweetalert2";
 import { Pencil, Trash2 } from "lucide-react";
+
 import NewClassModal from "@/components/Dashboard/Modals/NewClassModal";
-import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
+import EditClassAndRateModal from "@/components/Dashboard/Modals/EditModals/EditClassAndRateModal";
+
+import {
+    useDeleteClassAndRateMutation,
+    useGetAllClassAndRateQuery,
+} from "@/redux/features/classAndRate.features";
+
 import { TClassAndRate } from "@/types/types";
+
 import TableHead from "@/components/Reusable/TableHead";
 import TableData from "@/components/Reusable/TableData";
 import TableFooter from "@/components/Reusable/TableFooter";
 import CustomLoader from "@/components/Reusable/CustomLoader";
-import EditClassAndRateModal from "@/components/Dashboard/Modals/EditModals/EditClassAndRateModal";
 
 const ChangeClassAndRate = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(15);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
-  const [classId, setClassId] = useState<number>();
-  // Load data
-  const { isLoading, data: fetchedData } =
-    useGetAllClassAndRateQuery(undefined);
-  const classAndRates = fetchedData?.data || [];
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(15);
 
-  // Pagination logic
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedData = classAndRates?.slice(
-    startIndex,
-    startIndex + rowsPerPage
-  );
+    const [isOpen, setIsOpen] = useState(false);
+    const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+    const [classId, setClassId] = useState<number>();
 
-  // Delete function
-  const handleDelete = (id: number) => {};
+    const [deleteClassAndRate, { isLoading: isDeleting }] =
+        useDeleteClassAndRateMutation();
 
-  return (
-    <div className="bg-white">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900 py-3">
-          শ্রেণি এবং রেট পরিবর্তন
-        </h1>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="  bg-[#039A63] px-4 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
-        >
-          + নতুন শ্রেণি
-        </button>
-      </div>
+    // Get data
+    const { isLoading, data: fetchedData } =
+        useGetAllClassAndRateQuery(undefined);
 
-      <div className="overflow-x-auto border rounded-t-md">
-        <table className="min-w-full  border-collapse">
-          <thead>
-            <tr className="bg-[#039A63] text-white text-center">
-              <TableHead th="#" />
-              <TableHead th="শ্রেণির নাম" />
-              <TableHead th="শ্রেণির ধরণ" />
-              <TableHead th="রেট" />
-              <TableHead th="বাটন" />
-            </tr>
-          </thead>
-          <tbody className="text-center">
-            {isLoading ? (
-              <tr>
-                <td colSpan={5}>
-                  <CustomLoader cls="h-[30vh]" />
-                </td>
-              </tr>
-            ) : !paginatedData?.length ? (
-              <tr>
-                <td colSpan={5} className="py-8 text-gray-600">
-                  কোনো ডাটা পাওয়া যায়নি
-                </td>
-              </tr>
-            ) : (
-              paginatedData.map((row: TClassAndRate, index: number) => (
-                <tr
-                  key={row?.id}
-                  className="hover:bg-gray-50 transition-colors"
+    const classAndRates = fetchedData?.data || [];
+
+    // Pagination
+    const startIndex = (currentPage - 1) * rowsPerPage;
+
+    const paginatedData = classAndRates.slice(
+        startIndex,
+        startIndex + rowsPerPage
+    );
+
+    // Delete
+    const handleDelete = async (id: number) => {
+        const result = await Swal.fire({
+            title: "আপনি কি নিশ্চিত?",
+            text: "এই শ্রেণি এবং রেটটি ডিলেট করলে এটি আর ফিরে পাওয়া যাবে না!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#039A63",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "হ্যাঁ, ডিলেট করুন",
+            cancelButtonText: "বাতিল",
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            await deleteClassAndRate(id).unwrap();
+
+            await Swal.fire({
+                title: "ডিলেট হয়েছে!",
+                text: "শ্রেণি এবং রেটটি সফলভাবে ডিলেট করা হয়েছে।",
+                icon: "success",
+                confirmButtonColor: "#039A63",
+                confirmButtonText: "ঠিক আছে",
+            });
+        } catch (error: any) {
+            await Swal.fire({
+                title: "ডিলেট ব্যর্থ হয়েছে!",
+                text:
+                    error?.data?.message ||
+                    "শ্রেণি এবং রেটটি ডিলেট করা সম্ভব হয়নি।",
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "ঠিক আছে",
+            });
+        }
+    };
+
+    return (
+        <div className="bg-white">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <h1 className="py-3 text-xl font-semibold text-gray-900">
+                    শ্রেণি এবং রেট পরিবর্তন
+                </h1>
+
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="cursor-pointer rounded bg-[#039A63] px-4 py-1.5 font-medium text-gray-100"
                 >
-                  <TableData td={index + 1} />
-                  <TableData td={row?.className} />
-                  <TableData td={row?.classType} />
-                  <TableData td={`৳ ${row?.rate}`} />
-                  <td className="border p-2">
-                    <div className="flex justify-center gap-3">
-                      <button
-                        onClick={() => {
-                          setIsOpenEditModal(true);
-                          setClassId(row?.id as number);
-                        }}
-                        className="text-blue-600 hover:text-blue-800 transition"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-800 transition"
-                        onClick={() => handleDelete(row?.id as number)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    + নতুন শ্রেণি
+                </button>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto rounded-t-md border">
+                <table className="min-w-full border-collapse">
+                    <thead>
+                        <tr className="bg-[#039A63] text-center text-white">
+                            <TableHead th="#" />
+                            <TableHead th="শ্রেণির নাম" />
+                            <TableHead th="শ্রেণির ধরণ" />
+                            <TableHead th="রেট" />
+                            <TableHead th="বাটন" />
+                        </tr>
+                    </thead>
+
+                    <tbody className="text-center">
+                        {isLoading ? (
+                            <tr>
+                                <td colSpan={5}>
+                                    <CustomLoader cls="h-[30vh]" />
+                                </td>
+                            </tr>
+                        ) : !paginatedData.length ? (
+                            <tr>
+                                <td
+                                    colSpan={5}
+                                    className="py-8 text-gray-600"
+                                >
+                                    কোনো শ্রেণি এবং রেটের ডাটা পাওয়া যায়নি
+                                </td>
+                            </tr>
+                        ) : (
+                            paginatedData.map(
+                                (row: TClassAndRate, index: number) => (
+                                    <tr
+                                        key={row.id}
+                                        className="transition-colors hover:bg-gray-50"
+                                    >
+                                        <TableData
+                                            td={startIndex + index + 1}
+                                        />
+
+                                        <TableData td={row.className} />
+
+                                        <TableData td={row.classType} />
+
+                                        <TableData td={`৳ ${row.rate}`} />
+
+                                        <td className="border p-2">
+                                            <div className="flex justify-center gap-3">
+                                                {/* Edit */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setIsOpenEditModal(true);
+                                                        setClassId(
+                                                            row.id as number
+                                                        );
+                                                    }}
+                                                    className="text-blue-600 transition hover:text-blue-800"
+                                                >
+                                                    <Pencil className="h-4 w-4" />
+                                                </button>
+
+                                                {/* Delete */}
+                                                <button
+                                                    type="button"
+                                                    disabled={isDeleting}
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            row.id as number
+                                                        )
+                                                    }
+                                                    className="text-red-600 transition hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )
+                            )
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Footer */}
+            <TableFooter
+                currentPage={currentPage}
+                length={paginatedData.length}
+                rowsPerPage={rowsPerPage}
+                setCurrentPage={setCurrentPage}
+                setRowsPerPage={setRowsPerPage}
+                title="শ্রেণি"
+            />
+
+            {/* Create Modal */}
+            {isOpen && (
+                <NewClassModal
+                    isOpen={isOpen}
+                    onClose={() => setIsOpen(false)}
+                />
             )}
-          </tbody>
-        </table>
-      </div>
 
-      <TableFooter
-        currentPage={currentPage}
-        length={paginatedData?.length}
-        rowsPerPage={rowsPerPage}
-        setCurrentPage={setCurrentPage}
-        setRowsPerPage={setRowsPerPage}
-        title="শ্রেণি"
-      />
-
-      {isOpen && (
-        <NewClassModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
-      )}
-      {isOpenEditModal && (
-        <EditClassAndRateModal
-          isOpen={isOpenEditModal}
-          onClose={() => setIsOpenEditModal(false)}
-          id={classId!}
-        />
-      )}
-    </div>
-  );
+            {/* Edit Modal */}
+            {isOpenEditModal && (
+                <EditClassAndRateModal
+                    isOpen={isOpenEditModal}
+                    onClose={() => setIsOpenEditModal(false)}
+                    id={classId!}
+                />
+            )}
+        </div>
+    );
 };
 
 export default ChangeClassAndRate;

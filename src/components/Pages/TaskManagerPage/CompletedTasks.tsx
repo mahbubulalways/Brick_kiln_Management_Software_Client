@@ -288,14 +288,14 @@ export default function CompletedTasks({ date }: { date: string }) {
       <div className="mt-3 flex justify-end gap-1.5">
         <button
           type="button"
-          className="flex h-8 w-8 items-center justify-center text-gray-400"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center text-gray-400"
         >
           <ChevronLeft size={18} />
         </button>
 
         <button
           type="button"
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-[#039a63] text-sm text-[#039a63]"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-[#039a63] text-sm text-[#039a63]"
         >
           1
         </button>

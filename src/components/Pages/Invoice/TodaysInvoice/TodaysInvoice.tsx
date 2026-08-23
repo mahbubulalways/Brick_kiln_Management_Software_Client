@@ -484,7 +484,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <Link href={`/dashboard/customer/profile/${row?.customer?.id}`}><CustomDropDownMenuItem
+                            <Link href={`/dashboard/customer/profile/${row?.customer?.customerCode}`}><CustomDropDownMenuItem
                               Icon={User}
                               title="প্রোফাইলে যান"
                             /></Link>

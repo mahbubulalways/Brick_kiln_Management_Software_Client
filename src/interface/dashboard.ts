@@ -29,4 +29,6 @@ export type TDashboardReport = {
         total: number;
         payments: TPaymentReport[];
     };
+    cash: number;
+    due: number
 };

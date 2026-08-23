@@ -17,19 +17,23 @@ const DashboardPage = () => {
   const cashSell = reports?.challan?.summary?.cash
   const dueSell = reports?.challan?.summary?.due
   const payment = reports?.payment?.total
-
-
+  const due = reports?.due
+  const cash = reports?.cash
+console.log(cash)
   // ARRAY
   const challanItems = reports?.challan?.items
   return (
     <div className="pb-4">
       <ButtonGroup />
       {
-        isLoading ? <CustomLoader cls="h-[80vh]" /> : <> <CalculationsCard
+        isLoading ? <CustomLoader cls="h-[80vh]" /> : <>
+         <CalculationsCard
           cashSell={cashSell}
           dueSell={dueSell}
           totalSell={totalSell}
           payment={payment}
+          due={due}
+          cash={cash}
         />
 
           <div className="grid grid-cols-1 lg:grid-cols-10 gap-2 pt-5 ">

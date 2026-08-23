@@ -8,12 +8,21 @@ const authApi = baseApi.injectEndpoints({
             query: (payload) => ({
                 url: `/auth/logout`,
                 method: "POST",
-                body:payload.info
+                body: payload.info
+            }),
+        }),
+
+        changePassword: builder.mutation({
+            query: (payload) => ({
+                url: `/auth/change-password`,
+                method: "POST",
+                body: payload
             }),
         }),
     }),
 });
 
 export const {
-useLogoutFromTheSystemMutation
+    useLogoutFromTheSystemMutation,
+    useChangePasswordMutation
 } = authApi;

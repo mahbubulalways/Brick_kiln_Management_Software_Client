@@ -314,7 +314,8 @@ const NewDeliveryModal = ({
             </div>
             <div>
               <CustomDatePickerState
-                label="  পরবর্তী ডেলিভারি তারিখ"
+                label="পরবর্তী ডেলিভারি তারিখ"
+                disablePastDates
                 value={nextDeliveryDate}
                 onChange={setNextDeliveryDate}
               />

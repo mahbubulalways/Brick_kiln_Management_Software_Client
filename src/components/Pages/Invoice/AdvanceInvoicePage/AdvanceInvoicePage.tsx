@@ -22,6 +22,7 @@ import { TQuery } from "@/interface/query";
 import { useGetAllAdvanceInvoicesQuery, } from "@/redux/features/invoice.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
 import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
@@ -46,10 +47,10 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
       {/* Header search & controls */}
       <div className="flex justify-between items-center p-3 gap-4  bg-gray-50">
         <SearchBar value={searchItems} onChange={(e) => setSearchItems(e.target.value)} />
-          <CustomReportButton 
+        <CustomReportButton
           onClick={() => setOpenReportModal(true)}
           className="w-full md:w-max"
-           />
+        />
       </div>
 
       {/* Table */}
@@ -308,7 +309,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                               title="প্রিন্ট চালান"
                             />
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => {
                               setIsDeliveryModalOpen(true);
                               setInvoiceId(row?.serial);
@@ -331,10 +332,13 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <CustomDropDownMenuItem
-                              Icon={User}
-                              title="প্রোফাইলে যান"
-                            />
+                            <Link
+                              href={`/dashboard/customer/profile/${row?.customer?.customerCode}`}>
+                              <CustomDropDownMenuItem
+                                Icon={User}
+                                title="প্রোফাইলে যান"
+                              />
+                            </Link>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

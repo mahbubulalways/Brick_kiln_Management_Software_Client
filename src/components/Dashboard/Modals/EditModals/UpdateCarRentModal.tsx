@@ -126,7 +126,7 @@ const UpdateCarRentModal = ({
             width="sm"
         >
             {isFetching ? (
-                <CustomStatus type="loading"/>
+                 <CustomStatus type="loading"/>
             ) : isError ?   <CustomStatus type="error"/>: (
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-2">

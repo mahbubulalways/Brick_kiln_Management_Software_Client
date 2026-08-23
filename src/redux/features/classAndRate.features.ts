@@ -39,6 +39,15 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["ClassAndRate"],
     }),
+
+    // DELETE CLASS AND RATE
+    deleteClassAndRate: builder.mutation({
+      query: (id:number) => ({
+        url: `/class/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ClassAndRate"],
+    }),
   }),
 });
 
@@ -47,4 +56,5 @@ export const {
   useGetAllClassAndRateQuery,
   useGetSingleClassAndRateQuery,
   useUpdateClassAndRateMutation,
+  useDeleteClassAndRateMutation
 } = authApi;

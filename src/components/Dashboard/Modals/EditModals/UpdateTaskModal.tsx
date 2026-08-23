@@ -163,8 +163,6 @@ const UpdateTaskModal = ({
                 });
             }
         } catch (error: any) {
-            console.log(error);
-
             return showToast({
                 title:
                     error?.data?.message ||
@@ -203,7 +201,7 @@ const UpdateTaskModal = ({
             width="lg"
         >
             {isLoading ? (
-                <CustomLoader cls="h-[30vh]" />
+              <CustomStatus type="loading" />
             ) : isError ? (
                 <CustomStatus type="error" />
             ) : (

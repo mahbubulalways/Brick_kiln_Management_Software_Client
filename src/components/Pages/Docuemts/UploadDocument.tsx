@@ -9,15 +9,13 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
+import { getToken } from "@/service/auth.services";
 
 export default function UploadDocument({ refetch }: any) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const params = useParams();
     const id = params?.id as string | undefined;
-
-console.log(id);
-
     const [file, setFile] = useState<File | null>(null);
     const [progress, setProgress] = useState(0);
     const [uploading, setUploading] = useState(false);
@@ -57,20 +55,19 @@ console.log(id);
         }
 
         try {
+            const token = getToken()
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_BACKEND_API}/document/upload`,
                 formData,
                 {
                     headers: {
-                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${token}`,
                     },
-
                     onUploadProgress: (progressEvent) => {
                         if (!progressEvent.total) return;
 
                         const percentage = Math.round(
-                            (progressEvent.loaded * 100) /
-                            progressEvent.total
+                            (progressEvent.loaded * 100) / progressEvent.total
                         );
 
                         setProgress(percentage);
@@ -171,8 +168,8 @@ console.log(id);
                         {/* Icon */}
                         <div
                             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${uploadError
-                                    ? "bg-red-50"
-                                    : "bg-green-50"
+                                ? "bg-red-50"
+                                : "bg-green-50"
                                 }`}
                         >
                             {uploadError ? (
@@ -192,8 +189,8 @@ console.log(id);
                         <div className="min-w-0 flex-1">
                             <p
                                 className={`text-sm font-semibold ${uploadError
-                                        ? "text-red-600"
-                                        : "text-[#039A63]"
+                                    ? "text-red-600"
+                                    : "text-[#039A63]"
                                     }`}
                             >
                                 {uploadError
@@ -203,8 +200,8 @@ console.log(id);
 
                             <p
                                 className={`mt-0.5 break-words text-xs ${uploadError
-                                        ? "text-red-500"
-                                        : "text-gray-500"
+                                    ? "text-red-500"
+                                    : "text-gray-500"
                                     }`}
                             >
                                 {uploadError ||

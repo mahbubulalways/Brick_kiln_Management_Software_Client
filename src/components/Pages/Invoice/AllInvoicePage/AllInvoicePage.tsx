@@ -33,7 +33,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
     const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
         useState<boolean>(false);
     const [searchItems, setSearchItem] = useState("");
-    const [invoiceId, setInvoiceId] = useState<number|undefined>(undefined);
+    const [invoiceId, setInvoiceId] = useState<number | undefined>(undefined);
     const [openChalanDetailsModal, setOpenChalanDetailsModal] =
         useState<boolean>(false);
     const [dateRange, setDateRange] = useState("");
@@ -343,10 +343,12 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                         />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem>
-                                                       <Link href={`/dashboard/customer/profile/${row?.customer?.id}`}> <CustomDropDownMenuItem
-                                                            Icon={User}
-                                                            title="প্রোফাইলে যান"
-                                                        /></Link>
+                                                        <Link href={`/dashboard/customer/profile/${row?.customer?.customerCode}`}>
+                                                            <CustomDropDownMenuItem
+                                                                Icon={User}
+                                                                title="প্রোফাইলে যান"
+                                                            />
+                                                        </Link>
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -405,7 +407,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                 <NewDeliveryModal
                     isOpen={isDeliveryModalOpen}
                     onClose={() => setIsDeliveryModalOpen(false)}
-                    invoiceId={invoiceId}
+                    invoiceId={invoiceId!}
                 />
             )}
         </div>

@@ -77,6 +77,8 @@ const DeliveryHistory = ({
         setDeliveryInfo(deliveries);
     }, [deliveries]);
 
+
+    console.log(data)
     return (
         <div>
             <div className="overflow-x-auto">
@@ -166,7 +168,7 @@ const DeliveryHistory = ({
 
                                         <TableData
                                             td={
-                                                row.invoiceId
+                                                row.invoice.serial
                                             }
                                         />
 

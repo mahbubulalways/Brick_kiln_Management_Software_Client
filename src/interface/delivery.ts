@@ -1,3 +1,4 @@
+import { IChallanForDataShow } from "@/types/types";
 import { IUser } from "./user";
 
 export type TInvoiceCustomer = {
@@ -60,10 +61,5 @@ export type TDeliveryWithCustomer = {
   invoiceId: number;
   isDeleted: boolean;
   createdAt: string;
-  invoice: {
-    customer: {
-      name: string;
-      address: string;
-    };
-  };
+  invoice: IChallanForDataShow
 };

@@ -55,7 +55,7 @@ export default function SingleReceivableAndPayablePage({
     const due = data?.data || {};
 
     return (
-        <div>
+        <div className="bg-[#F1F5F9] p-2 lg:p-5 rounded-xl">
             {/* Page Title */}
             <div className="mb-6 flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-[#172b4d]">

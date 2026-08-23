@@ -1,9 +1,9 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import SoftwarePaymentPage from "@/components/Pages/SoftwarePaymentPage/SoftwarePaymentPage";
 
 const Page = () => {
   return (
     <div>
-      <UnderConstructionPage />
+      <SoftwarePaymentPage />
     </div>
   );
 };
