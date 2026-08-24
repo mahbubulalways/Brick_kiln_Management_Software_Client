@@ -1,5 +1,6 @@
 import { IChallanForDataShow } from "@/types/types";
 import { IUser } from "./user";
+import { TCustomer } from "./customer";
 
 export type TInvoiceCustomer = {
   id: number;
@@ -13,7 +14,7 @@ export type TInvoiceCustomer = {
 
 export type TDeliveryInvoice = {
   id: string;
-  customer: TInvoiceCustomer;
+  customer: TCustomer;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;

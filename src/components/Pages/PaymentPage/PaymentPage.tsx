@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +32,9 @@ import PaymentReportModal from "@/components/Dashboard/Modals/PaymentReportModal
 import UpdatePaymentModal from "@/components/Dashboard/Modals/EditModals/UpdatePaymentModal";
 import Swal from "sweetalert2";
 import CustomLoader from "@/components/Reusable/CustomLoader";
+import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
+import PaymentPrint from "@/components/PrintComponent/PaymentPrint";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 
 const PaymentPage = ({ limit, page, search }: TQuery) => {
   const [searchItems, setSearchItem] = useState("");
@@ -52,9 +55,10 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
       refetchOnMountOrArgChange: true,
     },
   );
-
+  const printRef = useRef<TCommonPrintRef>(null);
   const [deletePaymentAsync, { isLoading: deleteLoading }] = useDeletePaymentMutation()
-
+  // VATA INFORMATIONS
+  const { data: vata } = useGetVataInfoQuery(undefined)
   const payments = data?.data?.data as TPaymentResponse[];
   const meta = data?.data?.meta as TMetaConfig;
 
@@ -115,7 +119,6 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
       </span>
       <div className="flex w-full flex-col gap-2 pt-2 lg:flex-row lg:items-center lg:justify-between lg:gap-5 lg:pt-0">
 
-        {/* Left Section */}
         <div className="flex w-full items-center gap-2 lg:w-auto">
           <CustomNewButton
             title="নতুন পেমেন্ট"
@@ -123,15 +126,13 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
             className="flex-1 lg:flex-none"
           />
 
-          {/* Total Payment */}
+
           <span className="hidden whitespace-nowrap rounded border border-green-300 bg-green-100 px-3 py-1 font-medium text-green-800 lg:block">
             মোট পেমেন্ট: {totalCredit} টাকা
           </span>
         </div>
 
-        {/* Right Section */}
         <div className="grid w-full md:w-max grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end">
-          {/* Date */}
           <div className="">
             <CustomDatePickerState
               onChange={setDate}
@@ -141,7 +142,6 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
             />
           </div>
 
-          {/* Search */}
           <div className="min-w-0 sm:flex-1 lg:flex-none">
             <SearchBar
               value={searchItems}
@@ -150,10 +150,10 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
             />
           </div>
 
-          {/* Print */}
-          <CustomPrintButton />
+          <CustomPrintButton 
+           onClick={() => printRef.current?.print()}
+          />
 
-          {/* Report */}
           <CustomReportButton
             onClick={() => setReportModalOpen(true)}
           />
@@ -375,6 +375,17 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
       {isUpdateModalOpen &&
         <UpdatePaymentModal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)} id={selectedPaymentId} setId={setSelectedPaymentId} />
       }
+
+
+      <CommonPrint
+        ref={printRef}
+        title="payments"
+      >
+        <PaymentPrint
+          payments={payments}
+          vataInformation={vata?.data}
+        />
+      </CommonPrint>
     </div>
   );
 };

@@ -28,6 +28,7 @@ import { TablePagination } from "@/components/Reusable/TablePagination";
 import { TMetaConfig } from "@/interface/meta";
 import SearchBar from "@/components/Reusable/SearchBar";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import Link from "next/link";
 
 const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -42,7 +43,7 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
   );
   const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
   const isoDate = deliveryDate ? deliveryDate.toISOString() : "";
-  const { data, isLoading,isError,error } = useGetDeliveryHaveTodayQuery({ date: isoDate, limit, page, search }, {
+  const { data, isLoading, isError, error } = useGetDeliveryHaveTodayQuery({ date: isoDate, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
   const todaysDelivery = data?.data?.data || [];
@@ -184,10 +185,12 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
                                 />
                               </DropdownMenuItem>
                               <DropdownMenuItem>
-                                <CustomDropDownMenuItem
-                                  Icon={User}
-                                  title="প্রোফাইলে যান"
-                                />
+                                <Link href={`/dashboard/customer/profile/${row.customer.customerCode}`}>
+                                  <CustomDropDownMenuItem
+                                    Icon={User}
+                                    title="প্রোফাইলে যান"
+                                  />
+                                </Link>
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -214,7 +217,7 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
           invoiceId={InvoiceIdDelivery!}
         />
       )}
-      
+
       {openDateChangeModal && (
         <UpdateDeliveryDateModal
           isOpen={openDateChangeModal}

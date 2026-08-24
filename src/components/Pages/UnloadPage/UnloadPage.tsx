@@ -36,6 +36,7 @@ import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
 import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
 import UnloadPagePrint from "./UploadPagePrint";
 import UnloadReportModal from "@/components/Dashboard/Modals/ReportModal/UnloadReportModal";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 
 const UnloadPage = ({ limit, page }: TQuery) => {
     const [date, setDate] = useState<Date | undefined>();
@@ -43,6 +44,10 @@ const UnloadPage = ({ limit, page }: TQuery) => {
     const [openReportModal, setOpenReOpenModal] = useState<boolean>(false);
     const [selected, setSelected] = useState("");
     const printRef = useRef<TCommonPrintRef>(null);
+    const {
+        data: vataInfo,
+    } = useGetVataInfoQuery(undefined);
+
     // =========================
     // GET UNLOAD DATA
     // =========================
@@ -540,6 +545,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                     unloadData={unloads}
                     date={date}
                     classes={filtered}
+                    vataInfo={vataInfo?.data}
                 />
             </CommonPrint>
             {/* ================= NEW UNLOAD MODAL ================= */}

@@ -21,6 +21,7 @@ import {
 import { TMetaConfig } from "@/interface/meta";
 import { TQuery } from "@/interface/query";
 import { useGetAllInvoicesQuery } from "@/redux/features/invoice.features";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
 import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
 import Link from "next/link";
@@ -42,7 +43,8 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
         useGetAllInvoicesQuery(
             { limit, page, search, date: dateRange }
             , { refetchOnMountOrArgChange: true });
-
+  // VATA INFO
+  const { data: vata } = useGetVataInfoQuery(undefined)
     const invoices = data?.data?.data || []
     const meta = data?.data?.meta as TMetaConfig;
     return (
@@ -385,6 +387,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                     onClose={() => setOpenPrintModal(false)}
                     invoiceId={invoiceId!}
                     setInvoiceId={setInvoiceId}
+                    vataInformation={vata?.data}
                 />
             )}
             {openChalanDetailsModal && (

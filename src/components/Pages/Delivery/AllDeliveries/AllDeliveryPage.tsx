@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +27,11 @@ import CustomDateRangePicker from "@/components/Reusable/CustomDateRangePicker";
 import { TMetaConfig } from "@/interface/meta";
 import { TablePagination } from "@/components/Reusable/TablePagination";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
+import RemainingDeliveryPrint from "@/components/PrintComponent/RemainingDeliveryPrint";
+import Link from "next/link";
 
 const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -43,6 +48,9 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
   const { data, isLoading } = useGetAllDeliveryListQuery({ date: filterRange, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
+  const printRef = useRef<TCommonPrintRef>(null);
+  // VATA INFORMATIONS
+  const { data: vata } = useGetVataInfoQuery(undefined)
   const deliveries = data?.data?.data;
   const meta = data?.data?.meta as TMetaConfig;
 
@@ -50,15 +58,45 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
 
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
-      <div className="flex flex-col md:flex-row justify-between items-center pt-2 lg:pt-0 gap-5">
-        <SearchBar
-          value={searchItem}
-          onChange={(e) => setSearchItem(e.target.value)}
-          onClear={() => setSearchItem("")}
-        />
-        <div className="w-full flex items-center gap-2 ">
-          <CustomDateRangePicker value={filterRange} onChange={setFilterRange} />
-          <CustomReportButton onClick={() => setOpenDeliveryReport(true)} />
+      <div className="flex flex-col gap-2 pt-2 lg:flex-row lg:items-center lg:justify-between lg:pt-0">
+        {/* Left Section */}
+        <div className="flex w-full items-center gap-2 lg:w-auto">
+          <div className="min-w-0 flex-1 lg:flex-none">
+            <SearchBar
+              value={searchItem}
+              onChange={(e) => setSearchItem(e.target.value)}
+              onClear={() => setSearchItem("")}
+            />
+          </div>
+
+          {/* Date - Mobile/Tablet */}
+          <div className="lg:hidden">
+            <CustomDateRangePicker
+              value={filterRange}
+              onChange={setFilterRange}
+            />
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex w-full items-center gap-2 lg:w-auto lg:justify-end">
+          {/* Date - Large */}
+          <div className="hidden lg:block">
+            <CustomDateRangePicker
+              value={filterRange}
+              onChange={setFilterRange}
+            />
+          </div>
+
+          <CustomPrintButton
+            className="w-full md:w-max"
+            onClick={() => printRef.current?.print()}
+          />
+
+          <CustomReportButton
+            className="w-full md:w-max"
+            onClick={() => setOpenDeliveryReport(true)}
+          />
         </div>
       </div>
       <div>
@@ -193,10 +231,13 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
                                 />
                               </DropdownMenuItem>
                               <DropdownMenuItem>
-                                <CustomDropDownMenuItem
-                                  Icon={User}
-                                  title="প্রোফাইলে যান"
-                                />
+                                <Link
+                                  href={`/dashboard/customer/profile/${row.customer.customerCode}`}>
+                                  <CustomDropDownMenuItem
+                                    Icon={User}
+                                    title="প্রোফাইলে যান"
+                                  />
+                                </Link>
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -237,6 +278,16 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
           title="ডেলিভারি দিতে হবে"
         />
       )}
+
+      <CommonPrint
+        ref={printRef}
+        title="payments"
+      >
+        <RemainingDeliveryPrint
+          deliveries={deliveries}
+          vataInformation={vata?.data}
+        />
+      </CommonPrint>
     </div>
   );
 };

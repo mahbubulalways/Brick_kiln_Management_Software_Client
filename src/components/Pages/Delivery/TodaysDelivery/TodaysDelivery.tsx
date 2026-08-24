@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,6 @@ import { Calendar, MoreVertical, Truck, User } from "lucide-react";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
 import TableHead from "@/components/Reusable/TableHead";
-import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
 import { useGetTodaysDeliveryQuery } from "@/redux/features/delivery.features";
 import moment from "moment";
 import TableData from "@/components/Reusable/TableData";
@@ -32,6 +31,10 @@ import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import NewDeliveryModalForInput from "@/components/Dashboard/Modals/NewDeliveryModalForInput";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 import Link from "next/link";
+import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
+import DeliveryPrint from "@/components/PrintComponent/DeliveryPrint";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
 const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -44,6 +47,9 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
     refetchOnMountOrArgChange: true,
   });
 
+    const printRef = useRef<TCommonPrintRef>(null);
+    // VATA INFORMATIONS
+    const { data: vata } = useGetVataInfoQuery(undefined)
   const deliveries = data?.data?.data || [];
   const meta = data?.data?.meta as TMetaConfig;
   const items = deliveries?.map((delivery: TDeliveryResponse) => {
@@ -60,6 +66,9 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
         <CustomNewButton title="নতুন ডেলিভারি" onClick={() => setIsOpen(!isOpen)} />
         <div className="flex items-center gap-2 ">
           <CustomDatePickerState onChange={setDate} value={date} />
+           <CustomPrintButton 
+           onClick={() => printRef.current?.print()}
+          />
           <CustomReportButton onClick={() => setOpenDeliveryReport(true)} />
         </div>
       </div>
@@ -160,7 +169,7 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <Link href={`/dashboard/customer/profile/${row.invoice.customer.id}`}><CustomDropDownMenuItem
+                            <Link href={`/dashboard/customer/profile/${row.invoice.customer.customerCode}`}><CustomDropDownMenuItem
                               Icon={User}
                               title="প্রোফাইলে যান"
                             /></Link>
@@ -219,6 +228,17 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
           deliveryId={deliveryId}
           setDeliveryId={setDeliveryId} />
       }
+
+      <CommonPrint
+        ref={printRef}
+        title="deliveries"
+      >
+        <DeliveryPrint
+          deliveries={deliveries}
+          vataInformation={vata?.data}
+        />
+      </CommonPrint>
+      
     </div>
   );
 };

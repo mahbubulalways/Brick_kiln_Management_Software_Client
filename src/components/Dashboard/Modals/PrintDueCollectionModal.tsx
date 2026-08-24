@@ -188,11 +188,11 @@ const PrintDueCollectionModal = ({
                       হিলিপাড়া, কাটাবাড়ি, গাইবান্ধা
                     </p>
 
-                    <p className="text-sm leading-5">
+                    <p className="text-[12px] leading-5">
                       ০১৯১০৩৪৯১৯১, ০১৯১০৩৪৯১৯৩
                     </p>
 
-                    <p className="text-sm leading-5">
+                    <p className="text-[12px] leading-5">
                       <span>প্রোপ্রাইটরঃ  মোঃ মানিক মিয়া</span>
                     </p>
                   </div>
@@ -227,7 +227,7 @@ const PrintDueCollectionModal = ({
                   <p>
                     কাস্টমার আইডিঃ{" "}
                     <span>
-                      {toBanglaNumber(dueInfo?.customerId)}
+                      {toBanglaNumber(dueInfo?.customer.customerCode)}
                     </span>
                   </p>
 
@@ -255,11 +255,11 @@ const PrintDueCollectionModal = ({
 
                 <div className="text-right text-xs">
                   <p >
-                    {dueInfo?.customer?.name ?? "fgcgch"}
+                    {dueInfo?.customer?.name }
                   </p>
 
                   <p>
-                    {dueInfo?.customer?.address ?? "cbcvb"}
+                    {dueInfo?.customer?.address }
                   </p>
 
                   <p className="mt-1">

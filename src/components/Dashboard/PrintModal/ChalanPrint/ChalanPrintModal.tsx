@@ -1,228 +1,675 @@
 "use client";
-import CustomLoader from "@/components/Reusable/CustomLoader";
+
 import CustomNormalModal from "@/components/Reusable/CustomNormalModal";
+import CustomStatus from "@/components/Reusable/CustomStatus";
 import { useGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
 import { IChallanForDataShow, TCustomInvoiceModal } from "@/types/types";
+import moment from "moment";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
-import moment from "moment";
-import CustomStatus from "@/components/Reusable/CustomStatus";
+import { FileText, ReceiptText } from "lucide-react";
+import { formatBanglaDate } from "@/utils/formatBanglaDate";
+import { TVataInformation } from "@/interface/vata";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
+
+// =====================================================
+// Challan Copy Component
+// =====================================================
+
+interface ChallanCopyProps {
+  invoice: IChallanForDataShow;
+  copyType?: "customer" | "office";
+  vataInformation: TVataInformation
+}
+
+const ChallanCopy = ({
+  invoice,
+  copyType = "customer",
+  vataInformation
+}: ChallanCopyProps) => {
+  return (
+    <div className="w-full bg-white text-black">
+      {/* ================= Copy Title ================= */}
+      <div className="mb-2 text-center print:hidden">
+        <span className="inline-block rounded bg-gray-100 px-5 py-1 text-sm font-semibold text-gray-700">
+          {copyType === "customer" ? "গ্রাহক কপি" : "অফিস কপি"}
+        </span>
+      </div>
+
+      {/* ================= Invoice Body ================= */}
+      <div className="border border-gray-300 bg-white px-4 py-4">
+        {/* ================= Header ================= */}
+        <div className="flex items-start justify-between border-b border-gray-300 pb-3">
+          {/* Left Company */}
+          <div className="flex items-start gap-3">
+            {/* Logo */}
+            <div className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-md bg-gray-100">
+              <div className="relative flex flex-col items-center">
+                <div className="h-2 w-7 rounded-t-full bg-red-500" />
+                <div className="mt-[1px] h-2 w-9 bg-red-500" />
+                <div className="mt-[1px] h-2 w-11 bg-red-500" />
+                <div className="mt-[1px] h-2 w-14 rounded-b-full bg-red-500" />
+
+                <div className="absolute top-[7px] h-[38px] w-2 bg-white/80" />
+              </div>
+            </div>
+
+            <div>
+              <h1 className="text-[21px] font-bold leading-none">
+                {vataInformation?.nameBangla}
+              </h1>
+
+              <p className="mt-1 text-[11px] leading-[17px] text-gray-700">
+                {vataInformation?.address}
+                <br />
+                {toBanglaNumber(vataInformation?.challansPhoneNumber)}
+                <br />
+                প্রোপ্রাইটরঃ  {vataInformation?.ownerName}
+              </p>
+            </div>
+          </div>
+
+          {/* Right Invoice */}
+          <div className="text-right">
+            <h2 className="text-[35px] font-bold leading-none">
+              INVOICE
+            </h2>
+
+            <p className="mt-1 text-[11px]">
+              {copyType === "customer"
+                ? "গ্রাহক কপি"
+                : "অফিস কপি"}
+            </p>
+
+            <p className="mt-3 text-[11px]">
+              তারিখঃ{" "}
+              <span className="font-semibold">
+                {formatBanglaDate({ date: invoice?.challanDate })}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* ================= Customer Info ================= */}
+        <div className="flex justify-between border-b border-gray-300 py-3">
+          {/* Left */}
+          <div className="text-[12px] leading-6">
+            <p>
+              <span className="font-medium">
+                কাস্টমার আইডিঃ
+              </span>{" "}
+              {toBanglaNumber(invoice?.customer?.customerCode)}
+            </p>
+
+            <p>
+              <span className="font-medium">
+                চালানের তারিখঃ
+              </span>{" "}
+              {formatBanglaDate({
+                date: invoice?.challanDate,
+                showTime: true,
+              })}
+            </p>
+
+            <p>
+              <span className="font-medium">
+                ইস্যু করেছে:
+              </span>
+            </p>
+          </div>
+
+          {/* Right */}
+          <div className="border-r-[3px] border-black pr-3 text-right text-[12px] leading-6">
+            <p className="font-semibold">
+              {invoice?.customer?.name}
+            </p>
+
+            <p className="font-semibold">
+              {invoice?.customer?.address}
+            </p>
+
+            <p>{toBanglaNumber(invoice?.customer?.phoneNumber)}</p>
+          </div>
+        </div>
+
+        {/* ================= Product Table ================= */}
+        <div className="mt-3 overflow-hidden rounded border border-gray-300">
+          <table className="w-full border-collapse text-center text-[12px]">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border-r border-gray-300 px-2 py-2 font-medium">
+                  চালান নং
+                </th>
+
+                <th className="border-r border-gray-300 px-2 py-2 font-medium">
+                  শ্রেণি
+                </th>
+
+                <th className="border-r border-gray-300 px-2 py-2 font-medium">
+                  পরিমাণ
+                </th>
+
+                <th className="border-r border-gray-300 px-2 py-2 font-medium">
+                  দর
+                </th>
+
+                <th className="px-2 py-2 font-medium">
+                  মূল্য
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {invoice?.items?.map((item) => (
+                <tr key={item?.id}>
+                  <td className="border-t border-r border-gray-300 px-2 py-2">
+                    {toBanglaNumber(invoice?.serial)}
+                  </td>
+
+                  <td className="border-t border-r border-gray-300 px-2 py-2">
+                    {item?.class}
+                  </td>
+
+                  <td className="border-t border-r border-gray-300 px-2 py-2">
+                    {toBanglaNumber(item?.quantity)}
+                  </td>
+
+                  <td className="border-t border-r border-gray-300 px-2 py-2">
+                    ৳ {toBanglaNumber(item?.rate)}
+                  </td>
+
+                  <td className="border-t border-gray-300 px-2 py-2">
+                    ৳ {toBanglaNumber(item?.price)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* ================= Bottom Section ================= */}
+        <div className="mt-4 grid grid-cols-[1fr_300px] gap-5">
+          {/* ================= Rules ================= */}
+          <div className="pt-1">
+            <h3 className="mb-2 text-[13px] font-semibold underline">
+              বিশেষ দ্রষ্টব্যঃ
+            </h3>
+
+            <div className="space-y-1 text-[10px] leading-4 text-gray-600">
+              <p>
+                ১। চালান অথবা রশিদ ছাড়া কোনো লেনদেন করবেন না।
+              </p>
+
+              <p>
+                ২। ২টি ডেলিভারি নেওয়ার কোনো অভিযোগ গ্রহণ করা হবে না।
+              </p>
+
+              <p>
+                ৩। চালান করার ১০ দিনের মধ্যে ইট ডেলিভারি নিতে হবে।
+              </p>
+            </div>
+
+            {/* Payment Date */}
+            <div
+              className={`mt-6 flex h-[40px] w-max px-10 items-center justify-center rounded-lg border text-center ${invoice?.due
+                ? "border-red-500"
+                : "border-green-500"
+                }`}
+            >
+              <p
+                className={`text-[12px] font-semibold ${invoice?.due
+                  ? "text-red-500"
+                  : "text-green-600"
+                  }`}
+              >
+                পরিশোধের তারিখঃ{" "}
+                {formatBanglaDate({
+                  date: invoice?.duePaymentDate ||
+                    invoice?.challanDate
+                })}
+              </p>
+            </div>
+          </div>
+
+          {/* ================= Summary ================= */}
+          <div className="rounded-lg bg-gray-100 px-3 py-3">
+            <div className="space-y-2 text-[12px]">
+              <div className="flex justify-between">
+                <span>মোট মূল্য</span>
+
+                <span className="font-medium">
+                  ৳ {toBanglaNumber(invoice?.productPrice)}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>ছাড়</span>
+
+                <span>
+                  ৳ {toBanglaNumber(invoice?.discount || "00")}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>গাড়ি ভাড়া</span>
+
+                <span>
+                  ৳ {toBanglaNumber(invoice?.carRent || "00")}
+                </span>
+              </div>
+
+              <div className="my-2 border-t border-gray-300" />
+
+              <div className="flex justify-between font-medium">
+                <span>সর্বমোট</span>
+
+                <span>
+                  ৳ {toBanglaNumber(invoice?.totalPrice || "00")}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>জমা</span>
+
+                <span>
+                  ৳ {toBanglaNumber(invoice?.cash || "00")}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-[18px] font-semibold">
+                <span>বাকি</span>
+
+                <span>
+                  ৳ {toBanglaNumber(invoice?.due || "00")}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ================= Footer ================= */}
+        <div className="mt-12">
+          <div className="flex justify-between px-8 text-[11px]">
+            <div className="w-[145px] border-t border-black pt-1 text-center">
+              গ্রাহকের স্বাক্ষর
+            </div>
+
+            <div className="w-[145px] border-t border-black pt-1 text-center">
+              ম্যানেজারের স্বাক্ষর
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// =====================================================
+// Main Modal
+// =====================================================
+
 const ChalanPrintModal = ({
   isOpen,
   onClose,
   invoiceId,
-  setInvoiceId,
+  setInvoiceId, vataInformation
 }: TCustomInvoiceModal) => {
-  const { data, isLoading, isError } = useGetSingleInvoiceQuery(invoiceId, {
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useGetSingleInvoiceQuery(invoiceId, {
     refetchOnMountOrArgChange: true,
   });
 
-  const invoice: IChallanForDataShow = data?.data || {};
+  const invoice: IChallanForDataShow =
+    data?.data || ({} as IChallanForDataShow);
+
+  // =====================================================
+  // Close
+  // =====================================================
+
   const handleClose = () => {
     setInvoiceId(0);
     onClose();
   };
-  const contentRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({ contentRef });
 
-  const handleBothPrint = () => {
-    const double = document.getElementById("chalan");
-    const secondDiv = document.getElementById("chalan2");
+  // =====================================================
+  // Customer Print
+  // =====================================================
 
-    if (double && secondDiv) {
-      secondDiv.innerHTML = double.outerHTML;
-      handlePrint();
-    }
-  };
+  const customerPrintRef =
+    useRef<HTMLDivElement>(null);
+
+  const handleCustomerPrint = useReactToPrint({
+    contentRef: customerPrintRef,
+    documentTitle: "Customer-Challan",
+  });
+
+  // =====================================================
+  // Customer + Office Print
+  // =====================================================
+
+  const bothPrintRef =
+    useRef<HTMLDivElement>(null);
+
+  const handleBothPrint = useReactToPrint({
+    contentRef: bothPrintRef,
+    documentTitle: "Customer-Office-Challan",
+  });
 
   return (
-    <CustomNormalModal isOpen={isOpen} onClose={handleClose} width="xxl">
+    <CustomNormalModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      width="xxl"
+    >
       {isLoading ? (
         <CustomStatus type="loading" />
-      ) : isError ?
+      ) : isError ? (
         <CustomStatus type="error" />
-        : !invoice ?
-          <CustomStatus type="empty" /> : (
-            <div>
-              <div className="space-y-3">
-                {/* ✅ Top Buttons */}
-                <div className="flex justify-center gap-3">
-                  <button
-                    onClick={handlePrint}
-                    className="bg-green-600 text-white px-4 py-1 rounded flex items-center gap-1 text-sm cursor-pointer"
-                  >
-                    🖨️ গ্রাহক কপি
-                  </button>
-                  <button
-                    onClick={handleBothPrint}
-                    className="bg-green-500 text-white px-4 py-1 rounded flex items-center gap-1 text-sm cursor-pointer"
-                  >
-                    🖨️ গ্রাহক + অফিস কপি
-                  </button>
-                  <button className="bg-orange-500 text-white px-4 py-1 rounded text-sm cursor-pointer">
-                    X বাতিল
-                  </button>
-                </div>
-                <div
-                  className=" grid grid-cols-2 gap-8 w-full px-5 pt-5"
-                  ref={contentRef}
-                >
-                  <div id="chalan">
-                    <div className="flex justify-between items-start mt-2">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="bg-red-100 text-red-700 font-semibold px-3 py-0.5 rounded text-sm flex items-center">
-                            🚧 DEMO
-                          </span>
-                          <span className="border px-2 py-0.5 rounded text-sm font-medium">
-                            চালান কপি
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <h2 className="text-2xl">চালান</h2>
-                        <p className="text-sm">
-                          চালানের তারিখঃ{" "}
-                          <span className="font-semibold">
-                            {" "}
-                            {moment(invoice?.challanDate).format("L")}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
+      ) : !invoice ? (
+        <CustomStatus type="empty" />
+      ) : (
+        <div className="space-y-2">
 
-                    <div className="pt-2 flex justify-between">
-                      <div>
-                        <h2 className="text-green-700 font-bold text-lg">
-                          এস.এম.বি ব্রিকস
-                        </h2>
-                        <p className="text-[13px] text-gray-700">
-                          হিলালপুর, রামদিয়াপাড়া, গাইবান্ধা <br />
-                          ০১৯১১-৯৮৯৮১০, ০১৯১১-৯৮৯৮৭০
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-green-700 font-bold">মালিক</h3>
-                        <p className="text-gray-700 leading-tight text-[13px]">
-                          রংপুর <br /> ০১৯১১-৯৮৯৮৭০
-                        </p>
-                      </div>
-                    </div>
+          {/* =================================================
+              Print Options
+          ================================================= */}
 
-                    {/* ✅ Table */}
-                    <table className="w-full border border-gray-300 text-center text-[13px] mt-2">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="border p-1 w-12">চালান নং</th>
-                          <th className="border p-1 w-12">শ্রেণি</th>
-                          <th className="border p-1 w-20">পরিমাণ</th>
-                          <th className="border p-1 w-20">দর</th>
-                          <th className="border p-1 w-20">মূল্য</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {/* <tr>
-                      <td className="border p-1">৫</td>
-                      <td className="border p-1">১ নং</td>
-                      <td className="border p-1">৩,০০০</td>
-                      <td className="border p-1">৳ ৩.৫০</td>
-                      <td className="border p-1">৳ ১০,৫০০</td>
-                    </tr> */}
-                        {invoice?.items?.map((item) => (
-                          <tr key={item?.id}>
-                            <td className="border-r p-2">{item?.challanId}</td>
-                            <td className="border-r p-2">{item?.class}</td>
-                            <td className="border-r p-2">{item?.quantity}</td>
-                            <td className="border-r p-2">৳ {item?.rate}</td>
-                            <td className="p-2">৳ {item?.price}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+          <div className="rounded-xl bg-gray-100 py-2">
+            <p className="mb-3 text-center text-[13px] font-medium text-gray-600">
+              প্রিন্ট অপশন সিলেক্ট করুন
+            </p>
 
-                    {/* ✅ Summary + Red Vertical Logo */}
-                    <div className="flex justify-between mt-4 gap-3">
-                      {/* Left Red Logo */}
-                      <div
-                        className={`flex justify-center items-center border  rounded  text-3xl px-4 rotate ${invoice?.due
-                            ? "border-red-500 text-red-600"
-                            : "border-green-500 text-green-600"
-                          }`}
-                      >
-                        <p className="-rotate-90">
-                          {" "}
-                          {invoice?.due ? "বাকি" : "পরিশোধ"}
-                        </p>
-                      </div>
+            <div className="flex flex-wrap justify-center gap-2">
 
-                      {/* Right Boxes */}
-                      <div className="flex-1 border border-gray-200 rounded p-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="bg-gray-50 rounded p-2 text-center">
-                            <p className="text-gray-600 text-xs">মোট মূল্য</p>
-                            <p className="font-semibold">
-                              ৳ {invoice?.productPrice}
-                            </p>
-                          </div>
-                          <div className="bg-orange-50 rounded p-2 text-center">
-                            <p className="text-gray-600 text-xs">ছাড়</p>
-                            <p className="font-semibold text-orange-600">
-                              ৳ {invoice?.discount}
-                            </p>
-                          </div>
-                          <div className="bg-blue-50 rounded p-2 text-center">
-                            <p className="text-gray-600 text-xs">গাড়ি ভাড়া</p>
-                            <p className="font-semibold text-blue-600">
-                              ৳ {invoice?.carRent}
-                            </p>
-                          </div>
-                          <div className="bg-green-50 rounded p-2 text-center">
-                            <p className="text-gray-600 text-xs">সর্বমোট</p>
-                            <p className="font-semibold text-green-600">
-                              ৳ {invoice?.totalPrice}
-                            </p>
-                          </div>
-                          <div className="bg-gray-50 rounded p-2 text-center">
-                            <p className="text-gray-600 text-xs">জমা</p>
-                            <p className="font-semibold">৳ {invoice?.cash}</p>
-                          </div>
-                          <div className="bg-red-50 rounded p-2 text-center">
-                            <p className="text-gray-600 text-xs">বাকি</p>
-                            <p className="font-semibold text-red-600">
-                              ৳ {invoice?.due}
-                            </p>
-                          </div>
-                        </div>
+              {/* Customer A4 */}
+              <button
+                onClick={handleCustomerPrint}
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-4 py-1.5 text-[13px] font-medium text-white shadow-sm transition hover:bg-emerald-700"
+              >
+                <FileText size={16} />
 
-                        {/* Payment Date */}
-                        <div className="border border-red-500 rounded text-center py-2 mt-3">
-                          <p className="text-red-600 font-semibold text-sm">
-                            পরিশোধের তারিখঃ{" "}
-                            {moment(
-                              invoice?.duePaymentDate || invoice?.challanDate,
-                            ).format("L")}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                A4 (কাস্টমার)
+              </button>
 
-                    {/* ✅ Footer */}
-                    <div className="text-center mt-6 text-[12px] text-gray-700">
-                      <p>চালান ছাড়া রশিদ প্রদান বা টাকা গ্রহণ করবেন না</p>
-                      <div className="flex justify-between mt-8 px-8">
-                        <p>গ্রাহকের স্বাক্ষর</p>
-                        <p>ম্যানেজারের স্বাক্ষর</p>
-                      </div>
-                      <p className="text-[10px] text-gray-500 mt-4">
-                        [dev-mahbubul]
-                      </p>
-                    </div>
-                  </div>
-                  <div id="chalan2"></div>
-                </div>
-              </div>
+              {/* Customer + Office A4 */}
+              <button
+                onClick={handleBothPrint}
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-emerald-600 px-4 py-1.5 text-[13px] font-medium text-white shadow-sm transition hover:bg-emerald-700"
+              >
+                <FileText size={16} />
+
+                A4 (কাস্টমার+অফিস)
+              </button>
+
+              {/* POS Customer */}
+              <button
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-orange-500 px-4 py-1.5 text-[13px] font-medium text-white shadow-sm transition hover:bg-orange-600"
+              >
+                <ReceiptText size={16} />
+
+                POS (কাস্টমার)
+              </button>
+
+              {/* POS Customer + Office */}
+              <button
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-orange-600 px-4 py-1.5 text-[13px] font-medium text-white shadow-sm transition hover:bg-orange-700"
+              >
+                <ReceiptText size={16} />
+
+                POS (কাস্টমার+অফিস)
+              </button>
             </div>
-          )}
+          </div>
+
+          {/* =================================================
+              Screen Preview
+          ================================================= */}
+
+          <div>
+            <div className="mx-auto max-w-[760px] bg-white shadow">
+              <ChallanCopy
+                vataInformation={vataInformation!}
+                invoice={invoice}
+                copyType="customer"
+              />
+            </div>
+          </div>
+
+          {/* =================================================
+              Single Customer Print
+          ================================================= */}
+
+          <div
+            ref={customerPrintRef}
+            className="print-single-copy absolute -left-[99999px] top-0 w-[794px]"
+          >
+            <ChallanCopy
+              vataInformation={vataInformation!}
+              invoice={invoice}
+              copyType="customer"
+            />
+          </div>
+
+          {/* =================================================
+              Customer + Office Print
+              UPAR-NICHE
+          ================================================= */}
+
+          <div
+            ref={bothPrintRef}
+            className="print-both-copy absolute -left-[99999px] top-0 w-[794px]"
+          >
+            <div className="flex flex-col gap-6">
+
+              {/* ================= Customer Copy ================= */}
+
+              <div>
+                <div className="mb-2 text-center">
+                  <p className="text-sm font-bold">
+                    গ্রাহক কপি
+                  </p>
+                </div>
+
+                <ChallanCopy
+                  vataInformation={vataInformation!}
+                  invoice={invoice}
+                  copyType="customer"
+                />
+              </div>
+
+              {/* ================= Office Copy ================= */}
+
+              <div>
+                <div className="mb-2 text-center">
+                  <p className="text-sm font-bold">
+                    অফিস কপি
+                  </p>
+                </div>
+
+                <ChallanCopy
+                  vataInformation={vataInformation!}
+                  invoice={invoice}
+                  copyType="office"
+                />
+              </div>
+
+            </div>
+          </div>
+
+          {/* =================================================
+              Print CSS
+          ================================================= */}
+
+          <style jsx global>{`
+            @media print {
+
+              @page {
+                size: A4 portrait;
+                margin: 8mm;
+              }
+
+              body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+              }
+
+              body * {
+                visibility: hidden;
+              }
+
+              /* =================================================
+                 SINGLE CUSTOMER COPY
+              ================================================= */
+
+              .print-single-copy,
+              .print-single-copy * {
+                visibility: visible;
+              }
+
+              .print-single-copy {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+              }
+
+              /* =================================================
+                 CUSTOMER + OFFICE COPY
+              ================================================= */
+
+              .print-both-copy,
+              .print-both-copy * {
+                visibility: visible;
+              }
+
+              .print-both-copy {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+              }
+
+              /*
+                দুইটা copy পাশাপাশি নয়,
+                উপর-নিচে থাকবে
+              */
+
+              .print-both-copy > div {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 5mm !important;
+                width: 100% !important;
+              }
+
+              /* =================================================
+                 Both Copy Size Adjustment
+              ================================================= */
+
+              .print-both-copy .text-\\[35px\\] {
+                font-size: 22px !important;
+              }
+
+              .print-both-copy .text-\\[21px\\] {
+                font-size: 15px !important;
+              }
+
+              .print-both-copy .text-\\[18px\\] {
+                font-size: 13px !important;
+              }
+
+              .print-both-copy .text-\\[12px\\] {
+                font-size: 8px !important;
+              }
+
+              .print-both-copy .text-\\[11px\\] {
+                font-size: 7px !important;
+              }
+
+              .print-both-copy .text-\\[10px\\] {
+                font-size: 6px !important;
+              }
+
+              /* =================================================
+                 Bottom Grid
+              ================================================= */
+
+              .print-both-copy .grid-cols-\\[1fr_300px\\] {
+                grid-template-columns: 1fr 145px !important;
+              }
+
+              /* =================================================
+                 Padding
+              ================================================= */
+
+              .print-both-copy .px-4 {
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+              }
+
+              .print-both-copy .py-4 {
+                padding-top: 8px !important;
+                padding-bottom: 8px !important;
+              }
+
+              /* =================================================
+                 Logo
+              ================================================= */
+
+              .print-both-copy .h-\\[58px\\] {
+                height: 38px !important;
+              }
+
+              .print-both-copy .w-\\[58px\\] {
+                width: 38px !important;
+              }
+
+              /* =================================================
+                 Footer
+              ================================================= */
+
+              .print-both-copy .mt-12 {
+                margin-top: 20px !important;
+              }
+
+              /* =================================================
+                 Rules
+              ================================================= */
+
+              .print-both-copy .mt-6 {
+                margin-top: 10px !important;
+              }
+
+              /* =================================================
+                 Table
+              ================================================= */
+
+              .print-both-copy table {
+                font-size: 8px !important;
+              }
+
+              .print-both-copy th,
+              .print-both-copy td {
+                padding-top: 4px !important;
+                padding-bottom: 4px !important;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+              }
+
+              /* =================================================
+                 Border
+              ================================================= */
+
+              .print-both-copy .border {
+                border-color: #d1d5db !important;
+              }
+            }
+          `}</style>
+        </div>
+      )}
     </CustomNormalModal>
   );
 };

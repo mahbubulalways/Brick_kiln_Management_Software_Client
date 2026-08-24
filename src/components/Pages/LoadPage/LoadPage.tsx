@@ -38,6 +38,7 @@ import LoadPagePrint from "./LoadPagePrint";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import UpdateLoadModal from "@/components/Dashboard/Modals/EditModals/UpdateLoadModal";
 import Swal from "sweetalert2";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 
 const LoadPage = ({ limit, page }: TQuery) => {
   const [date, setDate] = useState<Date | undefined>();
@@ -54,6 +55,11 @@ const LoadPage = ({ limit, page }: TQuery) => {
     { date: String(date), search: selected, limit, page },
     { refetchOnMountOrArgChange: true }
   );
+
+  const {
+    data: vataInfo,
+  } = useGetVataInfoQuery(undefined);
+
   const [deleteLoadInfo, { isLoading: deleteLoading }] =
     useDeleteLoadInfoMutation();
   const loads: TLoadResponse[] = data?.data?.data ?? [];
@@ -137,25 +143,25 @@ const LoadPage = ({ limit, page }: TQuery) => {
 
         </div>
         <div className="flex items-center gap-2 w-full pt-3">
-  <div className="flex-1 min-w-0">
-    <CustomDatePickerState
-      onChange={setDate}
-      value={date}
-      placeholder="তারিখ"
-      height="8"
-    />
-  </div>
+          <div className="flex-1 min-w-0">
+            <CustomDatePickerState
+              onChange={setDate}
+              value={date}
+              placeholder="তারিখ"
+              height="8"
+            />
+          </div>
 
-  <div className="flex-1 min-w-0">
-    <CustomSelect2
-      options={format || []}
-      placeholder="1 নম্বর রাউন্ড"
-      onChange={(value) => setSelected(value)}
-      isError={roundError}
-      isLoading={roundLoading}
-    />
-  </div>
-</div>
+          <div className="flex-1 min-w-0">
+            <CustomSelect2
+              options={format || []}
+              placeholder="1 নম্বর রাউন্ড"
+              onChange={(value) => setSelected(value)}
+              isError={roundError}
+              isLoading={roundLoading}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto mt-4">
@@ -261,6 +267,7 @@ const LoadPage = ({ limit, page }: TQuery) => {
         <LoadPagePrint
           loadData={loads}
           date={date}
+          vataInfo={vataInfo?.data}
         />
       </CommonPrint>
 

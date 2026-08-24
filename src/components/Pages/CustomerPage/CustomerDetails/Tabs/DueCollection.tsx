@@ -147,7 +147,7 @@ const DueCollection = ({
                   {/* ================= আইডি ================= */}
 
                   <TableData
-                    td={toBanglaNumber(row.id)}
+                    td={toBanglaNumber(row?.customer?.customerCode)}
                   />
 
 

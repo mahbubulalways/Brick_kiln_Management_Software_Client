@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +26,12 @@ import { TMetaConfig } from "@/interface/meta";
 import { TablePagination } from "@/components/Reusable/TablePagination";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 import { IDueResponse } from "@/interface/due";
+import Link from "next/link";
+import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
+import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import CollectionDeuPrint from "@/components/PrintComponent/CollectionDeuPrint";
+
 
 
 
@@ -43,7 +49,9 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
   const { data, isLoading, isError, error } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
   });
-
+  const printRef = useRef<TCommonPrintRef>(null);
+  // VATA INFORMATIONS
+  const { data: vata } = useGetVataInfoQuery(undefined)
   const dues = data?.data?.data as IDueResponse[] || []
   const meta = data?.data?.meta as TMetaConfig;
   const totalCredit = dues?.reduce(
@@ -72,8 +80,11 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           </span>
         </div>
 
-        <div>
+        <div className="flex items-center gap-2">
           <CustomDatePickerState onChange={setDate} value={date} />
+          <CustomPrintButton
+            onClick={() => printRef.current?.print()}
+          />
         </div>
       </div>
       <div className="overflow-x-auto pt-3">
@@ -169,10 +180,14 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                             />
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <CustomDropDownMenuItem
-                              Icon={User}
-                              title="প্রোফাইল"
-                            />
+                            <Link
+                              href={`/dashboard/customer/profile/${row.customer.customerCode}`}
+                            >
+                              <CustomDropDownMenuItem
+                                Icon={User}
+                                title="প্রোফাইলে যান"
+                              />
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <CustomDropDownMenuItem
@@ -285,7 +300,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           onClose={() => setIsOpen(false)}
         />
       )}
-      
+
       {isOpenPrintModal && (
         <PrintDueCollectionModal
           isOpen={isOpenPrintModal}
@@ -308,6 +323,16 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           onClose={() => setOpenThermalPrintModal(false)}
         />
       )}
+
+      <CommonPrint
+        ref={printRef}
+        title="dues"
+      >
+        <CollectionDeuPrint
+          dues={dues}
+          vataInformation={vata?.data}
+        />
+      </CommonPrint>
     </div>
   );
 };

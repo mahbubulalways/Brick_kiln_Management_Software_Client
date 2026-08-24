@@ -20,6 +20,7 @@ import {
 import { TMetaConfig } from "@/interface/meta";
 import { TQuery } from "@/interface/query";
 import { useGetAllAdvanceInvoicesQuery, } from "@/redux/features/invoice.features";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
 import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
 import Link from "next/link";
@@ -37,7 +38,8 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
     useState<boolean>(false);
   const { isLoading: fetchInvoiceLoading, data: invoices, error } =
     useGetAllAdvanceInvoicesQuery({ limit, page, search });
-
+  // VATA INFO
+  const { data: vata } = useGetVataInfoQuery(undefined)
   // INVOICE RELATED FILTER
   const totalInvoices = invoices?.data?.data || [];
   const meta = invoices?.data?.meta as TMetaConfig;
@@ -370,6 +372,7 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
           onClose={() => setOpenPrintModal(false)}
           invoiceId={invoiceId!}
           setInvoiceId={setInvoiceId}
+          vataInformation={vata?.data}
         />
       )}
       {openChalanDetailsModal && (

@@ -1,4 +1,5 @@
 import { IUser } from "@/interface/user";
+import { TVataInformation } from "@/interface/vata";
 import { Dispatch, SetStateAction } from "react";
 
 export type TClassAndRate = {
@@ -47,6 +48,7 @@ export type TCustomInvoiceModal = {
   onClose: () => void;
   setInvoiceId: Dispatch<SetStateAction<number | undefined>>;
   invoiceId: number;
+  vataInformation?: TVataInformation
 };
 
 // Types for showing challan

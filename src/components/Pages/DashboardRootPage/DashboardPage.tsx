@@ -19,7 +19,6 @@ const DashboardPage = () => {
   const payment = reports?.payment?.total
   const due = reports?.due
   const cash = reports?.cash
-console.log(cash)
   // ARRAY
   const challanItems = reports?.challan?.items
   return (

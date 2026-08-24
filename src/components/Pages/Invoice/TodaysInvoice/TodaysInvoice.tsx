@@ -6,10 +6,12 @@ import SellingModal from "@/components/Dashboard/Modals/SellingModal";
 import UpdateChalanModal from "@/components/Dashboard/Modals/UpdateChalanModal";
 import ChalanPrintModal from "@/components/Dashboard/PrintModal/ChalanPrint/ChalanPrintModal";
 import PrintThermalInvoice from "@/components/Dashboard/PrintModal/PrintThermalInvoice";
+import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomNewButton from "@/components/Reusable/CustomNewButton";
+import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
 import SearchBar from "@/components/Reusable/SearchBar";
 import TableData from "@/components/Reusable/TableData";
@@ -37,9 +39,12 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { BsPencilSquare } from "react-icons/bs";
 import Swal from "sweetalert2";
+import UnloadPagePrint from "../../UnloadPage/UploadPagePrint";
+import DailyChallanPrint from "@/components/PrintComponent/DailyChallanPrint";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 
 const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const [searchItems, setSearchItem] = useState("");
@@ -49,12 +54,14 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] =
     useState<boolean>(false);
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
+  // const [openAllPrintModal, setOpenAllPrintModal] = useState<boolean>(false);
   const [openUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
   const [openThermalModal, setOpenThermalModal] = useState<boolean>(false);
-  const [invoiceId, setInvoiceId] = useState<number|undefined>(undefined);
+  const [invoiceId, setInvoiceId] = useState<number | undefined>(undefined);
   const [openChalanDetailsModal, setOpenChalanDetailsModal] =
     useState<boolean>(false);
-
+  // VATA INFORMATIONS
+  const { data: vata } = useGetVataInfoQuery(undefined)
   // FETCH ALL INVOICES
   const formatDate = date?.toISOString() ?? ""
   const { isFetching: fetchInvoiceLoading, data: invoices } =
@@ -63,7 +70,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
       , { refetchOnMountOrArgChange: true });
   //  CALL DELETE INVOICE HOOK
   const [deleteInvoice] = useDeleteInvoiceMutation();
-
+  const printRef = useRef<TCommonPrintRef>(null);
   const totalInvoices = invoices?.data?.data as IChallanForDataShow[] || [];
   const meta = invoices?.data?.meta as TMetaConfig;
 
@@ -121,6 +128,12 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
             onClick={() => setIsOpen(true)}
           />
 
+          {/* <div className="w-full hidden md:block flex-1">
+            <CustomPrintButton
+              className="w-full md:w-auto md:flex-none"
+              onClick={() => setOpenReportModal(true)}
+            />
+          </div> */}
           <div className="w-full block md:hidden flex-1">
             <CustomReportButton
               className="w-full md:w-auto md:flex-none"
@@ -158,6 +171,12 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
             />
           </div>
           {/* Report */}
+          <div className="w-full hidden md:block flex-1">
+            <CustomPrintButton
+              className="w-full md:w-auto md:flex-none"
+              onClick={() => printRef.current?.print()}
+            />
+          </div>
           <div className="w-full hidden md:block flex-1">
             <CustomReportButton
               className="w-full md:w-auto md:flex-none"
@@ -537,6 +556,7 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
           onClose={() => setOpenPrintModal(false)}
           invoiceId={invoiceId!}
           setInvoiceId={setInvoiceId}
+          vataInformation={vata?.data}
         />
       )}
       {openChalanDetailsModal && (
@@ -563,6 +583,17 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
           invoiceId={invoiceId!}
         />
       )}
+
+
+      <CommonPrint
+        ref={printRef}
+        title="daily_invoices"
+      >
+        <DailyChallanPrint
+          invoices={totalInvoices}
+          vataInformation={vata?.data}
+        />
+      </CommonPrint>
     </div>
   );
 };

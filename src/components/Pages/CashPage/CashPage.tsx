@@ -30,6 +30,7 @@ import Swal from "sweetalert2";
 import { useReactToPrint } from "react-to-print";
 import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
 import CashPagePrint from "./CashPagePrint";
+import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 
 const CashPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
@@ -50,6 +51,10 @@ const CashPage = ({ limit, page, search }: TQuery) => {
   });
   const [deleteCash, { isLoading: isDeleting }] =
     useDeleteCashMutation();
+  const {
+    data: vataInfo,
+  } = useGetVataInfoQuery(undefined);
+
 
   const cashData = cashResponse?.data?.data as TCash[] || [];
   const meta = cashResponse?.data?.meta as TMetaConfig;
@@ -264,6 +269,7 @@ const CashPage = ({ limit, page, search }: TQuery) => {
           title="ক্যাশ"
         />
       </div>
+
       <CommonPrint
         ref={printRef}
         title="Daily_cash_report"
@@ -271,8 +277,10 @@ const CashPage = ({ limit, page, search }: TQuery) => {
         <CashPagePrint
           cashData={cashData}
           date={date}
+          vataInfo={vataInfo?.data}
         />
       </CommonPrint>
+
       {/* New Cash Modal */}
       {isModalOpen && (
         <NewCashModal

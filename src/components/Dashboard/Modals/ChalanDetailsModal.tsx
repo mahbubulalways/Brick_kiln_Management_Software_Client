@@ -25,7 +25,7 @@ const ChalanDetailsModal = ({
     setInvoiceId(0);
     onClose();
   };
-console.log(error)
+
   const invoice: IChallanForDataShow = data?.data || {};
   const vataInformation = vata?.data as TVataInformation
   return (

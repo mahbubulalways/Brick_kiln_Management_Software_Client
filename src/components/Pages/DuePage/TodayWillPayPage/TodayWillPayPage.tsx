@@ -26,6 +26,8 @@ import { TablePagination } from "@/components/Reusable/TablePagination";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import UpdateDueCollectionDateModal from "@/components/Dashboard/Modals/EditModals/UpdateDueCollectionDateModal";
 import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
+import Link from "next/link";
+import TodayWillPayPrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/TodayWillPayPrintModal";
 
 type PaymentRow = {
   challans: IChallanForDataShow[];
@@ -36,6 +38,7 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [customerId, setCustomerId] = useState<string | undefined>(undefined)
   const [openDueModal, setOpenDueModal] = useState<boolean>(false);
+  const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const isoDate = date ? date.toISOString() : "";
@@ -75,7 +78,7 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
             placeholder="তারিখ"
             height="8"
           />
-          <button onClick={reactToPrintFn}>
+          <button onClick={()=>setOpenPrintModal(true)}>
             <CustomButtonFixed title="প্রিন্ট করুন" />
           </button>
         </div>
@@ -178,10 +181,11 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
                         <DropdownMenuItem
 
                         >
-                          <CustomDropDownMenuItem
-                            Icon={User}
-                            title="প্রোফাইল"
-                          />
+                          <Link href={`/dashboard/customer/profile/${row.customerCode}`}>
+                            <CustomDropDownMenuItem
+                              Icon={User}
+                              title="প্রোফাইলে যান"
+                            /></Link>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -214,6 +218,14 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
           id={customerId}
           isOpen={openDueCollectionModal}
           onClose={() => setOpenDueCollectionModal(false)}
+        />
+      }
+
+      {openPrintModal&&
+        <TodayWillPayPrintModal 
+        isOpen={openPrintModal}
+        onClose={()=>setOpenPrintModal(false)}
+        dues={dues}
         />
       }
     </div>

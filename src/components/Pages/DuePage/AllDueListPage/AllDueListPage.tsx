@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,12 +25,16 @@ import SearchBar from "@/components/Reusable/SearchBar";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 import UpdateDueCollectionDateModal from "@/components/Dashboard/Modals/EditModals/UpdateDueCollectionDateModal";
 import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
+import Link from "next/link";
+import TodayWillPayPrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/TodayWillPayPrintModal";
+import AllDuePrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/AllDuePrintModal";
 
 const AllDueListPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
   const [dateRange, setDateRange] = useState("");
   const [customerId, setCustomerId] = useState<string | undefined>(undefined)
   const [openDueModal, setOpenDueModal] = useState<boolean>(false);
+  const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
   const { data, isLoading, isError } = useGetAllDueListQuery({ date: dateRange, limit, page, search }, {
     refetchOnMountOrArgChange: true,
@@ -41,8 +45,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
     (sum: number, r: ICustomer) => sum + (r?.totalPurchased - r?.totalPaid),
     0,
   );
-  const contentRef = useRef<HTMLDivElement>(null);
-  const reactToPrintFn = useReactToPrint({ contentRef });
+
 
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
@@ -56,7 +59,6 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
 
           <button
             type="button"
-            onClick={reactToPrintFn}
             className="w-full sm:w-auto md:hidden block"
           >
             <CustomButtonFixed title="প্রিন্ট করুন" />
@@ -88,18 +90,14 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
             />
           </div>
 
-          <button
-            type="button"
-            onClick={reactToPrintFn}
-            className="w-full sm:w-auto hidden md:block"
-          >
+          <button onClick={() => setOpenPrintModal(true)}>
             <CustomButtonFixed title="প্রিন্ট করুন" />
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto pt-5" ref={contentRef}>
+      <div className="overflow-x-auto pt-5">
         <table className="min-w-full   text-center border-t">
           <thead className="bg-[#039A63] text-white">
             <tr>
@@ -193,10 +191,14 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
                           <DropdownMenuItem
 
                           >
-                            <CustomDropDownMenuItem
-                              Icon={User}
-                              title="প্রোফাইল"
-                            />
+                            <Link
+                              href={`/dashboard/customer/profile/${row.customerCode}`}
+                            >
+                              <CustomDropDownMenuItem
+                                Icon={User}
+                                title="প্রোফাইলে যান"
+                              />
+                            </Link>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -224,12 +226,20 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
           onClose={() => setOpenDueModal(false)}
           setId={setCustomerId} />
       }
-      
+
       {openDueCollectionModal &&
         <NewDueCollectionModalId
           id={customerId}
           isOpen={openDueCollectionModal}
           onClose={() => setOpenDueCollectionModal(false)}
+        />
+      }
+
+      {openPrintModal &&
+        <AllDuePrintModal
+          isOpen={openPrintModal}
+          onClose={() => setOpenPrintModal(false)}
+          dues={dues}
         />
       }
     </div>

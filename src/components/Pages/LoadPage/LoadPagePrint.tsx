@@ -1,15 +1,18 @@
 import { TLoadResponse } from "@/interface/load";
+import { TVataInformation } from "@/interface/vata";
 import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
 type TLoadPagePrintProps = {
   loadData: TLoadResponse[];
   date?: Date;
+  vataInfo: TVataInformation
 };
 
 const LoadPagePrint = ({
   loadData = [],
   date = new Date(),
+  vataInfo
 }: TLoadPagePrintProps) => {
   // ================= TOTAL LOAD =================
   const totalLoad = loadData.reduce(
@@ -25,19 +28,19 @@ const LoadPagePrint = ({
       {/* ================= HEADER ================= */}
       <div className="text-center">
         <h1 className="text-[24px] font-bold leading-tight">
-          জেবা ব্রিকস
+          {vataInfo?.nameBangla}
         </h1>
 
         <p className="text-[14px] font-medium mt-1">
-          জিল্লাপাড়া,চকবাজার,সীতাপুরগঞ্জ
+          {vataInfo?.address}
         </p>
 
         <p className="text-[13px] mt-1">
-          ০১৯০১৪৯৯০৯,০১৯০১৪৯৯০৬
+          {vataInfo?.challansPhoneNumber}
         </p>
 
         <p className="text-[13px]">
-          প্রোপ্রাইটরঃ মোঃ মানিক মিয়া
+          {vataInfo?.ownerName}
         </p>
       </div>
 

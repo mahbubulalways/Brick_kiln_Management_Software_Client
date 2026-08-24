@@ -1,15 +1,18 @@
 import { TCash } from "@/interface/cash";
+import { TVataInformation } from "@/interface/vata";
 import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
 type TCashPagePrintProps = {
   cashData: TCash[];
   date?: Date;
+  vataInfo: TVataInformation
 };
 
 const CashPagePrint = ({
   cashData = [],
   date = new Date(),
+  vataInfo
 }: TCashPagePrintProps) => {
   const totalIncome = cashData
     .filter((item) => item.type === "INCOME")
@@ -35,19 +38,19 @@ const CashPagePrint = ({
       {/* ================= HEADER ================= */}
       <div className="text-center">
         <h1 className="text-[24px] font-bold leading-tight">
-          জমা বিক্রয়
+          {vataInfo?.nameBangla}
         </h1>
 
         <p className="text-[14px] font-medium mt-1">
-          জিল্লাপাড়া,চকবাজার,সীতাপুরগঞ্জ
+          {vataInfo?.address}
         </p>
 
         <p className="text-[13px] mt-1">
-          ০১৯০১৪৯৪৯০৯,০১৯০১৪৯৯০৬
+          {vataInfo?.challansPhoneNumber}
         </p>
 
         <p className="text-[13px]">
-          প্রোপ্রাইটরঃ মোঃ মানিক মিয়া
+          {vataInfo?.ownerName}
         </p>
       </div>
 
@@ -162,16 +165,16 @@ const CashPagePrint = ({
                 <td className="border border-gray-300 py-1 px-2 text-center">
                   {row.type === "INCOME"
                     ? toBanglaNumber(
-                        Number(row.amount).toLocaleString()
-                      )
+                      Number(row.amount).toLocaleString()
+                    )
                     : "-"}
                 </td>
 
                 <td className="border border-gray-300 py-1 px-2 text-center">
                   {row.type === "EXPENSE"
                     ? toBanglaNumber(
-                        Number(row.amount).toLocaleString()
-                      )
+                      Number(row.amount).toLocaleString()
+                    )
                     : "-"}
                 </td>
 

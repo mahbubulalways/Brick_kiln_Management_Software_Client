@@ -10,6 +10,7 @@ export interface ICustomer {
   createdAt: string;
   updatedAt: string;
   customerCode:string
+   note: string | null;
 }
 
 export interface IDueResponse {
@@ -27,20 +28,6 @@ export interface IDueResponse {
 }
 
 
-// DUE EACH CUSTOMER 
-interface TDueCustomer {
-  id: number;
-  name: string;
-  address: string;
-  phoneNumber: string;
-  totalPurchased: number;
-  totalPaid: number;
-  nextPaymentDate: string;
-  createdAt: string;
-  updatedAt: string;
-  isDeleted: boolean;
-  note: string | null;
-}
 
 export interface TDueData {
   id: number;
@@ -53,5 +40,5 @@ export interface TDueData {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
-  customer: TDueCustomer;
+  customer: ICustomer;
 }
