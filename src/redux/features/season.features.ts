@@ -35,4 +35,5 @@ const seasonApi = baseApi.injectEndpoints({
 export const {
     useGetAllSeasonsQuery,
     useGetActiveSeasonQuery,
+    useChangeActiveSeasonMutation
 } = seasonApi;

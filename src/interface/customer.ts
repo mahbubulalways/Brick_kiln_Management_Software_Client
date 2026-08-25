@@ -1,3 +1,6 @@
+import { TSeason } from "@/components/Dashboard/Modals/SeasonModal";
+import { IChallanForDataShow } from "@/types/types";
+
 export interface TCustomer {
   id: number;
   name: string;
@@ -12,4 +15,23 @@ export interface TCustomer {
   note: string;
   customerCode:string;
   nextPaymentDate: string ;
+  customerDues:ICustomerDue[]
+}
+
+export interface ICustomerDue {
+  id: string;
+  customerId: string;
+  seasonId: string;
+  challanId: string;
+  totalAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+  nextPaymentDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+  customer:TCustomer
+
+  season:TSeason;
+
+  challan?: IChallanForDataShow;
 }

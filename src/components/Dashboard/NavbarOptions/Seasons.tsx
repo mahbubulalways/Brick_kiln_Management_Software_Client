@@ -7,10 +7,10 @@ import { useGetActiveSeasonQuery } from "@/redux/features/season.features";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
 const Seasons = () => {
-  const { data, isLoading ,error} = useGetActiveSeasonQuery(undefined);
+  const { data, isLoading } = useGetActiveSeasonQuery(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const activeSeason = data?.data;
-console.log(activeSeason)
+
   return (
     <div>
       <button

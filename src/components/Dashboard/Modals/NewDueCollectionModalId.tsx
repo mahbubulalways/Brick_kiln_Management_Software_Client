@@ -5,6 +5,8 @@ import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
 import SmsSwitch from "@/components/Reusable/SmsSwitch";
 import { showToast } from "@/components/Toast/CustomToast";
+import { TCustomer } from "@/interface/customer";
+import { TDueCollection } from "@/interface/due";
 import {
   useCollectionDueMutation,
   useGetCustomerDueQuery,
@@ -17,21 +19,16 @@ import { RiErrorWarningFill } from "react-icons/ri";
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
-  id?:string
+  id?: string
 };
 
-type TDueCollection = {
-  customerCode?: string;
-  name: string;
-  address: string;
-  season: string;
-  due: number | string;
-  collect?: number | string;
-  newDue?: number;
-  nextDate?: Date;
-  invoiceId: string;
-};
-const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
+
+type TCustomerDue = {
+  dueAmount: number,
+  season: string,
+} & TCustomer
+
+const NewDueCollectionModalId = ({ isOpen, onClose, id }: TCustomModal) => {
   const [collectionDue, { isLoading }] = useCollectionDueMutation();
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [sendSms, setSendSms] = useState(false);
@@ -46,51 +43,50 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
     defaultValues: {},
   });
 
-  const collect = watch("collect");
 
   const { data, isFetching, isError } = useGetCustomerDueQuery(
-   id!,
+    id!,
     {
       skip: !id,
       refetchOnMountOrArgChange: true,
     }
   );
 
-  const due = data?.data?.totalPurchased - data?.data?.totalPaid || 0;
 
-  const newDue = useMemo(() => due - (Number(collect) || 0), [due, collect]);
-
-
+  const collect = watch("collect");
+  const customer = data?.data as TCustomerDue
+  const due = customer?.dueAmount;
+  const newDue = useMemo(() => due - (Number(collect) || 0), [due, collect]) || 0;
   // Populate customer info when data loads
- useEffect(() => {
-  if (isError) {
-    reset();
-    setDate(undefined);
-    return;
-  }
-
-  if (!data?.data) return;
-
-  reset((prev) => ({
-    ...prev,
-    customerCode:data.data?.customerCode as any,
-    name: data.data.name || "",
-    address: data.data.address || "",
-    due:
-      Number(data.data.totalPurchased || 0) -
-      Number(data.data.totalPaid || 0),
-    season: "2427",
-  }));
-}, [data?.data, isError, reset,id]);
+  useEffect(() => {
+    if (isError) {
+      reset();
+      setDate(undefined);
+      return;
+    }
+    if (!data?.data) return;
+    reset((prev) => ({
+      ...prev,
+      customerId: data.data?.customerCode as any,
+      name: data.data.name || "",
+      address: data.data.address || "",
+      due: customer?.dueAmount,
+      season: customer?.season,
+    }));
+  }, [data?.data, isError, reset, id]);
 
   const onSubmit: SubmitHandler<TDueCollection> = async (data) => {
-    data.newDue = newDue;
-    data.nextDate = date;
-    data.collect = Number(data.collect);
-    data.due = Number(data.due);
-    const check = data.due > data.collect;
+    const payload = {
+      newDue: newDue,
+      nextDate: date,
+      collect: Number(data.collect),
+      due: Number(data.due),
+      customerId: data.customerId
+    }
+
+    const check = payload.due > payload.collect;
     try {
-      if (!data.nextDate && check) {
+      if (!payload.nextDate && check) {
         return showToast({
           title: "নতুন তারিখ সেট করুন",
           type: "info",
@@ -100,7 +96,7 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
           },
         });
       }
-      const result = await collectionDue(data).unwrap();
+      const result = await collectionDue(payload).unwrap();
       if (result?.success) {
         onClose();
         return showToast({
@@ -114,7 +110,7 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-     
+
       return showToast({
         title: error.data?.message,
         type: "success",
@@ -134,94 +130,183 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
       width="xxl"
     >
       <div className="relative">
-        <form onSubmit={handleSubmit(onSubmit)} className="pt-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            <CustomInput
-              name="customerCode"
-              label="কাস্টমার আইডি"
-              placeholder="কাস্টমার আইডি"
-              register={register}
-              type="text"
-              rules={{ required: "কাস্টমার আইডি" }}
-              error={errors.customerCode}
-              readonly
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+            <div className="mb-2 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-green-50 text-[#039A63]">
+                <span className="text-base font-bold">৳</span>
+              </div>
 
-            />
-            <CustomInput
-              name="name"
-              label="কাস্টমারের নাম"
-              placeholder="কাস্টমারের নাম"
-              register={register}
-              readonly
-              type="text"
-            />
-            <CustomInput
-              name="address"
-              label="কাস্টমারের ঠিকানা"
-              placeholder="কাস্টমারের ঠিকানা"
-              register={register}
-              readonly
-              type="text"
-            />
-            <CustomInput
-              name="season"
-              label="সিজন"
-              placeholder="সিজন"
-              register={register}
-              readonly
-              type="text"
-            />
-          </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800">
+                  কাস্টমার তথ্য
+                </h3>
+                <p className="text-[11px] text-gray-500">
+                  বাকি জমার জন্য কাস্টমারের তথ্য
+                </p>
+              </div>
+            </div>
 
-          <div className="bg-gray-100 rounded-md p-12 grid grid-cols-2 gap-5 mt-12">
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
               <CustomInput
-                name="due"
-                label="মোট বাকি"
-                placeholder="৳ মোট বাকি"
+                name="customerId"
+                label="কাস্টমার আইডি"
+                placeholder="কাস্টমার আইডি"
+                register={register}
+                type="text"
+                rules={{ required: "কাস্টমার আইডি" }}
+                error={errors.customerId}
+                readonly
+              />
+
+              <CustomInput
+                name="name"
+                label="কাস্টমারের নাম"
+                placeholder="কাস্টমারের নাম"
                 register={register}
                 readonly
                 type="text"
               />
+
               <CustomInput
-                name="collect"
-                label="জমা"
-                placeholder="৳ জমা"
+                name="address"
+                label="কাস্টমারের ঠিকানা"
+                placeholder="কাস্টমারের ঠিকানা"
                 register={register}
+                readonly
                 type="text"
-                rules={{ required: "আজকের জমা লিখুন" }}
-                error={errors.collect}
               />
+
+              <CustomInput
+                name="season"
+                label="সিজন"
+                placeholder="সিজন"
+                register={register}
+                readonly
+                type="text"
+              />
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+            <div className="mb-2 flex items-center justify-between">
               <div>
-                <CustomDatePickerState height="9" onChange={setDate} value={date} label=" নতুন তারিখ" placeholder=" নতুন তারিখ"/>
+                <h3 className="text-sm font-semibold text-gray-800">
+                  বাকি জমার তথ্য
+                </h3>
+                <p className="text-[11px] text-gray-500">
+                  জমার পর নতুন বাকি হিসাব হবে
+                </p>
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 pb-1.5  flex items-center">
-                  এসএমএস
-                </label>
-                <SmsSwitch sendSms={sendSms} setSendSms={setSendSms} />
+
+              <div className="rounded-md bg-red-50 px-2 py-1 text-[11px] font-semibold text-red-600">
+                বাকি হিসাব
               </div>
             </div>
-            <div>
-              <label className="text-gray-600 text-xs font-medium pb-2 flex items-center">
-                নতুন বাকি
-              </label>
-              <div className="bg-white text-center py-7 rounded-md border border-gray-300">
-                <span className=" text-gray-400  text-2xl pointer-events-none">
-                  {id && newDue ? (
-                    <p className="text-5xl font-medium text-red-600">
+
+            <div className="grid gap-2 grid-cols-3">
+              <div className="rounded-lg border border-red-100 bg-white p-2.5 shadow-sm">
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-gray-500">
+                    মোট বাকি
+                  </span>
+
+                  <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] text-red-500">
+                    বাকি
+                  </span>
+                </div>
+
+                <CustomInput
+                  name="due"
+                  label=""
+                  placeholder="৳ মোট বাকি"
+                  register={register}
+                  readonly
+                  type="text"
+                />
+              </div>
+
+              <div className="rounded-lg border border-green-100 bg-white p-2.5 shadow-sm">
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-gray-500">
+                    আজকের জমা
+                  </span>
+
+                  <span className="rounded bg-green-50 px-1.5 py-0.5 text-[10px] text-green-600">
+                    জমা
+                  </span>
+                </div>
+
+                <CustomInput
+                  name="collect"
+                  label=""
+                  placeholder="৳ আজকের জমা"
+                  register={register}
+                  type="text"
+                  rules={{ required: "আজকের জমা লিখুন" }}
+                  error={errors.collect}
+                />
+              </div>
+
+              <div className="rounded-lg border border-orange-100 bg-white p-2.5 shadow-sm">
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-gray-500">
+                    নতুন বাকি
+                  </span>
+
+                  <span className="rounded bg-orange-50 px-1.5 py-0.5 text-[10px] text-orange-600">
+                    অবশিষ্ট
+                  </span>
+                </div>
+
+                <div className="flex h-[42px] items-center justify-center rounded-md border border-orange-100 bg-orange-50/40">
+                  {id && newDue !== undefined ? (
+                    <p className="text-2xl font-bold tracking-tight text-red-600">
                       ৳ {newDue}
                     </p>
                   ) : (
-                    "নতুন বাকি"
+                    <span className="text-xs text-gray-400">
+                      নতুন বাকি
+                    </span>
                   )}
-                </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-2 grid  gap-2 grid-cols-2">
+              <div className="rounded-lg border border-gray-200 bg-white p-2.5">
+                <CustomDatePickerState
+                  height="8"
+                  onChange={setDate}
+                  value={date}
+                  label="পরবর্তী পরিশোধের তারিখ"
+                  placeholder="পরবর্তী তারিখ নির্বাচন করুন"
+                />
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2.5">
+                <div>
+                  <p className="text-xs font-semibold text-gray-700">
+                    কাস্টমারকে এসএমএস
+                  </p>
+
+                  <p className="mt-0.5 text-[10px] text-gray-400">
+                    জমার পর SMS পাঠান
+                  </p>
+                </div>
+
+                <SmsSwitch
+                  sendSms={sendSms}
+                  setSendSms={setSendSms}
+                />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 justify-between pt-5 w-full">
-            <div
+          <div className="flex w-full gap-2 border-t border-gray-200 pt-3  sm:justify-between">
+            <button
+              disabled={isLoading}
+              type="button"
               onClick={() => {
                 setDate(undefined);
                 reset((prev) => ({
@@ -234,17 +319,27 @@ const NewDueCollectionModalId = ({ isOpen, onClose,id }: TCustomModal) => {
                   collect: "",
                 }));
               }}
-              className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5  text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer w-full text-center"
+              className="w-full rounded-lg border border-gray-300 bg-white px-5 py-1.5 text-sm font-medium text-gray-600 transition hover:border-red-300 hover:bg-red-50 hover:text-red-500 cursor-pointer"
             >
               ক্লিয়ার
-            </div>
-            <button className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer w-full">
-              অ্যাড করুন
+            </button>
+
+            <button
+              disabled={isLoading}
+              type="submit"
+              className="disabled:cursor-default disabled:bg-gray-600 w-full rounded-lg bg-[#039A63] px-7 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#028a58] active:scale-[0.98] cursor-pointer"
+            >
+              বাকি জমা করুন
             </button>
           </div>
         </form>
+
         {isFetching && (
-          <div className="absolute inset-0 w-full  bg-gray-100/50 blur-md"></div>
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/60 backdrop-blur-[2px]">
+            <div className="rounded-lg bg-white px-4 py-2 text-xs font-medium text-gray-600 shadow-md">
+              কাস্টমারের তথ্য লোড হচ্ছে...
+            </div>
+          </div>
         )}
       </div>
     </CustomModalBottom>

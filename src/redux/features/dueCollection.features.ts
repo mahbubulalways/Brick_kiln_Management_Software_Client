@@ -32,6 +32,16 @@ const dueCollectionApi = baseApi.injectEndpoints({
       providesTags: ['DueCollection']
     }),
 
+    // SEARCH CUSTOMER FOR DWU
+    searchCustomerForDeu: builder.query({
+      query: (query: TQuery) => ({
+        url: `/due/search-customer?search=${query.search}`,
+        method: "GET",
+      }),
+      providesTags: ['DueCollection']
+    }),
+
+
     // GET TODAY PAID
     getTodayPaid: builder.query({
       query: (query: TQuery) => ({
@@ -48,7 +58,7 @@ const dueCollectionApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       keepUnusedDataFor: 0,
-      providesTags:["DueCollection"]
+      providesTags: ["DueCollection"]
     }),
     // GET ALL DUES
     getSingleDue: builder.query({
@@ -76,14 +86,14 @@ const dueCollectionApi = baseApi.injectEndpoints({
       invalidatesTags: ["DueCollection"],
     }),
 
-      // UPDATE DUE COLLECTION DATE
+    // UPDATE DUE COLLECTION DATE
     updateDueCollectionDate: builder.mutation({
       query: (payload) => ({
         url: `/due/update-date/${payload.id}`,
         method: "PATCH",
         body: payload.data,
       }),
-      invalidatesTags: ["DueCollection","CUSTOMER"],
+      invalidatesTags: ["DueCollection", "CUSTOMER"],
     }),
   }),
 });
@@ -97,5 +107,6 @@ export const {
   useGetSingleDueQuery,
   useUpdateDueCollectionMutation,
   useGetSingleDueDateQuery,
-  useUpdateDueCollectionDateMutation
+  useUpdateDueCollectionDateMutation,
+  useSearchCustomerForDeuQuery
 } = dueCollectionApi;

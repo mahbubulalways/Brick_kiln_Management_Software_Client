@@ -22,16 +22,25 @@ const invoiceApi = baseApi.injectEndpoints({
       invalidatesTags: ["Invoice"],
     }),
 
+    // SEARCH INVOICE FOR DELIVERY
+    searchInvoiceForDelivery: builder.query({
+      query: (payload: TQuery) => ({
+        url: `/invoice/search?search=${payload?.search}`,
+        method: "GET",
+      }),
+      providesTags: ["Invoice", "SEASON"],
+    }),
+
     // GET ALL INVOICE
     getAllInvoices: builder.query({
       query: (payload: TQuery) => ({
         url: `/invoice/all-invoices?limit=${payload?.limit}&page=${payload?.page}&search=${payload?.search}&date=${payload?.date}`,
         method: "GET",
       }),
-      providesTags: ["Invoice"],
+      providesTags: ["Invoice", "SEASON"],
     }),
 
-     getAllAdvanceInvoices: builder.query({
+    getAllAdvanceInvoices: builder.query({
       query: (payload: TQuery) => ({
         url: `/invoice/all-advance-invoices?limit=${payload?.limit}&page=${payload?.page}&search=${payload?.search}&date=${payload?.date}`,
         method: "GET",
@@ -118,5 +127,6 @@ export const {
   useUpdateInvoiceDeliveryDateMutation,
   useUpdateInvoiceItemDeliveryDateMutation,
   useLazyGetSingleInvoiceQuery,
-  useGetAllAdvanceInvoicesQuery
+  useGetAllAdvanceInvoicesQuery,
+  useSearchInvoiceForDeliveryQuery
 } = invoiceApi;

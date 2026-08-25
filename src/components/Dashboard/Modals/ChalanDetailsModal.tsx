@@ -28,6 +28,8 @@ const ChalanDetailsModal = ({
 
   const invoice: IChallanForDataShow = data?.data || {};
   const vataInformation = vata?.data as TVataInformation
+
+  console.log(invoice)
   return (
     <CustomModalBottom
       isOpen={isOpen}
@@ -61,8 +63,11 @@ const ChalanDetailsModal = ({
               </div>
 
               {/* Info Boxes */}
-              <div className="grid  grid-cols-1 lg:grid-cols-3 gap-3 mt-4 text-[15px]">
+              <div className="grid  grid-cols-1 lg:grid-cols-3 gap-3 mt-4 text-[14px]">
                 <div className="border rounded-md p-3">
+                  <p>
+                    <span className="">কাস্টমার আইডি:</span> {invoice?.customer?.customerCode}
+                  </p>
                   <p>
                     <span className="">নাম:</span> {invoice?.customer?.name}
                   </p>
@@ -74,21 +79,9 @@ const ChalanDetailsModal = ({
                     {invoice?.customer?.phoneNumber}
                   </p>
                 </div>
-                <div className="border rounded-md p-3">
+                 <div className="border rounded-md p-3">
                   <p>
-                    <span className="">কাস্টমার আইডি:</span> {invoice?.customer?.customerCode}
-                  </p>
-                  <p>
-                    <span className="">ধরণ:</span> {invoice?.chalanType}
-                  </p>
-                  <p>
-                    <span className="">ডেলিভারি তারিখ:</span>{" "}
-                    {formatBanglaDate({date:invoice?.deliveryDate})}
-                  </p>
-                </div>
-                <div className="border rounded-md p-3">
-                  <p>
-                    <span className="">তারিখ:</span>{" "}
+                    <span className=""> চালান তারিখ:</span>{" "}
                     
                        {formatBanglaDate({date:invoice?.challanDate})}
                   </p>
@@ -97,7 +90,23 @@ const ChalanDetailsModal = ({
                      {formatBanglaDate({date:invoice?.challanDate,showDate:false,showTime:true})}
                   </p>
                   <p>
-                    <span className="">সিজন:</span> {toBanglaNumber(invoice?.season)}
+                    <span className=""> চালান সিজন:</span> {invoice?.season?.name}
+                  </p>
+                  
+                </div>
+                <div className="border rounded-md p-3">
+                  <p>
+                    <span className="">ধরণ:</span> {invoice?.chalanType}
+                  </p>
+                  {
+                   invoice?.deliverySeason && <p>
+                    <span className="">ডেলিভারি সিজন:</span> {invoice?.deliverySeason}
+                  </p>
+                  }
+                 
+                  <p>
+                    <span className="">ডেলিভারি তারিখ:</span>{" "}
+                    {formatBanglaDate({date:invoice?.deliveryDate})}
                   </p>
                 </div>
               </div>

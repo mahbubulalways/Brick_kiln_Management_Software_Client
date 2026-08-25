@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 
 import KhotiyanModal from "@/components/Dashboard/Modals/KhatiyanModal";
 import UpdateKhotiyanModal from "@/components/Dashboard/Modals/EditModals/UpdateKhotiyanModal";
-
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import TableHead from "@/components/Reusable/TableHead";
 import TableData from "@/components/Reusable/TableData";
@@ -34,36 +33,37 @@ type TLedger = {
   serial: number;
 };
 
-const Khotiyan = ({ limit, page, search }: TQuery) => {
-  // Create modal
+const Khotiyan = ({
+  limit = 10,
+  page = 1,
+  search = "",
+}: TQuery = {}) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  // Update modal
   const [updateOpen, setUpdateOpen] = useState(false);
   const [selectedLedgerId, setSelectedLedgerId] = useState<number | null>(
-    null
+    null,
   );
 
-  // Get all
   const {
     data,
     isLoading,
     isError,
   } = useGetAllLedgerPaginationQuery(
-    { limit, page, search },
-    { refetchOnMountOrArgChange: true }
+    {
+      limit,
+      page,
+      search,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
   );
 
-  // Delete
   const [deleteLedger, { isLoading: deleteLoading }] =
     useDeleteleLedgerMutation();
 
   const ledgers = (data?.data?.data ?? []) as TLedger[];
   const meta = data?.data?.meta as TMetaConfig;
-
-  // =========================
-  // DELETE
-  // =========================
 
   const handleDelete = async (id: number) => {
     const result = await Swal.fire({
@@ -93,8 +93,7 @@ const Khotiyan = ({ limit, page, search }: TQuery) => {
       await Swal.fire({
         title: "ব্যর্থ!",
         text:
-          error?.data?.message ||
-          "খতিয়ানটি ডিলেট করা সম্ভব হয়নি।",
+          error?.data?.message || "খতিয়ানটি ডিলেট করা সম্ভব হয়নি।",
         icon: "error",
         confirmButtonColor: "#d33",
         confirmButtonText: "ঠিক আছে",
@@ -102,18 +101,10 @@ const Khotiyan = ({ limit, page, search }: TQuery) => {
     }
   };
 
-  // =========================
-  // EDIT
-  // =========================
-
   const handleEdit = (id: number) => {
     setSelectedLedgerId(id);
     setUpdateOpen(true);
   };
-
-  // =========================
-  // CLOSE UPDATE MODAL
-  // =========================
 
   const handleUpdateClose = () => {
     setUpdateOpen(false);
@@ -122,22 +113,20 @@ const Khotiyan = ({ limit, page, search }: TQuery) => {
 
   return (
     <div className="rounded-lg bg-white p-2">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold text-gray-900 py-3">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="py-3 text-xl font-semibold text-gray-900">
           খতিয়ান অ্যাড/আপডেট
         </h1>
 
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="bg-[#039A63] px-4 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
+          className="cursor-pointer rounded bg-[#039A63] px-4 py-1.5 font-medium text-gray-100"
         >
           + নতুন খতিয়ান
         </button>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="min-w-full border-collapse">
           <thead>
@@ -182,46 +171,36 @@ const Khotiyan = ({ limit, page, search }: TQuery) => {
                   key={row.id}
                   className="transition-colors hover:bg-gray-50"
                 >
-                  {/* Serial */}
                   <TableData td={row.serial} />
 
-                  {/* Name */}
                   <TableData
                     td={row.name}
                     cls="font-medium"
                   />
 
-                  {/* Group */}
-                  <TableData
-                    td={row.parent?.name || "-"}
-                  />
+                  <TableData td={row.parent?.name || "-"} />
 
-                  {/* Rate */}
                   <TableData td={row.rate ?? 0} />
 
-                  {/* Quantity */}
                   <TableData td={row.quantity ?? 0} />
 
-                  {/* Actions */}
                   <td className="border p-2">
                     <div className="flex justify-center gap-3">
-                      {/* Edit */}
                       <button
                         type="button"
-                        className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                        className="cursor-pointer text-blue-600 transition hover:text-blue-800"
                         onClick={() => handleEdit(row.id)}
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="h-4 w-4" />
                       </button>
 
-                      {/* Delete */}
                       <button
                         type="button"
                         disabled={deleteLoading}
-                        className="text-red-600 hover:text-red-800 transition cursor-pointer disabled:opacity-50"
+                        className="cursor-pointer text-red-600 transition hover:text-red-800 disabled:opacity-50"
                         onClick={() => handleDelete(row.id)}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -231,7 +210,6 @@ const Khotiyan = ({ limit, page, search }: TQuery) => {
           </tbody>
         </table>
 
-        {/* Pagination */}
         <TablePagination
           page={meta?.page ?? 1}
           totalPages={meta?.totalPages ?? 1}
@@ -240,7 +218,6 @@ const Khotiyan = ({ limit, page, search }: TQuery) => {
         />
       </div>
 
-      {/* CREATE MODAL */}
       {isOpen && (
         <KhotiyanModal
           isOpen={isOpen}
@@ -249,7 +226,6 @@ const Khotiyan = ({ limit, page, search }: TQuery) => {
         />
       )}
 
-      {/* UPDATE MODAL */}
       <UpdateKhotiyanModal
         isOpen={updateOpen}
         onClose={handleUpdateClose}

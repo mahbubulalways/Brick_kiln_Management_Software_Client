@@ -91,16 +91,9 @@ const ChallanCopy = ({
         </div>
 
         {/* ================= Customer Info ================= */}
-        <div className="flex justify-between border-b border-gray-300 py-3">
+        <div className="flex justify-between border-b border-gray-300 py-1">
           {/* Left */}
-          <div className="text-[12px] leading-6">
-            <p>
-              <span className="font-medium">
-                কাস্টমার আইডিঃ
-              </span>{" "}
-              {toBanglaNumber(invoice?.customer?.customerCode)}
-            </p>
-
+          <div className="text-[12px] space-y-0.5">
             <p>
               <span className="font-medium">
                 চালানের তারিখঃ
@@ -110,20 +103,28 @@ const ChallanCopy = ({
                 showTime: true,
               })}
             </p>
-
+            {
+              invoice?.deliverySeason && <p>
+                <span className="">ডেলিভারি সিজন:</span> {invoice?.deliverySeason}
+              </p>
+            }
             <p>
-              <span className="font-medium">
-                ইস্যু করেছে:
-              </span>
+              <span className="">ডেলিভারি তারিখ:</span>{" "}
+              {formatBanglaDate({ date: invoice?.deliveryDate })}
             </p>
           </div>
 
           {/* Right */}
-          <div className="border-r-[3px] border-black pr-3 text-right text-[12px] leading-6">
+          <div className="border-r-[3px] border-black pr-3 text-right text-[12px] space-y-0.5">
             <p className="font-semibold">
               {invoice?.customer?.name}
             </p>
-
+            <p>
+              <span className="font-medium">
+                কাস্টমার আইডিঃ
+              </span>{" "}
+              {toBanglaNumber(invoice?.customer?.customerCode)}
+            </p>
             <p className="font-semibold">
               {invoice?.customer?.address}
             </p>

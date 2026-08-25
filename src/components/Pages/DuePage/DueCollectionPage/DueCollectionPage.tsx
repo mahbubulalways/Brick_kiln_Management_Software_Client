@@ -31,6 +31,7 @@ import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
 import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import CollectionDeuPrint from "@/components/PrintComponent/CollectionDeuPrint";
+import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
 
 
 
@@ -143,7 +144,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                       }
                       cls="hidden lg:table-cell"
                     />
-                    <TableData td={row?.season} cls="hidden lg:table-cell" />
+                    <TableData td={row?.season?.name} cls="hidden lg:table-cell" />
 
                     <td className="border p-2 ">
                       <DropdownMenu>
@@ -240,7 +241,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
                             <p className="font-semibold text-xs text-gray-500">
                               সিজন
                             </p>
-                            <p className="text-gray-500">{row?.season}</p>
+                            <p className="text-gray-500">{row?.season?.name}</p>
                           </div>
                         </div>
 
@@ -317,6 +318,7 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
           id={deuId!}
         />
       )}
+
       {isOpenThermalPrintModal && (
         <ThermalDueCollectionPrintModal
           isOpen={isOpenThermalPrintModal}

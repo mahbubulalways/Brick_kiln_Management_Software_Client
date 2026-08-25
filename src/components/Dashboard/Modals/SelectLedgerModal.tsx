@@ -62,7 +62,7 @@ const SelectLedgerModal = ({ isOpen, onClose, setLedger }: TCustomModal) => {
                             onClose();
                           }
                         }}
-                        className="cursor-pointer rounded-lg py-1 px-2 bg-gray-50 shadow-none text-gray-800 text-[14px] text-center "
+                        className="cursor-pointer rounded-lg py-1 px-2 bg-gray-50 shadow-none text-gray-800 text-gray-700 text-[14px] text-center "
                       >
                         <div className="flex flex-row items-center gap-1">
                           <FiFileText className="h-4 w-4" /> {ledger.name}
@@ -71,7 +71,7 @@ const SelectLedgerModal = ({ isOpen, onClose, setLedger }: TCustomModal) => {
                     </PopoverTrigger>
 
                     {hasChildren && (
-                      <PopoverContent className="max-w-36  p-1">
+                      <PopoverContent className="max-w-44  p-1">
                         {ledger?.children?.map((child: TLedger) => (
                           <div
                             key={child.id}
@@ -80,7 +80,7 @@ const SelectLedgerModal = ({ isOpen, onClose, setLedger }: TCustomModal) => {
                               onClose();
                             }}
                             className="cursor-pointer rounded-md p-1 hover:bg-gray-100"
-                          ><div className="flex flex-row items-center gap-1 text-[14px]">
+                          ><div className="flex flex-row items-center gap-1 text-gray-700 text-[14px]">
                               <FiFileText className="h-4 w-4" /> {child.name}
                             </div>
 

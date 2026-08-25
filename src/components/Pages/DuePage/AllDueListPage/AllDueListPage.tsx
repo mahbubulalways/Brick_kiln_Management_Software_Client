@@ -28,6 +28,28 @@ import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollect
 import Link from "next/link";
 import TodayWillPayPrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/TodayWillPayPrintModal";
 import AllDuePrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/AllDuePrintModal";
+import { formatBanglaDate } from "@/utils/formatBanglaDate";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
+
+export interface IGetAllDueList {
+  id: string;
+  customerCode: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  totalDue: number;
+  totalCollect: number;
+  remainingDue: number;
+  due: number;
+  collect: number;
+  newDue: number;
+  nextDate: string | null;
+  remainingDelivery: number;
+  totalQuantity: number;
+  totalDelivered: number;
+  season: string;
+  notes: string[];
+}
 
 const AllDueListPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
@@ -39,10 +61,10 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
   const { data, isLoading, isError } = useGetAllDueListQuery({ date: dateRange, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
-  const dues = data?.data?.data as ICustomer[]
+  const dues = data?.data?.data as IGetAllDueList[]
   const meta = data?.data?.meta as TMetaConfig;
   const totalCredit = dues?.reduce(
-    (sum: number, r: ICustomer) => sum + (r?.totalPurchased - r?.totalPaid),
+    (sum: number, r: IGetAllDueList) => sum + r?.remainingDue,
     0,
   );
 
@@ -66,7 +88,7 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
 
           <div>
             <span className="whitespace-nowrap rounded-md border border-orange-300 bg-orange-50 px-3 py-2 text-sm font-medium text-orange-600">
-              মোট বাকি: {totalCredit?.toLocaleString()} টাকা
+              মোট বাকি: {toBanglaNumber(totalCredit || "00")} টাকা
             </span>
           </div>
         </div>
@@ -132,23 +154,23 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
               </tr>
             ) : (
               <>
-                {dues?.map((row: ICustomer) => (
+                {dues?.map((row: IGetAllDueList) => (
                   <tr key={row?.id} className="hover:bg-gray-50">
                     <TableData td={row?.customerCode} />
                     <TableData td={row?.name} />
                     <TableData td={row?.address} />
                     <TableData
-                      td={row?.remainingDelivery}
+                      td={toBanglaNumber(row?.remainingDelivery)}
                       cls="text-orange-500"
                     />
-                    <TableData td={row?.totalPurchased - row?.totalPaid} />
+                    <TableData td={toBanglaNumber(row?.remainingDue)} />
                     <TableData
-                      td={moment(row?.nextPaymentDate).format("DD-MM-YYYY")}
+                      td={row?.nextDate ? formatBanglaDate({ date: row.nextDate }) : "-"}
                     />
 
-                    <TableData td={row?.phoneNumber} />
-                    <TableData td={row?.note ?? "-"} />
-                    <TableData td={"2020"} />
+                    <TableData td={toBanglaNumber(row?.phoneNumber)} />
+                    <TableData td={row?.notes[0] ?? "-"} />
+                    <TableData td={row?.season} />
 
                     <td className="border p-2">
                       <DropdownMenu>
@@ -235,13 +257,13 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
         />
       }
 
-      {openPrintModal &&
+      {/* {openPrintModal &&
         <AllDuePrintModal
           isOpen={openPrintModal}
           onClose={() => setOpenPrintModal(false)}
           dues={dues}
         />
-      }
+      } */}
     </div>
   );
 };

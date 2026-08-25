@@ -67,7 +67,7 @@ const SellingModal = ({
                 {data?.data?.slice(0, 4)?.map((item: IChallanItem) => (
                   <tr key={item?.id}>
                     <td className="px-4 py-2">{item?.class}</td>
-                    <td className="px-4 py-2">{item?.challanId}</td>
+                    <td className="px-4 py-2">{item?.challan?.serial}</td>
                     <td className="px-4 py-2">{item?.quantity}</td>
                   </tr>
                 ))}
