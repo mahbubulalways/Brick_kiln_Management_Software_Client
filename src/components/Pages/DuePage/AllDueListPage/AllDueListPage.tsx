@@ -48,7 +48,7 @@ export interface IGetAllDueList {
   totalQuantity: number;
   totalDelivered: number;
   season: string;
-  notes: string[];
+  note: string;
 }
 
 const AllDueListPage = ({ limit, page, search }: TQuery) => {
@@ -165,11 +165,11 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
                     />
                     <TableData td={toBanglaNumber(row?.remainingDue)} />
                     <TableData
-                      td={row?.nextDate ? formatBanglaDate({ date: row.nextDate }) : "-"}
+                      td={row?.nextDate ? formatBanglaDate({ date: row?.nextDate }) : "-"}
                     />
 
                     <TableData td={toBanglaNumber(row?.phoneNumber)} />
-                    <TableData td={row?.notes[0] ?? "-"} />
+                    <TableData td={row?.note ?? "-"} />
                     <TableData td={row?.season} />
 
                     <td className="border p-2">

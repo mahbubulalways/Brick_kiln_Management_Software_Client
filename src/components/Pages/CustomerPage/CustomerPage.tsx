@@ -36,7 +36,7 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
     const [searchItems, setSearchItem] = useState("");
     const [openUpdateCustomer, setOpenUpdateCustomer] = useState<boolean>(false);
     const [openUpdateDateModal, setOpenUpdateDateModal] = useState<boolean>(false);
-    const [customerId, setCustomerId] = useState<number | undefined>(undefined)
+    const [customerId, setCustomerId] = useState<string | undefined>(undefined)
     const router = useRouter()
     const {
         data: response,
@@ -241,7 +241,7 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
                                                     <button
                                                         onClick={() => {
                                                             setOpenUpdateCustomer(true),
-                                                                setCustomerId(customer.id)
+                                                                setCustomerId(customer.customerCode)
                                                         }}
                                                         type="button"
                                                         className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[#079B67] hover:text-[#079B67]"
@@ -252,7 +252,7 @@ const CustomerPage = ({ limit, page, search }: TQuery) => {
                                                     <button
                                                         onClick={() => {
                                                             setOpenUpdateDateModal(true),
-                                                                setCustomerId(customer.id)
+                                                                setCustomerId(customer.customerCode)
                                                         }}
                                                         type="button"
                                                         className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-[#079B67] hover:text-[#079B67]"
