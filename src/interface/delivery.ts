@@ -1,6 +1,7 @@
 import { IChallanForDataShow } from "@/types/types";
 import { IUser } from "./user";
 import { TCustomer } from "./customer";
+import { TDriver } from "./driver";
 
 export type TInvoiceCustomer = {
   id: number;
@@ -34,13 +35,13 @@ export type TDeliveryResponse = {
   quantity: number;
   deliveryReceived: number;
   deliveryRemaining: number;
-  driverName: string;
-  driverPhoneNumber: string;
+  driver:TDriver,
   invoiceId: string;
   invoice: TDeliveryInvoice;
   isDeleted: boolean;
   createdAt: string;
   deliveryBy:IUser
+  lastDelivered:number
 
 };
 

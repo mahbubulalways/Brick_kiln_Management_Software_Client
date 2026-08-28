@@ -25,6 +25,9 @@ import { RiErrorWarningFill } from "react-icons/ri";
 import { FaCircleCheck } from "react-icons/fa6";
 import { MdOutlineError } from "react-icons/md";
 import { Truck, UserRound, Car, CalendarDays, FileText } from "lucide-react";
+import formatLabelValuePair from "@/utils/formatLabelValuePair";
+import { useGetDriverOptionsQuery } from "@/redux/features/driver.features";
+import { TDriver } from "@/interface/driver";
 
 type TCustomModal = {
   isOpen: boolean;
@@ -48,11 +51,11 @@ type TDelivery = {
     todaysDelivery?: number;
     remainingDelivery?: number;
   };
-  itemId?: number;
+  itemId?: string | number;
   carRent?: string;
-  driverName?: string;
+  driverId?: string;
   driverMobileNumber?: string;
-  carNumber?: string;
+  carNo?: string;
   note?: string;
   savingType?: string;
   serial?: number;
@@ -75,6 +78,9 @@ const NewDeliveryModal = ({
 
   const [createDelivery, { isLoading: createDeliveryLoading }] =
     useCreateDeliveryMutation();
+
+  const { data: drivers, isLoading: driverLoading, isError: driverError } =
+    useGetDriverOptionsQuery(undefined)
 
   const {
     data: nextDeliveryNo,
@@ -115,6 +121,29 @@ const NewDeliveryModal = ({
       deliveryNo: "",
     },
   });
+
+
+
+  // FOR DRIVER=====================================================
+  const driverId = watch("driverId");
+  const formatDriver = formatLabelValuePair({
+    data: drivers?.data,
+    label: "name", value: "id"
+  })
+  const selectedDriver = drivers?.data?.find(
+    (driver: TDriver) => driver.id === driverId
+  );
+  useEffect(() => {
+    if (selectedDriver) {
+      setValue(
+        "driverMobileNumber",
+        selectedDriver.PhoneNumber
+      );
+    } else {
+      setValue("driverMobileNumber", "");
+    }
+  }, [selectedDriver, setValue]);
+
 
   const targetClass = watch("items.class");
   const deliveryToday = watch("items.todaysDelivery");
@@ -417,6 +446,7 @@ const NewDeliveryModal = ({
                 placeholder="শ্রেণি নির্বাচন করুন"
                 control={control}
                 options={itemName || []}
+
               />
 
               <CustomInput
@@ -477,12 +507,13 @@ const NewDeliveryModal = ({
                 {/* Driver Information */}
                 <div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <CustomInput
-                      name="driverName"
+                    <CustomSelect
+                      name="driverId"
                       label=""
                       placeholder="ড্রাইভারের নাম"
-                      register={register}
-                      type="text"
+                      control={control}
+                      options={formatDriver}
+                      searchable
                     />
 
                     <CustomInput

@@ -13,9 +13,12 @@ export interface TCustomer {
   totalPaid: number;
   totalDue: number;
   note: string;
-  customerCode:string;
-  nextPaymentDate: string ;
-  customerDues:ICustomerDue[]
+  customerCode: string;
+  nextPaymentDate: string;
+  customerDues: ICustomerDue[]
+  currentSeasonDue: number,
+  previousDue: number
+  createdAt:string
 }
 
 export interface ICustomerDue {
@@ -29,9 +32,9 @@ export interface ICustomerDue {
   nextPaymentDate: string | null;
   createdAt: string;
   updatedAt: string;
-  customer:TCustomer
+  customer: TCustomer
 
-  season:TSeason;
+  season: TSeason;
 
   challan?: IChallanForDataShow;
 }

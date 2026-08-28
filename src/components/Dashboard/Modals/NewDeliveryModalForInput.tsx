@@ -39,6 +39,9 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { MdOutlineError, MdSms } from "react-icons/md";
 
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import { useGetDriverOptionsQuery } from "@/redux/features/driver.features";
+import formatLabelValuePair from "@/utils/formatLabelValuePair";
+import { TDriver } from "@/interface/driver";
 
 type TCustomModal = {
   isOpen: boolean;
@@ -89,9 +92,9 @@ type TDelivery = {
 
   itemId?: string | number;
   carRent?: string;
-  driverName?: string;
+  driverId?: string;
   driverMobileNumber?: string;
-  carNumber?: string;
+  carNo?: string;
   note?: string;
   savingType?: string;
 };
@@ -129,6 +132,10 @@ const NewDeliveryModalForInput = ({
     data: nextDeliveryNo,
     isLoading: deliveryNoLoading,
   } = useGetNextDeliveryNoQuery(undefined);
+
+  const { data: drivers, isLoading: driverLoading, isError: driverError } =
+    useGetDriverOptionsQuery(undefined)
+
 
 
 
@@ -177,6 +184,27 @@ const NewDeliveryModalForInput = ({
     customerSearchData?.data || [];
 
   const targetClass = watch("items.class");
+  const driverId = watch("driverId");
+
+  // FOR DRIVER=====================================================
+  const formatDriver = formatLabelValuePair({
+    data: drivers?.data,
+    label: "name", value: "id"
+  })
+  const selectedDriver = drivers?.data?.find(
+    (driver: TDriver) => driver.id === driverId
+  );
+  useEffect(() => {
+    if (selectedDriver) {
+      setValue(
+        "driverMobileNumber",
+        selectedDriver.PhoneNumber
+      );
+    } else {
+      setValue("driverMobileNumber", "");
+    }
+  }, [selectedDriver, setValue]);
+
 
   const deliveryToday = Number(
     watch("items.todaysDelivery") || 0,
@@ -988,9 +1016,10 @@ const NewDeliveryModalForInput = ({
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto]">
+
+          <div className="grid grid-cols-1 gap-4 w-full">
             {/* Vehicle & Driver Information */}
-            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div className="rounded-2xl border  border-gray-200 bg-white shadow-sm">
               {/* Header */}
               <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
@@ -1012,12 +1041,13 @@ const NewDeliveryModalForInput = ({
                 {/* Driver Information */}
                 <div>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <CustomInput
-                      name="driverName"
+                    <CustomSelect
+                      name="driverId"
                       label=""
                       placeholder="ড্রাইভারের নাম"
-                      register={register}
-                      type="text"
+                      control={control}
+                      options={formatDriver}
+                      searchable
                     />
 
                     <CustomInput
@@ -1094,7 +1124,7 @@ const NewDeliveryModalForInput = ({
           </div>
         </form>
         {
-          deliveryNoLoading && (
+          deliveryNoLoading || driverLoading && (
             <div className="absolute inset-0 z-40 flex items-center justify-center rounded-2xl bg-white/50 backdrop-blur-[2px]">
               <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-5 py-3 shadow-lg">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-[#039A63]" />

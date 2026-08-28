@@ -300,13 +300,13 @@ const DeliveryCopy = ({
             </p>
 
             <p>
-              ড্রাইভারঃ {invoice?.driverName || "-"}
+              ড্রাইভারঃ {invoice?.driver.name || "-"}
             </p>
 
             <p>
               ফোন নম্বরঃ{" "}
-              {invoice?.driverPhoneNumber
-                ? toBanglaNumber(invoice.driverPhoneNumber)
+              {invoice?.driver.PhoneNumber
+                ? toBanglaNumber(invoice.driver.PhoneNumber)
                 : "-"}
             </p>
 

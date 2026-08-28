@@ -59,6 +59,9 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
     };
   });
 
+
+  console.log(deliveries)
+
   const result: TItems[] = groupAndSumByClass(items);
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
@@ -85,6 +88,7 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
                 <TableHead th={"ঠিকানা"} cls="hidden lg:table-cell" />
                 <TableHead th={"শ্রেণি"} />
                 <TableHead th={"ক্রয়"} cls="hidden lg:table-cell" />
+                <TableHead th={"পূর্ববর্তী ডে."} cls="hidden lg:table-cell" />
                 <TableHead th={"ডেলিভারি"} />
                 <TableHead th={"ডে.বাকি"} cls="hidden lg:table-cell" />
                 <TableHead th={"ড্রাইভার"} cls="hidden lg:table-cell" />
@@ -122,12 +126,13 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
                     />
                     <TableData td={row?.class} />
                     <TableData td={toBanglaNumber(row?.quantity)} cls="hidden lg:table-cell" />
+                    <TableData td={toBanglaNumber(row?.lastDelivered??0)} cls="hidden lg:table-cell" />
                     <TableData td={toBanglaNumber(row?.deliveryReceived)} />
                     <TableData
                       td={toBanglaNumber(row?.deliveryRemaining)}
                       cls="hidden lg:table-cell"
                     />
-                    <TableData td={row?.driverName || "-"} cls="hidden lg:table-cell" />
+                    <TableData td={row?.driver?.name || "-"} cls="hidden lg:table-cell" />
                     <TableData td={toBanglaNumber(row?.deliveryReceived)} />
                     <TableData
                       cls="hidden lg:table-cell"

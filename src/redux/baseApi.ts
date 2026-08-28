@@ -39,7 +39,8 @@ export const baseApi = createApi({
     "DUE_MATE",
     "CONTACT",
     "WEATHER",
-    "SEASON"
+    "SEASON",
+    "DRIVER"
   ],
   endpoints: () => ({}),
 });
