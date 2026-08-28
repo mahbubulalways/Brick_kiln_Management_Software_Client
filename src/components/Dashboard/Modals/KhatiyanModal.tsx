@@ -61,9 +61,7 @@ const KhotiyanModal = ({ isOpen, onClose, showRateQuantity }: TCustomModal) => {
   }, [count, reset]);
 
   const onSubmit: SubmitHandler<TKhatiyan> = async (data) => {
-    if (data.parentId) {
-      data.parentId = Number(data.parentId);
-    }
+    
     try {
       const result = await mutateAsync(data).unwrap();
       if (result?.success) {

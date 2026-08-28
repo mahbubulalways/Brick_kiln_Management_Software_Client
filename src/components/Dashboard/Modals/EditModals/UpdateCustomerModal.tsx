@@ -17,7 +17,7 @@ import {
 } from "react-hook-form";
 
 type TCustomer = {
-    id: number;
+    id: string;
     name: string;
     address: string;
     phoneNumber: string;
@@ -26,8 +26,8 @@ type TCustomer = {
 type TUpdateCustomer = {
     isOpen: boolean;
     onClose: () => void;
-    id: number;
-    setId: Dispatch<SetStateAction<undefined | number>>
+    id: string;
+    setId: Dispatch<SetStateAction<undefined | string>>
 }
 
 const UpdateCustomerModal = ({ id, isOpen, onClose, setId }: TUpdateCustomer) => {
@@ -58,7 +58,7 @@ const UpdateCustomerModal = ({ id, isOpen, onClose, setId }: TUpdateCustomer) =>
         formState: { errors },
     } = useForm<TCustomer>({
         defaultValues: {
-            id: 0,
+            id: "",
             name: "",
             address: "",
             phoneNumber: "",
@@ -74,7 +74,7 @@ const UpdateCustomerModal = ({ id, isOpen, onClose, setId }: TUpdateCustomer) =>
         const customer = data.data;
 
         reset({
-            id: customer.id ?? id,
+            id: customer.customerCode ?? id,
             name: customer.name ?? "",
             address: customer.address ?? "",
             phoneNumber: customer.phoneNumber ?? "",
@@ -206,7 +206,7 @@ const UpdateCustomerModal = ({ id, isOpen, onClose, setId }: TUpdateCustomer) =>
                             <button
                                 type="submit"
                                 disabled={isUpdating}
-                                className="cursor-pointer rounded bg-[#039A63] px-8 py-1.5 text-[14px] font-medium text-gray-100 duration-300 hover:bg-[#028653] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="cursor-pointer rounded bg-[#039A63] px-8 py-1.5 text-[14px] font-medium text-gray-100 duration-300 hover:bg-[#028653] disabled:cursor-not-allowed disabled:bg-gray-500"
                             >
                                 {isUpdating
                                     ? "আপডেট হচ্ছে..."

@@ -21,7 +21,7 @@ const roundApi = baseApi.injectEndpoints({
         }),
 
         getSingleCutomerInfo: builder.query({
-            query: (id: number) => ({
+            query: (id: string) => ({
                 url: `/customer/info/${id}`,
 
             }),

@@ -15,7 +15,12 @@ import { TMetaConfig } from "@/interface/meta";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import { TDueData } from "@/interface/due";
-import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MessageSquare, MoreVertical, Wallet2Icon } from "lucide-react";
+import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
+import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
+import SendCustomerSmsModal from "@/components/Dashboard/Modals/SendCustomerSmsModal";
 
 interface DueProps {
   customerId: number;
@@ -33,7 +38,10 @@ const DueCollection = ({
   endDate,
   query, setDueInfo
 }: DueProps) => {
+  const [openDueModal, setOpenDeuModal] = useState<boolean>(false);
+  const [openSmsModal, setOpenSmsModal] = useState<boolean>(false);
 
+  const [customerCode, setCustomerCode] = useState<string>();
   const {
     data,
     isLoading,
@@ -88,6 +96,8 @@ const DueCollection = ({
 
               {/* নতুন তারিখ */}
               <TableHead th="নতুন তারিখ" />
+
+              <TableHead th={"বাটন"} />
 
             </tr>
           </thead>
@@ -196,7 +206,43 @@ const DueCollection = ({
                       })
                     }
                   />
+                  <td className="border p-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1.5 rounded hover:bg-gray-100 transition">
+                          <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="rounded-md border bg-white shadow-md"
+                      >
 
+                        <DropdownMenuItem onClick={() => {
+                          setCustomerCode(row?.customer.customerCode)
+                          setOpenDeuModal(true)
+                        }}>
+                          <CustomDropDownMenuItem
+                            Icon={Wallet2Icon}
+                            title="জমা করুন"
+                          />
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setOpenSmsModal(true)}
+                        >
+                          <CustomDropDownMenuItem
+                            Icon={MessageSquare}
+                            title="মেসেজ করুন"
+                          />
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                        >
+
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
                 </tr>
 
               ))
@@ -213,6 +259,22 @@ const DueCollection = ({
         dataLength={dues.length}
         title="বাকি"
       />
+
+      {openDueModal &&
+        <NewDueCollectionModalId
+          onClose={() => setOpenDeuModal(false)}
+          isOpen={openDueModal}
+          id={String(customerCode)}
+        />
+      }
+
+      {openSmsModal &&
+        <SendCustomerSmsModal
+          onClose={() => setOpenSmsModal(false)}
+          isOpen={openSmsModal}
+          customerId={String(customerCode)}
+        />
+      }
     </div>
   );
 };

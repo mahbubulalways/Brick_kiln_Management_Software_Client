@@ -151,8 +151,7 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
                           />
                           <TableData
                             td={
-                              toBanglaNumber(row?.customer?.totalPurchased -
-                                row?.customer?.totalPaid)
+                              toBanglaNumber(row?.totalDue)
                             }
                             rowSpan={row.items.length}
                             cls="hidden lg:table-cell"

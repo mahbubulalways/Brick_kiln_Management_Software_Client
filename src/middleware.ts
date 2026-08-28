@@ -16,19 +16,19 @@ export async function middleware(request: NextRequest) {
     // GET HOST
     // =========================================
 
-    const host = request.headers.get("host");
+    // const host = request.headers.get("host");
 
-    if (!host) {
-        return NextResponse.rewrite(
-            new URL("/domain-not-found", request.url)
-        );
-    }
+    // if (!host) {
+    //     return NextResponse.rewrite(
+    //         new URL("/domain-not-found", request.url)
+    //     );
+    // }
 
-    const hostname = host.split(":")[0];
+    // const hostname = host.split(":")[0];
 
-    console.log("Hostname:", hostname);
+    // console.log("Hostname:", hostname);
 
-    let subdomain: string | null = null;
+    // let subdomain: string | null = null;
 
     // =========================================
     // LOCAL
@@ -39,66 +39,66 @@ export async function middleware(request: NextRequest) {
     //
     // =========================================
 
-    if (hostname.endsWith(".localhost")) {
-        const parts = hostname.split(".");
+    // if (hostname.endsWith(".localhost")) {
+    //     const parts = hostname.split(".");
 
-        // sabbbir.localhost
-        if (parts.length === 2 && parts[0]) {
-            subdomain = parts[0];
+    //     // sabbbir.localhost
+    //     if (parts.length === 2 && parts[0]) {
+    //         subdomain = parts[0];
 
-            console.log("Local Subdomain:", subdomain);
-        }
-    }
+    //         console.log("Local Subdomain:", subdomain);
+    //     }
+    // }
 
-    // localhost without subdomain
-    else if (
-        hostname === "localhost" ||
-        hostname === "127.0.0.1"
-    ) {
-        subdomain = null;
-    }
+    // // localhost without subdomain
+    // else if (
+    //     hostname === "localhost" ||
+    //     hostname === "127.0.0.1"
+    // ) {
+    //     subdomain = null;
+    // }
 
-    // =========================================
-    // PRODUCTION
-    // =========================================
+    // // =========================================
+    // // PRODUCTION
+    // // =========================================
 
-    else if (hostname.endsWith(".itvata.com")) {
-        const parts = hostname.split(".");
+    // else if (hostname.endsWith(".itvata.com")) {
+    //     const parts = hostname.split(".");
 
-        // itvata.com
-        if (parts.length >= 3) {
-            subdomain = parts[0];
+    //     // itvata.com
+    //     if (parts.length >= 3) {
+    //         subdomain = parts[0];
 
-            console.log(
-                "Production Subdomain:",
-                subdomain
-            );
-        }
-    }
+    //         console.log(
+    //             "Production Subdomain:",
+    //             subdomain
+    //         );
+    //     }
+    // }
 
     // =========================================
     // SUBDOMAIN MUST EXIST
     // =========================================
 
-    if (!subdomain) {
-        return NextResponse.rewrite(
-            new URL("/domain-not-found", request.url)
-        );
-    }
+    // if (!subdomain) {
+    //     return NextResponse.rewrite(
+    //         new URL("/domain-not-found", request.url)
+    //     );
+    // }
 
     // =========================================
     // CHECK SUBDOMAIN FROM BACKEND
     // =========================================
 
-    const isValid = await checkSubdomain(subdomain);
+    // const isValid = await checkSubdomain(subdomain);
 
-    console.log("Subdomain valid:", isValid);
+    // console.log("Subdomain valid:", isValid);
 
-    if (!isValid) {
-        return NextResponse.rewrite(
-            new URL("/domain-not-found", request.url)
-        );
-    }
+    // if (!isValid) {
+    //     return NextResponse.rewrite(
+    //         new URL("/domain-not-found", request.url)
+    //     );
+    // }
 
     // =========================================
     // AUTH CHECK

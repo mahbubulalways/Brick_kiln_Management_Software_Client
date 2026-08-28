@@ -31,7 +31,7 @@ const OldCustomerModal = ({
     useLazyGetOldCustomerQuery();
 
   const customers: TCustomer[] = data?.data ?? [];
-
+  console.log(customers)
   // Modal close হলে search field clear হবে
   useEffect(() => {
     if (!isOpen) {
@@ -259,6 +259,7 @@ const OldCustomerModal = ({
                     font-medium
                     text-white
                     hover:bg-[#00875e]
+                    cursor-pointer
                   "
                 >
                   যোগ করুন

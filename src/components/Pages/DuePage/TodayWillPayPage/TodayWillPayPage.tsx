@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Eye, MessageSquare, MoreVertical, Pencil, Trash2, User, Wallet2Icon } from "lucide-react";
-import { useReactToPrint } from "react-to-print";
-
 import NewPaymentModal from "@/components/Dashboard/Modals/NewPaymentModal";
 import TableHead from "@/components/Reusable/TableHead";
 import CustomButtonFixed from "@/components/Reusable/CustomButtonFixed";
@@ -17,7 +15,6 @@ import TableData from "@/components/Reusable/TableData";
 import { useGetTodayHaveDueQuery } from "@/redux/features/dueCollection.features";
 import { IChallanForDataShow, ICustomer } from "@/types/types";
 import CustomLoader from "@/components/Reusable/CustomLoader";
-import TableFooter from "@/components/Reusable/TableFooter";
 import { TQuery } from "@/interface/query";
 import SearchBar from "@/components/Reusable/SearchBar";
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
@@ -28,9 +25,11 @@ import UpdateDueCollectionDateModal from "@/components/Dashboard/Modals/EditModa
 import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
 import Link from "next/link";
 import TodayWillPayPrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/TodayWillPayPrintModal";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
 type PaymentRow = {
   challans: IChallanForDataShow[];
+  remainingDue: number
 } & ICustomer;
 
 const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
@@ -49,20 +48,21 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
 
   const dues = data?.data?.data as PaymentRow[]
   const meta = data?.data?.meta as TMetaConfig;
-  const totalCredit = dues?.reduce(
-    (sum: number, r: PaymentRow) => sum + (r?.totalPurchased - r?.totalPaid),
-    0,
-  );
+  const totalCredit =
+    dues?.reduce(
+      (sum: number, r: PaymentRow) =>
+        sum +
 
-  const contentRef = useRef<HTMLDivElement>(null);
-  const reactToPrintFn = useReactToPrint({ contentRef });
+        Number(r?.remainingDue || 0),
+      0
+    ) || 0;
 
   return (
     <div className="bg-white p-2 rounded-md border border-gray-200 shadow-sm">
       <div className="flex justify-between items-center pt-2 lg:pt-0 gap-5">
         <div className="flex items-center gap-2 w-auto lg:w-full">
           <span className=" text-orange-500 px-3 py-1 rounded   border border-orange-300 font-medium hidden lg:block">
-            মোট জমা দেবেঃ {totalCredit} টাকা
+            মোট জমা দেবেঃ {toBanglaNumber(totalCredit)} টাকা
           </span>
         </div>
 
@@ -78,14 +78,14 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
             placeholder="তারিখ"
             height="8"
           />
-          <button onClick={()=>setOpenPrintModal(true)}>
+          <button onClick={() => setOpenPrintModal(true)}>
             <CustomButtonFixed title="প্রিন্ট করুন" />
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto pt-5" ref={contentRef}>
+      <div className="overflow-x-auto pt-5">
         <table className="min-w-full   text-center border-t">
           <thead className="bg-[#039A63] text-white">
             <tr>
@@ -122,7 +122,7 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
                   <TableData td={row?.name} />
                   <TableData td={row?.address} />
                   <TableData
-                    td={row?.challans?.reduce((accChallan, challan) => {
+                    td={toBanglaNumber(row?.challans?.reduce((accChallan, challan) => {
                       const itemsSum =
                         challan.items?.reduce(
                           (accItem, curr) =>
@@ -131,14 +131,14 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
                           0,
                         ) ?? 0;
                       return accChallan + itemsSum;
-                    }, 0)}
+                    }, 0))}
                   />
 
-                  <TableData td={row?.totalPurchased - row?.totalPaid} />
-                  <TableData td={row?.phoneNumber} />
-                  <TableData td={row?.note ?? "-"} />
+                  <TableData td={toBanglaNumber(row?.remainingDue)} />
+                  <TableData td={toBanglaNumber(row?.phoneNumber)} />
+                  <TableData td={row?.challans[0]?.note || "-"} />
 
-                  <TableData td={"2425"} />
+                  <TableData td={row?.challans[0]?.season.name} />
 
                   <td className="border p-2">
                     <DropdownMenu>
@@ -179,7 +179,6 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
                         </DropdownMenuItem>
 
                         <DropdownMenuItem
-
                         >
                           <Link href={`/dashboard/customer/profile/${row.customerCode}`}>
                             <CustomDropDownMenuItem
@@ -221,11 +220,11 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
         />
       }
 
-      {openPrintModal&&
-        <TodayWillPayPrintModal 
-        isOpen={openPrintModal}
-        onClose={()=>setOpenPrintModal(false)}
-        dues={dues}
+      {openPrintModal &&
+        <TodayWillPayPrintModal
+          isOpen={openPrintModal}
+          onClose={() => setOpenPrintModal(false)}
+          dues={dues}
         />
       }
     </div>

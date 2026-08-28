@@ -25,7 +25,7 @@ import { TCustomer } from "@/interface/customer";
 import DueCollectionPrint from "./DueCollectionPrint";
 import { TDueData } from "@/interface/due";
 import DeliveryHistoryPrint from "./DeliveryHistoryPrint";
-import {  TDeliveryWithCustomer } from "@/interface/delivery";
+import { TDeliveryWithCustomer } from "@/interface/delivery";
 
 type CustomerTab =
     | "all"
@@ -127,97 +127,107 @@ const CustomerTabs = ({
         <div className="mt-3 w-full rounded-xl border border-[#DCE5ED] bg-white p-3">
 
             {/* ================= Filter ================= */}
+            {/* ================= Filters ================= */}
+            <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-1">
+                        <CustomDatePickerState
+                            value={startDate}
+                            onChange={setStartDate}
+                            placeholder="শুরুর তারিখ"
+                            height="9"
+                        />
 
-            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[#DCE5ED] bg-[#F8FAFC] p-2">
+                        <span className="px-1 text-sm font-medium text-slate-400">
+                            —
+                        </span>
 
-                <CustomDatePickerState
-                    value={startDate}
-                    onChange={setStartDate}
-                    placeholder="শুরুর তারিখ"
-                    height="9"
-                />
+                        <CustomDatePickerState
+                            value={endDate}
+                            onChange={setEndDate}
+                            placeholder="শেষের তারিখ"
+                            height="9"
+                        />
+                    </div>
 
-                <span className="text-gray-400">
-                    -
-                </span>
+                    <button
+                        type="button"
+                        onClick={handlePrint}
+                        className="flex h-9 items-center gap-2 rounded-lg bg-[#079B67] px-4 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#05875B] hover:shadow-md active:scale-[0.98]"
+                    >
+                        <Printer size={16} strokeWidth={2.2} />
 
-                <CustomDatePickerState
-                    value={endDate}
-                    onChange={setEndDate}
-                    placeholder="শেষের তারিখ"
-                    height="9"
-                />
-
-                <button
-                    type="button"
-
-                    onClick={handlePrint}
-                    className="flex h-9 items-center gap-2 rounded-md bg-[#079B67] px-4 text-sm font-medium text-white hover:bg-[#05875B]"
-                >
-                    <Printer size={17} />
-
-                    {printButtonText[activeTab]}
-                </button>
+                        <span>
+                            {printButtonText[activeTab]}
+                        </span>
+                    </button>
+                </div>
             </div>
 
             {/* ================= Tabs ================= */}
+            <div className="mt-4 flex w-full overflow-x-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-sm">
+                <div className="flex min-w-max items-center gap-1">
+                    {/* All Challan */}
+                    <button
+                        type="button"
+                        onClick={() => handleTabChange("all")}
+                        className={`flex h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-[13px] font-semibold transition-all duration-200 md:px-4 md:text-sm ${activeTab === "all"
+                                ? "bg-[#079B67] text-white shadow-sm"
+                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                            }`}
+                    >
+                        <FileText
+                            size={16}
+                            strokeWidth={2}
+                        />
 
-            <div className="mt-3 flex items-center gap-2">
+                        <span>
+                            সব চালান
+                        </span>
+                    </button>
 
-                {/* All Challan */}
+                    {/* Delivery History */}
+                    <button
+                        type="button"
+                        onClick={() =>
+                            handleTabChange("deliveryInfo")
+                        }
+                        className={`flex h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-[13px] font-semibold transition-all duration-200 md:px-4 md:text-sm ${activeTab === "deliveryInfo"
+                                ? "bg-[#079B67] text-white shadow-sm"
+                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                            }`}
+                    >
+                        <Truck
+                            size={16}
+                            strokeWidth={2}
+                        />
 
-                <button
-                    type="button"
-                    onClick={() =>
-                        handleTabChange("all")
-                    }
-                    className={`flex cursor-pointer text-[13px] lg:text-[16px] items-center gap-2 rounded-md px-2 md:px-4 py-1.5 text-sm font-medium transition ${activeTab === "all"
-                        ? "bg-[#079B67] text-white"
-                        : "bg-[#F0F4F8] text-gray-600 hover:bg-gray-200"
-                        }`}
-                >
-                    <FileText size={16} />
+                        <span>
+                            ডেলিভারি হিস্ট্রি
+                        </span>
+                    </button>
 
-                    সব চালান
-                </button>
+                    {/* Due Collection */}
+                    <button
+                        type="button"
+                        onClick={() =>
+                            handleTabChange("dueCollection")
+                        }
+                        className={`flex h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-[13px] font-semibold transition-all duration-200 md:px-4 md:text-sm ${activeTab === "dueCollection"
+                                ? "bg-[#079B67] text-white shadow-sm"
+                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                            }`}
+                    >
+                        <Banknote
+                            size={16}
+                            strokeWidth={2}
+                        />
 
-                {/* Delivery Pending */}
-
-                <button
-                    type="button"
-                    onClick={() =>
-                        handleTabChange(
-                            "deliveryInfo"
-                        )
-                    }
-                    className={`flex text-[13px] md:text-[16px]  cursor-pointer items-center gap-2 rounded-md px-2 md:px-4 py-1.5 text-sm font-medium transition ${activeTab === "deliveryInfo"
-                        ? "bg-[#079B67] text-white"
-                        : "bg-[#F0F4F8] text-gray-600 hover:bg-gray-200"
-                        }`}
-                >
-                    <Truck size={16} />
-
-                    ডেলিভারি হিস্ট্রি
-                </button>
-
-                {/* Due Collection */}
-
-                <button
-                    type="button"
-                    onClick={() =>
-                        handleTabChange(
-                            "dueCollection"
-                        )
-                    }
-                    className={`flex cursor-pointer text-[13px] md:text-[16px]  items-center gap-2 rounded-md px-2 md:px-4 py-1.5 text-sm font-medium transition ${activeTab === "dueCollection"
-                        ? "bg-[#079B67] text-white"
-                        : "bg-[#F0F4F8] text-gray-600 hover:bg-gray-200"
-                        }`}
-                >
-                    <Banknote size={16} />
-
-                    বাকি জমা
-                </button>
+                        <span>
+                            বাকি জমা
+                        </span>
+                    </button>
+                </div>
             </div>
 
             {/* ================= Tab Content ================= */}

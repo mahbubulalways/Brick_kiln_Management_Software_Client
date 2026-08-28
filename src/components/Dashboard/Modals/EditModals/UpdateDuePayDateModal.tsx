@@ -17,19 +17,13 @@ type TForm = {
 type TCustomModal = {
     isOpen: boolean;
     onClose: () => void;
-    id: number | undefined,
-    setId: Dispatch<SetStateAction<number | undefined>>
+    id: string | undefined,
+    setId: Dispatch<SetStateAction<string | undefined>>
 };
 
 const UpdateDuePayDateModal = ({ isOpen, onClose, id, setId }: TCustomModal) => {
-
     const [mutateAsync, { isLoading }] = useUpdateDueCollectionDateMutation();
-    const { handleSubmit, control, reset, formState: { errors }, register } = useForm<TForm>({
-
-    });
-
-
-
+    const { handleSubmit, control, formState: { errors } } = useForm<TForm>({})
     const onSubmit: SubmitHandler<TForm> = async (data) => {
         const payload = {
             id, data
@@ -47,7 +41,6 @@ const UpdateDuePayDateModal = ({ isOpen, onClose, id, setId }: TCustomModal) => 
                     },
                 });
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.log(error);
             return showToast({
@@ -73,9 +66,10 @@ const UpdateDuePayDateModal = ({ isOpen, onClose, id, setId }: TCustomModal) => 
         <CustomModal
             isOpen={isOpen}
             onClose={handleClose}
-
+            title="আপডেট তারিখ"
             width="sm"
-        ><form onSubmit={handleSubmit(onSubmit)} >
+        >
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <CustomDatePicker
                     control={control}
                     name="date"
@@ -84,17 +78,17 @@ const UpdateDuePayDateModal = ({ isOpen, onClose, id, setId }: TCustomModal) => 
                     error={errors.date}
                     rules={{ required: "বাকি পরিশোধের তারিখ পরিবর্তন" }}
                 />
-                <div className="pt-5">
-                    <button
-                        type="submit"
-                        className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "অ্যাড হচ্ছে..." : "পরিবর্তন করুন"}
-                    </button>
-                </div>
-            </form>
 
+
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="rounded-lg w-full bg-[#039A63] px-6 py-2 text-[14px] font-medium text-white shadow-sm transition-all duration-200 hover:bg-[#028653] hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    {isLoading ? "পরিবর্তন হচ্ছে..." : "পরিবর্তন করুন"}
+                </button>
+
+            </form>
         </CustomModal >
     );
 };

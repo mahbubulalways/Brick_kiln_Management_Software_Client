@@ -1,25 +1,33 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
+
 import { SubmitHandler, useForm } from "react-hook-form";
+
 import CustomInput from "@/components/Reusable/CustomInput";
 import CustomModalBottom from "@/components/Reusable/CustomModalBottom";
-import { DatePicker } from "@/components/Others/DatePicker";
-import { Input } from "@/components/ui/input";
 import SmsSwitch from "@/components/Reusable/SmsSwitch";
-import { useLazyGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { IChallanItem } from "@/types/types";
 import CustomSelect from "@/components/Reusable/CustomSelect";
+import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+
+import { Input } from "@/components/ui/input";
+
+import { useLazyGetSingleInvoiceQuery } from "@/redux/features/invoice.features";
 import {
   useCreateDeliveryMutation,
   useGetNextDeliveryNoQuery,
 } from "@/redux/features/delivery.features";
+
+import { IChallanItem } from "@/types/types";
+
 import { showToast } from "@/components/Toast/CustomToast";
 import { RiErrorWarningFill } from "react-icons/ri";
 import { FaCircleCheck } from "react-icons/fa6";
 import { MdOutlineError } from "react-icons/md";
-import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
+import { Truck, UserRound, Car, CalendarDays, FileText } from "lucide-react";
+import formatLabelValuePair from "@/utils/formatLabelValuePair";
+import { useGetDriverOptionsQuery } from "@/redux/features/driver.features";
+import { TDriver } from "@/interface/driver";
 
 type TCustomModal = {
   isOpen: boolean;
@@ -43,11 +51,11 @@ type TDelivery = {
     todaysDelivery?: number;
     remainingDelivery?: number;
   };
-  itemId?: number;
+  itemId?: string | number;
   carRent?: string;
-  driverName?: string;
+  driverId?: string;
   driverMobileNumber?: string;
-  carNumber?: string;
+  carNo?: string;
   note?: string;
   savingType?: string;
   serial?: number;
@@ -58,22 +66,32 @@ const NewDeliveryModal = ({
   onClose,
   invoiceId: invoId,
 }: TCustomModal) => {
-  const [nextDeliveryDate, setNextDeliveryDate] = useState<Date | undefined>();
+  const [nextDeliveryDate, setNextDeliveryDate] = useState<
+    Date | undefined
+  >();
+
   const [sendSms, setSendSms] = useState<boolean>(false);
+
   const [date, setDate] = useState<Date | undefined>(new Date());
+
   const [saveType, setSaveType] = useState<string>("");
 
   const [createDelivery, { isLoading: createDeliveryLoading }] =
     useCreateDeliveryMutation();
-  const { data: nextDeliveryNo, isLoading: deliveryNoLoading, isError: nextDeliveryError } =
-    useGetNextDeliveryNoQuery(undefined);
+
+  const { data: drivers, isLoading: driverLoading, isError: driverError } =
+    useGetDriverOptionsQuery(undefined)
+
+  const {
+    data: nextDeliveryNo,
+    isLoading: deliveryNoLoading,
+  } = useGetNextDeliveryNoQuery(undefined);
+
   const [
     getSingleInvoice,
     {
       data,
-      error,
       isLoading,
-      isError,
     },
   ] = useLazyGetSingleInvoiceQuery();
 
@@ -104,22 +122,44 @@ const NewDeliveryModal = ({
     },
   });
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  // const invoiceId = watch("invoiceId");
+
+
+  // FOR DRIVER=====================================================
+  const driverId = watch("driverId");
+  const formatDriver = formatLabelValuePair({
+    data: drivers?.data,
+    label: "name", value: "id"
+  })
+  const selectedDriver = drivers?.data?.find(
+    (driver: TDriver) => driver.id === driverId
+  );
+  useEffect(() => {
+    if (selectedDriver) {
+      setValue(
+        "driverMobileNumber",
+        selectedDriver.PhoneNumber
+      );
+    } else {
+      setValue("driverMobileNumber", "");
+    }
+  }, [selectedDriver, setValue]);
+
+
   const targetClass = watch("items.class");
   const deliveryToday = watch("items.todaysDelivery");
   const willReceiveDelivery = watch("items.quantity");
-  const serial = watch("serial")
+  const serial = watch("serial");
+
   const items = data?.data?.items;
+
   const itemName = items?.map((item: IChallanItem) => ({
     label: item?.class,
     value: item?.class,
   }));
+
   const selectedItem = data?.data?.items?.find(
     (item: IChallanItem) => item?.class === targetClass,
   );
-
-
 
   useEffect(() => {
     if (!data?.data) return;
@@ -128,31 +168,36 @@ const NewDeliveryModal = ({
 
     reset({
       serial: data?.data?.serial,
+
       customer: {
         name: data.data.customer?.name || "",
         phoneNumber: data.data.customer?.phoneNumber || "",
         address: data.data.customer?.address || "",
       },
+
       items: {
         class: firstItem?.class || "",
+
         quantity: Math.max(
           Number(firstItem?.quantity || 0) -
           Number(firstItem?.delivered || 0),
           0,
         ),
+
         todaysDelivery: 0,
+
         remainingDelivery: Math.max(
           Number(firstItem?.quantity || 0) -
           Number(firstItem?.delivered || 0),
           0,
         ),
       },
+
       note: data.data.note || "",
+
       deliveryNo: nextDeliveryNo?.data || "",
     });
-  }, [data, invoId, reset]);
-
-
+  }, [data, reset, nextDeliveryNo?.data]);
 
   useEffect(() => {
     const id = invoId || serial;
@@ -168,33 +213,46 @@ const NewDeliveryModal = ({
     }
   }, [nextDeliveryNo?.data, setValue]);
 
-
   useEffect(() => {
     setValue(
       "items.quantity",
-      selectedItem?.quantity - selectedItem?.delivered,
+      Math.max(
+        Number(selectedItem?.quantity || 0) -
+        Number(selectedItem?.delivered || 0),
+        0,
+      ),
     );
-    setValue("items.remainingDelivery", willReceiveDelivery! - deliveryToday!);
+
+    setValue(
+      "items.remainingDelivery",
+      Number(willReceiveDelivery || 0) -
+      Number(deliveryToday || 0),
+    );
   }, [
     selectedItem?.quantity,
-    willReceiveDelivery,
-    setValue,
-    deliveryToday,
     selectedItem?.delivered,
+    willReceiveDelivery,
+    deliveryToday,
+    setValue,
   ]);
 
-
-  const onSubmit: SubmitHandler<Partial<TDelivery>> = async (formData) => {
+  const onSubmit: SubmitHandler<Partial<TDelivery>> = async (
+    formData,
+  ) => {
     formData.itemId = selectedItem?.id;
     formData.savingType = saveType;
     formData.deliveryDate = date;
     formData.nextDeliveryDate = nextDeliveryDate;
+
     if (invoId) {
-      formData.invoiceId = invoId
+      formData.invoiceId = invoId;
     }
-    (formData.items as IChallanItem).quantity = selectedItem?.quantity;
+
+    (formData.items as IChallanItem).quantity =
+      selectedItem?.quantity;
+
     if (
-      (formData.items?.remainingDelivery as number) > 0 &&
+      Number(formData.items?.remainingDelivery || 0) > 0 &&
       !nextDeliveryDate
     ) {
       return showToast({
@@ -209,8 +267,10 @@ const NewDeliveryModal = ({
 
     try {
       const result = await createDelivery(formData).unwrap();
+
       if (result?.success) {
         onClose();
+
         return showToast({
           title: result?.message,
           type: "success",
@@ -220,11 +280,12 @@ const NewDeliveryModal = ({
           },
         });
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return showToast({
-        title: error.data?.message,
-        type: "success",
+        title:
+          error?.data?.message ||
+          "ডেলিভারি তৈরি করা যায়নি",
+        type: "error",
         options: {
           icon: <MdOutlineError className="h-5 w-5" />,
           duration: 4000,
@@ -233,7 +294,6 @@ const NewDeliveryModal = ({
     }
   };
 
-
   return (
     <CustomModalBottom
       isOpen={isOpen}
@@ -241,78 +301,115 @@ const NewDeliveryModal = ({
       title="নতুন ডেলিভারি"
       width="xxl"
     >
-
       <div className="relative">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-2 lg:grid-cols-3 items-center gap-2 mb-4 ">
-            <CustomInput
-              name="deliveryNo"
-              label="ডেলিভারি নং"
-              placeholder="ডেলিভারি নং"
-              register={register}
-              type="text"
-              rules={{ required: "" }}
-              readonly
-            />
-            <CustomInput
-              name="serial"
-              label="চালান নং"
-              placeholder="চালান নং"
-              register={register}
-              type="text"
-              readonly
-              rules={{ required: "" }}
-            />
-            <div>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-3"
+        >
+          {/* =====================================================
+              DELIVERY INFORMATION
+          ====================================================== */}
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-50 text-[#039A63]">
+                <FileText size={18} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800">
+                  ডেলিভারি তথ্য
+                </h3>
+
+                <p className="mt-0.5 text-[11px] text-gray-400">
+                  ডেলিভারি ও কাস্টমারের প্রাথমিক তথ্য
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+              <CustomInput
+                name="deliveryNo"
+                label="ডেলিভারি নং"
+                placeholder="ডেলিভারি নং"
+                register={register}
+                type="text"
+                rules={{ required: "" }}
+                readonly
+              />
+
+              <CustomInput
+                name="serial"
+                label="চালান নং"
+                placeholder="চালান নং"
+                register={register}
+                type="text"
+                readonly
+                rules={{ required: "" }}
+              />
+
               <CustomDatePickerState
-                label=" ডেলিভারি তারিখ"
+                label="ডেলিভারি তারিখ"
                 onChange={setDate}
                 value={date}
               />
+
+              <CustomInput
+                name="customer.name"
+                label="কাস্টমারের নাম"
+                placeholder="কাস্টমারের নাম"
+                register={register}
+                type="text"
+                readonly={data?.data?.customer}
+                error={errors?.customer?.name}
+                rules={{
+                  required: "কাস্টমারের নাম লিখুন",
+                }}
+              />
+
+              <CustomInput
+                name="customer.phoneNumber"
+                label="ফোন নম্বর"
+                placeholder="ফোন নম্বর"
+                register={register}
+                type="text"
+                readonly={data?.data?.customer}
+                rules={{
+                  required: "ফোন নম্বর লিখুন",
+                }}
+                error={errors?.customer?.phoneNumber}
+              />
+
+              <CustomInput
+                name="customer.address"
+                label="ডেলিভারি ঠিকানা"
+                placeholder="ডেলিভারি ঠিকানা"
+                register={register}
+                type="text"
+                readonly={data?.data?.customer}
+                rules={{
+                  required: "ঠিকানা লিখুন",
+                }}
+                error={errors?.customer?.address}
+              />
             </div>
-            <CustomInput
-              name="customer.name"
-              label="কাস্টমারের নাম"
-              placeholder="কাস্টমারের নাম"
-              register={register}
-              type="text"
-              readonly={data?.data?.customer}
-              error={errors?.customer?.name}
-              rules={{ required: "কাস্টমারের নাম লিখুন" }}
-            />
-            <CustomInput
-              name="customer.phoneNumber"
-              label="ফোন নম্বর"
-              placeholder="ফোন নম্বর"
-              register={register}
-              type="text"
-              readonly={data?.data?.customer}
-              rules={{ required: "ফোন নম্বর লিখুন" }}
-              error={errors?.customer?.phoneNumber}
-            />
-            <CustomInput
-              name="customer.address"
-              label="ডেলিভারি ঠিকানা"
-              placeholder="ডেলিভারি ঠিকানা"
-              register={register}
-              type="text"
-              readonly={data?.data?.customer}
-              error={errors?.customer?.address}
-              rules={{ required: "ঠিকানা নম্বর লিখুন" }}
-            />
           </div>
-          <div className="flex items-center gap-5">
-            <div className="flex-1">
+
+          {/* =====================================================
+              NOTE + NEXT DELIVERY
+          ====================================================== */}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <CustomInput
                 name="note"
                 label="নোট"
-                placeholder="চালানের  নোট"
+                placeholder="চালানের নোট"
                 register={register}
                 type="text"
                 rules={{ required: "" }}
               />
             </div>
-            <div>
+
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <CustomDatePickerState
                 label="পরবর্তী ডেলিভারি তারিখ"
                 disablePastDates
@@ -322,20 +419,38 @@ const NewDeliveryModal = ({
             </div>
           </div>
 
-          {/* Items Table */}
-          <div className="grid grid-cols-2 md:grid-cols-4 my-2 justify-between bg-gray-100 rounded-md p-4 gap-2">
-            <div className="flex-1">
+          {/* =====================================================
+              DELIVERY ITEM
+          ====================================================== */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-4">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <Truck size={18} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-gray-800">
+                  ডেলিভারি পরিমাণ
+                </h3>
+
+                <p className="mt-0.5 text-[11px] text-gray-400">
+                  আজকের ডেলিভারি ও অবশিষ্ট পরিমাণ
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <CustomSelect
-                name={`items.class`}
+                name="items.class"
                 label="শ্রেণি"
-                placeholder="শ্রেণি"
+                placeholder="শ্রেণি নির্বাচন করুন"
                 control={control}
                 options={itemName || []}
+
               />
-            </div>
-            <div className="flex-1">
+
               <CustomInput
-                name={`items.quantity`}
+                name="items.quantity"
                 label="ডেলিভারি পাবে"
                 placeholder="ডেলিভারি পাবে"
                 register={register}
@@ -343,126 +458,146 @@ const NewDeliveryModal = ({
                 readonly
                 rules={{ required: "" }}
               />
-            </div>
-            <div className="flex-1">
+
               <CustomInput
-                name={`items.todaysDelivery`}
+                name="items.todaysDelivery"
                 label="আজকের ডেলিভারি"
                 placeholder="আজকের ডেলিভারি"
                 register={register}
                 type="number"
                 rules={{ required: "" }}
-              />  </div>
-            <div className="flex-1">
+              />
+
               <CustomInput
-                name={`items.remainingDelivery`}
+                name="items.remainingDelivery"
                 label="ডেলিভারি বাকি"
                 placeholder="ডেলিভারি বাকি"
                 register={register}
                 type="number"
+                readonly
                 rules={{ required: "" }}
-              /></div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 pt-3 gap-5">
-            <div className="flex flex-col gap-1">
-              <h1 className=" lg:pb-0.5 flex items-center  font-medium text-gray-600">
-                ড্রাইভারের তথ্যঃ
-              </h1>
-              <CustomInput
-                name={`driverName`}
-                label=""
-                placeholder="ড্রাইভারের নাম"
-                register={register}
-                type="text"
-              />
-              <CustomInput
-                name={`driverMobileNumber`}
-                label=""
-                placeholder="ড্রাইভারের ফোন নম্বর"
-                register={register}
-                type="text"
-              />
-              <CustomInput
-                name={`carNumber`}
-                label=""
-                placeholder="গাড়ি নম্বর"
-                register={register}
-                type="number"
               />
             </div>
+          </div>
 
-            <div className="flex flex-col w-full max-w-2xs">
-              <div className="space-y-2">
-                <label className="text-gray-600 font-medium pb-1 flex items-center">
-                  গাড়ি ভাড়া
-                </label>
-                <div className="relative w-full ">
-                  <Input
-                    type="number"
-                    placeholder="ভাড়া"
-                    {...register("carRent")}
-                    className="h-16 text-6xl pl-8 rounded border border-gray-300 shadow-none placeholder:text-2xl"
-                    style={{
-                      fontSize: "24px",
-                    }}
-                  />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-4xl pointer-events-none">
-                    ৳
-                  </span>
+
+
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto]">
+            {/* Vehicle & Driver Information */}
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+              {/* Header */}
+              <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+                  <Truck size={18} />
                 </div>
 
-                <SmsSwitch
-                  sendSms={sendSms}
-                  setSendSms={setSendSms}
-                  showBorder={true}
-                  showLabel={false}
-                  title="কাস্টমারকে এসএমএস দিন"
-                />
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-800">
+                    গাড়ি ও ড্রাইভারের তথ্য
+                  </h3>
+                  <p className="mt-0.5 text-[11px] text-gray-400">
+                    ডেলিভারি গাড়ি সম্পর্কিত তথ্য
+                  </p>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-3 p-4">
+                {/* Driver Information */}
+                <div>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <CustomSelect
+                      name="driverId"
+                      label=""
+                      placeholder="ড্রাইভারের নাম"
+                      control={control}
+                      options={formatDriver}
+                      searchable
+                    />
+
+                    <CustomInput
+                      name="driverMobileNumber"
+                      label=""
+                      placeholder="ড্রাইভারের ফোন নম্বর"
+                      register={register}
+                      type="text"
+                    />
+
+                    <CustomInput
+                      name="carNumber"
+                      label=""
+                      placeholder="গাড়ি নম্বর"
+                      register={register}
+                      type="text"
+                    />
+                  </div>
+                </div>
+
+                {/* Bottom Information */}
+                <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+                  <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-3">
+                    <div className="relative">
+                      <CustomInput
+                        type="number"
+                        placeholder="গাড়ি ভাড়া লিখুন    ৳"
+                        name="carRent"
+                        register={register}
+                      />
+                    </div>
+
+                    <div className="flex mt-1 items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2.5">
+                      <div>
+                        <p className="text-xs font-semibold text-gray-700">
+                          কাস্টমারকে এসএমএস দিন
+                        </p>
+                        <p className="mt-0.5 text-[10px] text-gray-400">
+                          ডেলিভারি সম্পন্ন হলে এসএমএস পাঠানো হবে
+                        </p>
+                      </div>
+
+                      <SmsSwitch
+                        sendSms={sendSms}
+                        setSendSms={setSendSms}
+                        showBorder={false}
+                        showLabel={false}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50/50 p-3">
+                    <button
+                      type="button"
+                      // onClick={handleClear}
+                      className="h-10 text-sm rounded-xl border border-gray-300 bg-white px-4  font-semibold text-gray-600 transition-all hover:border-[#039A63] hover:text-[#039A63] active:scale-[0.98]"
+                    >
+                      ক্লিয়ার
+                    </button>
+
+                    <button
+                      type="submit"
+                      onClick={() => setSaveType("saveAndCreate")}
+                      disabled={createDeliveryLoading}
+                      className="h-10 text-sm rounded-xl bg-[#039A63] px-4  font-semibold text-white shadow-sm transition-all hover:bg-[#028a58] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {createDeliveryLoading ? "সেভ হচ্ছে..." : "সেভ + নতুন"}
+                    </button>
+
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-1 col-span-2 md:col-span-1 w-full flex-col gap-2 pt-5 sm:flex-row sm:items-center">
-              {/* Clear */}
-              <button
-                type="button"
-                onClick={() =>
-                  reset({
-                    customer: {
-                      address: "",
-                      name: "",
-                      phoneNumber: "",
-                    },
-                  })
-                }
-                className="w-full rounded border border-gray-300 bg-white px-5 py-2 text-[14px] font-medium text-gray-500 duration-500 hover:border-[#039A63] hover:text-[#039A63] sm:w-auto sm:flex-1"
-              >
-                ক্লিয়ার
-              </button>
+          </div>
 
-              {/* Save */}
-              {/* <button
-                type="button"
-                onClick={() => setSaveType("saveOnly")}
-                className="w-full rounded bg-[#039A63] px-5 py-2 text-[14px] font-medium text-white transition hover:bg-[#028a58] sm:w-auto sm:flex-1"
-              >
-                সেভ করুন
-              </button> */}
 
-              {/* Save + New Delivery */}
-              <button
-                type="submit"
-                onClick={() => setSaveType("saveAndCreate")}
-                className="w-full disabled:bg-gray-500 cursor-pointer rounded bg-[#039A63] px-5 py-2 text-[14px] font-medium text-white transition hover:bg-[#028a58] sm:w-auto sm:flex-1"
-                disabled={createDeliveryLoading}
-              >
-                {createDeliveryLoading ? "সেভ হচ্ছে.." : "সেভ + নতুন ডেলিভারি"}
-              </button>
+        </form>
+
+        {(isLoading || deliveryNoLoading) && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-[2px]">
+            <div className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-600 shadow-lg">
+              তথ্য লোড হচ্ছে...
             </div>
           </div>
-        </form>
-        {(isLoading || deliveryNoLoading) && (
-          <div className="absolute inset-0 w-full  bg-gray-100/50 blur-md"></div>
         )}
       </div>
     </CustomModalBottom>

@@ -69,8 +69,12 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
   } = useForm<TChallanCreate>({
     defaultValues: {
       invoiceItems: {
-        items: [{ class: "", rate: 0, quantity: 0, price: 0 }],
+        items: [{ class: "", rate: 0, quantity: 0, price: 0, }],
       },
+      invoice: {
+        discount: 0,
+        carRent: 0
+      }
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -83,7 +87,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
   const carRent = watch("invoice.carRent");
   const discount = watch("invoice.discount");
   const cash = watch("invoice.cash");
-
+  const chalanType = watch("invoice.chalanType");
   // Update price instantly whenever rate or quantity changes
   watchItems.forEach((item, index) => {
     const selectedClassName = item.class;
@@ -204,89 +208,152 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
     >
       {classRateLoading || serialLoading ? (
         <CustomStatus type="loading" />
-      ) : invoiceError || isError ? <CustomStatus type="error" /> : (
-        <div>
-          <div className="flex flex-col lg:flex-row justify-between gap-4 mb-4">
-            <div className="flex items-stretch sm:items-center gap-2 w-full lg:w-auto">
-              <button className="bg-[#039A63] text-white px-4 sm:px-6 py-2 rounded font-medium hover:bg-[#028a58] transition flex items-center justify-center gap-2 w-full sm:w-auto">
+      ) : invoiceError || isError ? (
+        <CustomStatus type="error" />
+      ) : (
+        <div className="space-y-4">
+          <div className="flex flex-col lg:flex-row gap-3 rounded-xl border border-gray-200 bg-white p-3 shadow-sm justify-between">
+
+            <div className="flex w-full  gap-2">
+              <button
+                type="button"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#039A63] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#028a58] sm:w-auto"
+              >
                 নতুন কাস্টমার
               </button>
+
               <button
+                type="button"
                 onClick={() => setOpenOldCustomerModal(true)}
-                className="text-orange-500 border border-orange-500 px-3 py-2 rounded hover:bg-orange-400 hover:text-white transition w-full sm:w-auto text-center">
+                className="w-full rounded-lg border border-orange-400 bg-orange-50 px-5 py-2 text-sm font-semibold text-orange-600 transition hover:bg-orange-500 hover:text-white sm:w-auto"
+              >
                 পুরাতন কাস্টমার
               </button>
             </div>
 
-            <div className="flex items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <div className="flex items-center border h-[41px] border-gray-300 rounded-md px-2 py-1 w-full sm:w-auto">
-                <label className="text-gray-700 whitespace-nowrap mr-2">
-                  চালান নম্বর:
-                </label>
-                <input
-                  type="text"
-                  className="outline-none w-full sm:w-20 pl-2 text-gray-800"
-                  placeholder="000"
-                  {...register("invoice.serial")}
-                  defaultValue={
-                    invoiceSerial?.data?.invoiceSerial
-                      ? invoiceSerial?.data?.invoiceSerial
-                      : 1
-                  }
-                />
+            <div className="flex w-full gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex w-full items-center rounded-lg border border-gray-300 bg-gray-50 px-3 py-2">
+                  <label className="mr-2 whitespace-nowrap text-sm font-medium text-gray-700">
+                    চালান নম্বর:
+                  </label>
+
+                  <input
+                    type="text"
+                    className="min-w-0 flex-1 bg-transparent pl-1 text-sm font-medium text-gray-800 outline-none"
+                    placeholder="000"
+                    {...register("invoice.serial")}
+                    defaultValue={
+                      invoiceSerial?.data?.invoiceSerial
+                        ? invoiceSerial.data.invoiceSerial
+                        : 1
+                    }
+                  />
+                </div>
               </div>
 
-              <CustomDatePickerState
-                value={challanDate!}
-                onChange={setChallanDate!}
-                disablePastDates
-              />
+              <div className="min-w-0 flex-1">
+                <CustomDatePickerState
+                  value={challanDate!}
+                  onChange={setChallanDate!}
+                  disablePastDates
+                />
+              </div>
             </div>
           </div>
 
-          {/* Main Form */}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              <CustomInput
-                name="customer.phoneNumber"
-                label="ফোন নম্বর"
-                placeholder="ফোন নম্বর"
-                register={register}
-                type="text"
-                rules={{ required: "ফোন নম্বর লিখুন" }}
-                error={errors.customer?.phoneNumber}
-              />
-              <CustomInput
-                name="customer.name"
-                label="কাস্টমারের নাম"
-                placeholder="কাস্টমারের নাম"
-                register={register}
-                type="text"
-                rules={{ required: "কাস্টমারের নাম লিখুন" }}
-                error={errors.customer?.name}
-              />
-              <CustomInput
-                name="customer.address"
-                label="কাস্টমারের ঠিকানা"
-                placeholder="কাস্টমারের ঠিকানা"
-                register={register}
-                type="text"
-                rules={{ required: "কাস্টমারের ঠিকানা লিখুন" }}
-                error={errors.customer?.address}
-              />
-              <CustomSelect
-                name="invoice.chalanType"
-                label="চালানের ধরণ"
-                placeholder="চালানের ধরণ"
-                error={errors.invoice?.chalanType}
-                rules={{ required: "চালানের ধরণ লিখুন" }}
-                control={control}
-                options={[
-                  { label: "রেগুলার চালান", value: "রেগুলার চালান" },
-                  { label: "অগ্রিম চালান", value: "অগ্রিম চালান" },
-                ]}
-              />
-              <div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-[#039A63]">
+                  👤
+                </div>
+
+                <div>
+                  <h3 className="text-base font-semibold text-gray-800">
+                    কাস্টমারের তথ্য
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    কাস্টমারের প্রয়োজনীয় তথ্য পূরণ করুন
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                <CustomInput
+                  name="customer.phoneNumber"
+                  label="ফোন নম্বর"
+                  placeholder="ফোন নম্বর"
+                  register={register}
+                  type="text"
+                  rules={{ required: "ফোন নম্বর লিখুন" }}
+                  error={errors.customer?.phoneNumber}
+                />
+
+                <CustomInput
+                  name="customer.name"
+                  label="কাস্টমারের নাম"
+                  placeholder="কাস্টমারের নাম"
+                  register={register}
+                  type="text"
+                  rules={{ required: "কাস্টমারের নাম লিখুন" }}
+                  error={errors.customer?.name}
+                />
+
+                <CustomInput
+                  name="customer.address"
+                  label="কাস্টমারের ঠিকানা"
+                  placeholder="কাস্টমারের ঠিকানা"
+                  register={register}
+                  type="text"
+                  rules={{ required: "কাস্টমারের ঠিকানা লিখুন" }}
+                  error={errors.customer?.address}
+                />
+
+                <CustomSelect
+                  name="invoice.chalanType"
+                  label="চালানের ধরণ"
+                  placeholder="চালানের ধরণ"
+                  error={errors.invoice?.chalanType}
+                  rules={{ required: "চালানের ধরণ নির্বাচন করুন" }}
+                  control={control}
+                  options={[
+                    {
+                      label: "রেগুলার চালান",
+                      value: "রেগুলার চালান",
+                    },
+                    {
+                      label: "অগ্রিম চালান",
+                      value: "অগ্রিম চালান",
+                    },
+                  ]}
+                />
+
+                {chalanType === "অগ্রিম চালান" && (
+                  <CustomSelect
+                    name="invoice.deliverySeason"
+                    label="ডেলিভারি সিজন"
+                    placeholder="ডেলিভারি সিজন নির্বাচন করুন"
+                    control={control}
+                    options={[
+                      { label: "2026-2027", value: "2026-2027" },
+                      { label: "2027-2028", value: "2027-2028" },
+                      { label: "2028-2029", value: "2028-2029" },
+                      { label: "2029-2030", value: "2029-2030" },
+                      { label: "2030-2031", value: "2030-2031" },
+                      { label: "2031-2032", value: "2031-2032" },
+                      { label: "2032-2033", value: "2032-2033" },
+                      { label: "2033-2034", value: "2033-2034" },
+                      { label: "2034-2035", value: "2034-2035" },
+                      { label: "2035-2036", value: "2035-2036" },
+                    ]}
+                    error={errors.invoice?.deliverySeason}
+                    rules={{
+                      required: "ডেলিভারি সিজন নির্বাচন করুন",
+                    }}
+                  />
+                )}
+
                 <CustomDatePicker
                   control={control}
                   name="invoice.deliveryDate"
@@ -294,233 +361,322 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                   label="ডেলিভারি তারিখ"
                   disablePastDates
                   error={errors.invoice?.deliveryDate}
-                  rules={{ required: "ডেলিভারি তারিখ" }}
+                  rules={{
+                    required: "ডেলিভারি তারিখ নির্বাচন করুন",
+                  }}
+                />
+
+                <CustomInput
+                  name="invoice.note"
+                  label="নোট"
+                  placeholder="নোট লিখুন"
+                  register={register}
+                  type="text"
                 />
               </div>
-              <CustomInput
-                name="invoice.note"
-                label="নোট"
-                placeholder="নোট"
-                register={register}
-                type="text"
-              />
             </div>
 
-            {/* Items Section */}
-            <div className="mb-4 flex flex-col gap-2">
-              {fields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="flex w-full items-center md:items-end gap-2 rounded-xl border border-gray-200 bg-gray-50 p-3"
-                >
-                  {/* Add Button */}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      append({ class: "", rate: 0, quantity: 0, price: 0 })
-                    }
-                    className="flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border border-green-200 bg-green-50 text-green-600 transition-all duration-200 hover:bg-green-600 hover:text-white hover:shadow-md active:scale-95"
-                    title="নতুন সারি যোগ করুন"
-                  >
-                    <Plus size={18} strokeWidth={2.5} />
-                  </button>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    <div className="flex-1">
-                      <CustomSelect
-                        name={`invoiceItems.items.${index}.class`}
-                        label="শ্রেণি"
-                        placeholder="শ্রেণি"
-                        control={control}
-                        options={classOptions || []}
-                        error={errors.invoiceItems?.items?.[index]?.class}
-                        rules={{
-                          required: "শ্রেণি নির্বাচন করুন",
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <CustomInput
-                        name={`invoiceItems.items.${index}.rate`}
-                        label="রেট"
-                        placeholder="0"
-                        register={register}
-                        type="text"
-                        error={errors.invoiceItems?.items?.[index]?.rate}
-                        rules={{
-                          required: "রেট আবশ্যক",
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <CustomInput
-                        name={`invoiceItems.items.${index}.quantity`}
-                        label="পরিমাণ"
-                        placeholder="0"
-                        register={register}
-                        type="number"
-                        error={errors.invoiceItems?.items?.[index]?.quantity}
-                        rules={{ required: "পরিমাণ আবশ্যক" }}
-                      />
-                    </div>
-
-                    <div className="flex-1">
-                      <CustomInput
-                        name={`invoiceItems.items.${index}.price`}
-                        label="মূল্য"
-                        placeholder="0"
-                        register={register}
-                        type="number"
-                        readonly
-                        error={errors.invoiceItems?.items?.[index]?.price}
-                        rules={{ required: "মূল্য আবশ্যক" }}
-                      />
-                    </div>
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-center justify-between border-b border-gray-100 pb-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    📦
                   </div>
-                  {/* Delete Button */}
-                  <button
-                    type="button"
-                    disabled={fields.length === 1}
-                    onClick={() => remove(index)}
-                    title="সারি মুছে ফেলুন"
-                    className={`flex h-10 w-10  cursor-pointer items-center justify-center rounded-lg border transition-all duration-200 active:scale-95 ${fields.length === 1
-                      ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
-                      : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white hover:shadow-md"
-                      }`}
-                  >
-                    <Trash size={18} strokeWidth={2.5} />
-                  </button>
-                </div>
-              ))}
-            </div>
 
-            {/* Footer Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {due ? (
-                <div className=" flex-col items-center justify-center h-auto">
-                  <h1 className="text-orange-600 text-sm text-center">
-                    বাকি পরিশোধের তারিখ লিখুন
-                  </h1>
-                  <div className="w-max mx-auto py-2">
-                    <CustomDatePickerState disablePastDates value={duePayDate} onChange={setDuepayDate} />
-                  </div>
-                  <SmsSwitch
-                    sendSms={sendSms}
-                    setSendSms={setSendSms}
-                    showBorder={false}
-                    showLabel={false}
-                    title="কাস্টমারকে এসএমএস দিন"
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center">
                   <div>
-                    <h1 className="text-red-600 mx-auto bg-red-50 p-5 text-4xl font-semibold w-max">
-                      DEMO
-                    </h1>
+                    <h3 className="text-base font-semibold text-gray-800">
+                      পণ্যের তথ্য
+                    </h3>
+
+                    <p className="text-xs text-gray-500">
+                      শ্রেণি, রেট ও পরিমাণ নির্বাচন করুন
+                    </p>
+                  </div>
+                </div>
+
+                <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-[#039A63]">
+                  {fields.length} টি আইটেম
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="rounded-xl border border-gray-200 bg-gray-50 p-3 transition hover:border-green-200"
+                  >
+                    <div className="flex flex-col gap-3 md:flex-row md:items-end">
+                      <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-4">
+                        <CustomSelect
+                          name={`invoiceItems.items.${index}.class`}
+                          label="শ্রেণি"
+                          placeholder="শ্রেণি নির্বাচন করুন"
+                          control={control}
+                          options={classOptions || []}
+                          error={errors.invoiceItems?.items?.[index]?.class}
+                          rules={{
+                            required: "শ্রেণি নির্বাচন করুন",
+                          }}
+                        />
+
+                        <CustomInput
+                          name={`invoiceItems.items.${index}.rate`}
+                          label="রেট"
+                          placeholder="0"
+                          register={register}
+                          type="text"
+                          error={errors.invoiceItems?.items?.[index]?.rate}
+                          rules={{
+                            required: "রেট আবশ্যক",
+                          }}
+                        />
+
+                        <CustomInput
+                          name={`invoiceItems.items.${index}.quantity`}
+                          label="পরিমাণ"
+                          placeholder="0"
+                          register={register}
+                          type="number"
+                          error={errors.invoiceItems?.items?.[index]?.quantity}
+                          rules={{
+                            required: "পরিমাণ আবশ্যক",
+                          }}
+                        />
+
+                        <CustomInput
+                          name={`invoiceItems.items.${index}.price`}
+                          label="মূল্য"
+                          placeholder="0"
+                          register={register}
+                          type="number"
+                          readonly
+                          error={errors.invoiceItems?.items?.[index]?.price}
+                          rules={{
+                            required: "মূল্য আবশ্যক",
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            append({
+                              class: "",
+                              rate: 0,
+                              quantity: 0,
+                              price: 0,
+                            })
+                          }
+                          title="নতুন সারি যোগ করুন"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-green-200 bg-green-50 text-green-600 transition hover:bg-green-600 hover:text-white active:scale-95"
+                        >
+                          <Plus size={16} strokeWidth={2.5} />
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={fields.length === 1}
+                          onClick={() => remove(index)}
+                          title="সারি মুছে ফেলুন"
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition active:scale-95 ${fields.length === 1
+                            ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                            : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white"
+                            }`}
+                        >
+                          <Trash size={16} strokeWidth={2.5} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {/* Payment Information */}
+              <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-50 text-lg">
+                    📅
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-800">
+                      পেমেন্ট তথ্য
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      বাকি থাকলে পরবর্তী পরিশোধের তারিখ দিন
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  {due > 0 ? (
+                    <div className="rounded-xl border border-orange-100 bg-orange-50/50 p-3">
+                      <div className="mb-2">
+                        <p className="text-sm font-semibold text-orange-600">
+                          বাকি পরিশোধের তারিখ
+                        </p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          কাস্টমার কখন বাকি পরিশোধ করবে সেই তারিখ নির্বাচন করুন
+                        </p>
+                      </div>
+
+                      <CustomDatePickerState
+                        disablePastDates
+                        value={duePayDate}
+                        onChange={setDuepayDate}
+                      />
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-green-100 bg-green-50 p-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-green-600 shadow-sm">
+                          ✓
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-green-700">
+                            কোনো বাকি নেই
+                          </p>
+                          <p className="mt-1 text-xs text-green-600">
+                            এই কাস্টমারের কোনো বাকি নেই
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SMS */}
+                  <div className="mt-3 flex items-center justify-between
+                   rounded-xl border border-gray-100 bg-white px-3 
+                   shadow py-2.5">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700">
+                        কাস্টমারকে SMS পাঠান
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-400">
+                        চালান তৈরি হওয়ার পর SMS পাঠানো হবে
+                      </p>
+                    </div>
+
                     <SmsSwitch
                       sendSms={sendSms}
                       setSendSms={setSendSms}
                       showBorder={false}
                       showLabel={false}
-                      title="কাস্টমারকে এসএমএস দিন"
+                      title="SMS"
                     />
                   </div>
                 </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-2">
-                <CustomInput
-                  name="invoice.productPrice"
-                  label="মূল্য"
-                  placeholder="0"
-                  register={register}
-                  type="number"
-                  readonly
-                  error={errors.invoice?.productPrice}
-                  rules={{ required: "মূল্য আবশ্যক" }}
-                />
-
-                <CustomInput
-                  name="invoice.discount"
-                  label="ছাড়"
-                  placeholder="0"
-                  register={register}
-                  type="number"
-                  error={errors.invoice?.discount}
-                  rules={{ required: "ছাড় আবশ্যক" }}
-                />
-
-                <CustomInput
-                  name="invoice.carRent"
-                  label="গাড়ি ভাড়া"
-                  placeholder="৳ 0"
-                  register={register}
-                  type="number"
-                  error={errors.invoice?.carRent}
-                  rules={{ required: "গাড়ি ভাড়া আবশ্যক" }}
-                />
-
-                <CustomInput
-                  name="invoice.totalPrice"
-                  label="মোট"
-                  placeholder="৳ 0"
-                  register={register}
-                  type="number"
-                  readonly
-                  error={errors.invoice?.totalPrice}
-                  rules={{ required: "মোট মূল্য আবশ্যক" }}
-                />
-
-                <CustomInput
-                  name="invoice.cash"
-                  label="নগদ"
-                  placeholder="৳ 0"
-                  register={register}
-                  type="number"
-                  error={errors.invoice?.cash}
-                  rules={{ required: "নগদ পরিমাণ আবশ্যক" }}
-                />
-
-                <CustomInput
-                  name="invoice.due"
-                  label="বাকি"
-                  placeholder="৳ 0"
-                  register={register}
-                  type="number"
-                  readonly
-                  error={errors.invoice?.due}
-                />
               </div>
 
+              {/* হিসাবের তথ্য */}
+              <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="mb-3 flex items-center gap-2 border-b border-gray-100 pb-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-lg font-bold text-[#039A63]">
+                    ৳
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-800">
+                      হিসাবের তথ্য
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      চালানের মোট হিসাব
+                    </p>
+                  </div>
+                </div>
 
+                <div className="grid grid-cols-2 gap-2.5">
+                  <CustomInput
+                    name="invoice.productPrice"
+                    label="মূল্য"
+                    placeholder="0"
+                    register={register}
+                    type="number"
+                    readonly
+                    error={errors.invoice?.productPrice}
+                    rules={{ required: "মূল্য আবশ্যক" }}
+                  />
+
+                  <CustomInput
+                    name="invoice.discount"
+                    label="ছাড়"
+                    placeholder="0"
+                    register={register}
+                    type="number"
+                    error={errors.invoice?.discount}
+                    rules={{ required: "ছাড় আবশ্যক" }}
+                  />
+
+                  <CustomInput
+                    name="invoice.carRent"
+                    label="গাড়ি ভাড়া"
+                    placeholder="৳ 0"
+                    register={register}
+                    type="number"
+                    error={errors.invoice?.carRent}
+                    rules={{ required: "গাড়ি ভাড়া আবশ্যক" }}
+                  />
+
+                  <CustomInput
+                    name="invoice.totalPrice"
+                    label="মোট"
+                    placeholder="৳ 0"
+                    register={register}
+                    type="number"
+                    readonly
+                    error={errors.invoice?.totalPrice}
+                    rules={{ required: "মোট মূল্য আবশ্যক" }}
+                  />
+
+                  <CustomInput
+                    name="invoice.cash"
+                    label="নগদ"
+                    placeholder="৳ 0"
+                    register={register}
+                    type="number"
+                    error={errors.invoice?.cash}
+                    rules={{ required: "নগদ পরিমাণ আবশ্যক" }}
+                  />
+
+                  <CustomInput
+                    name="invoice.due"
+                    label="বাকি"
+                    placeholder="৳ 0"
+                    register={register}
+                    type="number"
+                    readonly
+                    error={errors.invoice?.due}
+                  />
+                </div>
+              </div>
             </div>
-
-            {/* Buttons */}
-            <div className="grid grid-cols-2 gap-5 pt-5">
-              <div
+            <div className="grid grid-cols-2 gap-3 border-t border-gray-200 pt-4">
+              <button
+                type="button"
                 onClick={() => reset()}
-                className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5 text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer text-center"
+                className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-semibold text-gray-600 transition hover:border-[#039A63] hover:text-[#039A63]"
               >
                 ক্লিয়ার
-              </div>
+              </button>
+
               <button
                 type="submit"
-                className="text-[14px] bg-[#039A63] disabled:bg-gray-500 px-8 py-1.5 text-white font-medium rounded cursor-pointer"
                 disabled={createInvoiceLoading}
+                className="rounded-lg bg-[#039A63] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#028a58] disabled:cursor-not-allowed disabled:bg-gray-400"
               >
                 {createInvoiceLoading ? "সেভ হচ্ছে..." : "সেভ করুন"}
               </button>
             </div>
           </form>
 
-          {
-            openOlodCustomerModal &&
+          {openOlodCustomerModal && (
             <OldCustomerModal
               setCustomer={handleSelectOldCustomer}
               isOpen={openOlodCustomerModal}
               onClose={() => setOpenOldCustomerModal(false)}
             />
-          }
+          )}
         </div>
       )}
     </CustomModalBottom>

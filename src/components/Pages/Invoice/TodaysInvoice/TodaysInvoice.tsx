@@ -37,6 +37,8 @@ import {
   Notebook,
   User,
   Trash,
+  MessageSquare,
+  HandCoins,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
@@ -45,6 +47,8 @@ import Swal from "sweetalert2";
 import UnloadPagePrint from "../../UnloadPage/UploadPagePrint";
 import DailyChallanPrint from "@/components/PrintComponent/DailyChallanPrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
+import SendCustomerSmsModal from "@/components/Dashboard/Modals/SendCustomerSmsModal";
 
 const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const [searchItems, setSearchItem] = useState("");
@@ -60,6 +64,9 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const [invoiceId, setInvoiceId] = useState<number | undefined>(undefined);
   const [openChalanDetailsModal, setOpenChalanDetailsModal] =
     useState<boolean>(false);
+  const [openDueModal, setOpenDeuModal] = useState<boolean>(false);
+  const [openSmsModal, setOpenSmsModal] = useState<boolean>(false);
+  const [customerId, setCustomerId] = useState<string>();
   // VATA INFORMATIONS
   const { data: vata } = useGetVataInfoQuery(undefined)
   // FETCH ALL INVOICES
@@ -112,6 +119,15 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
     });
   };
 
+  const handleDueCollection = (id: string) => {
+    setCustomerId(id)
+    setOpenDeuModal(true)
+  }
+
+  const handleSendSms = (id: string) => {
+    setCustomerId(id)
+    setOpenSmsModal(true)
+  }
 
 
   return (
@@ -502,11 +518,32 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                               title="চালান বিস্তারিত"
                             />
                           </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={() => handleSendSms(row?.customer?.customerCode)}
+                          >
+                            <CustomDropDownMenuItem
+                              Icon={MessageSquare}
+                              title="এসএমএস দিন"
+                            />
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={() => handleDueCollection(row?.customer?.customerCode)}
+                          >
+                            <CustomDropDownMenuItem
+                              Icon={HandCoins}
+                              title="বাকি জমা করুন"
+                            />
+                          </DropdownMenuItem>
+
+
                           <DropdownMenuItem>
                             <Link href={`/dashboard/customer/profile/${row?.customer?.customerCode}`}><CustomDropDownMenuItem
                               Icon={User}
                               title="প্রোফাইলে যান"
-                            /></Link>
+                            />
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteInvoice(row?.id)}
@@ -594,6 +631,22 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
           vataInformation={vata?.data}
         />
       </CommonPrint>
+
+      {openDueModal &&
+        <NewDueCollectionModalId
+          onClose={() => setOpenDeuModal(false)}
+          isOpen={openDueModal}
+          id={customerId}
+        />
+      }
+
+      {openSmsModal &&
+        <SendCustomerSmsModal
+          onClose={() => setOpenSmsModal(false)}
+          isOpen={openSmsModal}
+          customerId={customerId}
+        />
+      }
     </div>
   );
 };

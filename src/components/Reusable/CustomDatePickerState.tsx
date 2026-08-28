@@ -101,7 +101,7 @@ const CustomDatePickerState = ({
         </label>
       )}
 
-      <div className="relative w-full max-w-[250px]">
+      <div className="relative w-full max-w-[350px]">
         <Popover
           open={open}
           onOpenChange={setOpen}

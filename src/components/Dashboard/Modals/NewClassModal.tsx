@@ -17,7 +17,7 @@ type TCustomModal = {
 
 const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
   const [mutateAsync, { isLoading }] = useCreateClassAndRateMutation();
-  const { register, handleSubmit, control, reset } = useForm<TClassAndRate>({
+  const { register, handleSubmit, control, reset,formState:{errors} } = useForm<TClassAndRate>({
     defaultValues: {},
   });
 
@@ -66,6 +66,10 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
             label="শ্রেণির ধরণ"
             placeholder="শ্রেণির ধরণ"
             control={control}
+              error={errors.classType}
+            rules={{
+              required: "শ্রেণির ধরণ নির্বাচন করুন",
+            }}
             options={[
               {
                 label: "ইট",
@@ -88,6 +92,18 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
             placeholder="শ্রেণির নাম"
             register={register}
             type="text"
+            error={errors.className}
+            rules={{
+              required: "শ্রেণির নাম লিখুন",
+              minLength: {
+                value: 2,
+                message: "শ্রেণির নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+              },
+              maxLength: {
+                value: 50,
+                message: "শ্রেণির নাম সর্বোচ্চ ৫০ অক্ষরের হতে হবে",
+              },
+            }}
           />
 
           <CustomInput
@@ -96,6 +112,23 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
             placeholder="রেট (৳)"
             register={register}
             type="text"
+            error={errors.rate}
+            rules={{
+              required: "রেট লিখুন",
+              validate: (value: string) => {
+                const rate = Number(value);
+
+                if (isNaN(rate)) {
+                  return "সঠিক রেট লিখুন";
+                }
+
+                if (rate <= 0) {
+                  return "রেট ০ এর চেয়ে বেশি হতে হবে";
+                }
+
+                return true;
+              },
+            }}
           />
         </div>
 

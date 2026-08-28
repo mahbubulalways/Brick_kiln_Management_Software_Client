@@ -1,3 +1,4 @@
+import { ISeason } from "@/interface/season";
 import { IUser } from "@/interface/user";
 import { TVataInformation } from "@/interface/vata";
 import { Dispatch, SetStateAction } from "react";
@@ -22,8 +23,8 @@ export type TChallanCreate = {
     serial: number;
     chalanType: string;
     deliveryDate: Date | null;
-    challanDate: Date;
-    duePaymentDate: Date;
+    challanDate: Date|null;
+    duePaymentDate: Date|null;
     note: string;
     productPrice: number;
     discount: number;
@@ -31,6 +32,7 @@ export type TChallanCreate = {
     totalPrice: number;
     cash: number;
     due: number;
+    deliverySeason?: string|null;
   };
   customer: {
     phoneNumber: string;
@@ -85,9 +87,10 @@ export interface IChallanItem {
 export interface IChallanForDataShow {
   id: string;
   serial: number;
-  season:string;
+  season:ISeason;
   chalanType: string;
   challanDate: string;
+  deliverySeason: string;
   createdAt: string;
   updatedAt: string;
   customerId: number;
@@ -103,6 +106,9 @@ export interface IChallanForDataShow {
   deliveryDate: string;
   note?: string;
   carRent: number;
+
+  // NOT IN DB
+  totalDue:number
 }
 
 // DELIVERY
