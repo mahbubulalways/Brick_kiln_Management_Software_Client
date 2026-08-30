@@ -63,9 +63,9 @@ const UpdateChalanModal = ({
     isLoading: classRateLoading,
     data: fetchedData,
     isError: classError,
-  } = useGetAllClassAndRateQuery(undefined);
+  } = useGetAllClassAndRateQuery({ limit: 1000000, page: 1 });
 
-  const classAndRate: TClassAndRate[] = fetchedData?.data || [];
+  const classAndRate: TClassAndRate[] = fetchedData?.data?.data || [];
 
   const [mutateAsync, { isLoading: updateLoading }] =
     useUpdateInvoiceMutation();
@@ -187,23 +187,23 @@ const UpdateChalanModal = ({
         items:
           data.items?.length > 0
             ? data.items.map((item: any) => ({
-                class: item.class || "",
-                rate: Number(item.rate) || 0,
-                quantity: Number(item.quantity) || 0,
-                price: Number(item.price) || 0,
+              class: item.class || "",
+              rate: Number(item.rate) || 0,
+              quantity: Number(item.quantity) || 0,
+              price: Number(item.price) || 0,
 
-                ...(item.delivered !== undefined
-                  ? { delivered: item.delivered }
-                  : {}),
-              }))
+              ...(item.delivered !== undefined
+                ? { delivered: item.delivered }
+                : {}),
+            }))
             : [
-                {
-                  class: "",
-                  rate: 0,
-                  quantity: 0,
-                  price: 0,
-                },
-              ],
+              {
+                class: "",
+                rate: 0,
+                quantity: 0,
+                price: 0,
+              },
+            ],
       },
     });
 
@@ -796,11 +796,10 @@ const UpdateChalanModal = ({
                           disabled={fields.length === 1}
                           onClick={() => remove(index)}
                           title="সারি মুছে ফেলুন"
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition active:scale-95 ${
-                            fields.length === 1
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition active:scale-95 ${fields.length === 1
                               ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
                               : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white"
-                          }`}
+                            }`}
                         >
                           <Trash
                             size={16}

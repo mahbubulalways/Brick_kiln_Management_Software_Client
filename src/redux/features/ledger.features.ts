@@ -19,7 +19,7 @@ const ledgerAPi = baseApi.injectEndpoints({
         url: `/ledger/all`,
         method: "GET",
       }),
-      providesTags: ["LEDGER"],
+      providesTags: ["LEDGER","SEASON"],
     }),
     // GET ALL LEDGER
     getAllLedgerPagination: builder.query({
@@ -27,7 +27,7 @@ const ledgerAPi = baseApi.injectEndpoints({
         url: `/ledger/all-ledgers?page=${query.page}&limit=${query.limit}&search=${query.search}`,
         method: "GET",
       }),
-      providesTags: ["LEDGER"],
+      providesTags: ["LEDGER","SEASON"],
     }),
 
     // GET ALL LEDGER WITH AMOUNT

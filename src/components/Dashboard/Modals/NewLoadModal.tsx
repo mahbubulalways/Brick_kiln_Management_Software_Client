@@ -38,12 +38,12 @@ const NewLoadModal = ({ isOpen, onClose }: TCustomModal) => {
     });
     const isPaka = watch("loadType") === "পাকা ইট লোড হয়েছে"
     const { isLoading: classLoading, data: fetchedData } =
-        useGetAllClassAndRateQuery(undefined);
-console.log(fetchedData)
+        useGetAllClassAndRateQuery({ limit: 100000});
+    console.log(fetchedData)
     const formatLabelValue = fetchedData?.data?.filter((dt: TClassAndRate) =>
         dt.classType !== "অন্যান্য")?.map((dt: TClassAndRate) =>
             ({ label: dt.className, value: dt.className }))
-    
+
     const onSubmit: SubmitHandler<TLoadInfo> = async (data) => {
         console.log(data);
         try {
@@ -138,7 +138,7 @@ console.log(fetchedData)
                     </div>
                     <button
                         type="submit"
-                        className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
+                        className="text-[14px] disabled:bg-gray-500 disabled:cursor-default bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
                         disabled={isLoading}
                     >
                         {isLoading ? "অ্যাড হচ্ছে..." : "অ্যাড করুন"}

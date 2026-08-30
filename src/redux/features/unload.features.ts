@@ -17,7 +17,7 @@ const unloadApi = baseApi.injectEndpoints({
                     date: query.date,
                 },
             }),
-            providesTags: ["UNLOAD"],
+            providesTags: ["UNLOAD", "SEASON"],
         }),
 
         // GET REPORT
@@ -26,7 +26,7 @@ const unloadApi = baseApi.injectEndpoints({
                 url: "/unload/report",
                 method: "GET",
             }),
-            providesTags: ["UNLOAD"],
+            providesTags: ["UNLOAD", "SEASON"],
         }),
 
         // GET SINGLE LOAD INFO
@@ -47,8 +47,6 @@ const unloadApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["UNLOAD"],
         }),
-
-
 
         // DELETE LOAD INFO
         deleteUnloadInfo: builder.mutation({

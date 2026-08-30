@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+
 import {
     Folder,
     FileText,
@@ -13,33 +14,32 @@ import {
     X,
     Download,
 } from "lucide-react";
+
 import { useGetAllDocumentsQuery } from "@/redux/features/document.features";
 import { IDocument } from "@/interface/document";
+
 import Link from "next/link";
 import Image from "next/image";
+
 import ImagePreview from "./ImagePreview";
 import { isImage } from "./document.utils";
 import { WindowsFolderIcon } from "./WindowsFolderIcon";
 import FileTypeIcon from "./FileTypeIcon";
 import { CommonActionMenu } from "./CommonActionMenu";
+
 import UpdateFolderNameModal from "@/components/Dashboard/Modals/EditModals/UpdateFolderNameModal";
+
 import { CommonFolderActionMenu } from "./CommonFolderActionMenu";
 
 interface ShowAllDocumentsProps {
     orientation: "grid" | "list" | "image";
-    documents: IDocument[]
+    documents: IDocument[];
 }
 
 export default function ShowAllDocuments({
     documents,
     orientation,
 }: ShowAllDocumentsProps) {
-
-
-
-
-
-
     const folders = documents?.filter(
         (item) => item.type === "FOLDER"
     );
@@ -48,12 +48,10 @@ export default function ShowAllDocuments({
         (item) => item.type === "FILE"
     );
 
-
     if (orientation === "list") {
         return (
             <>
                 <div className="mt-5 space-y-6">
-
                     {/* FOLDERS */}
                     {folders.length > 0 && (
                         <div>
@@ -94,23 +92,19 @@ export default function ShowAllDocuments({
                         <div>
                             <div className="space-y-2">
                                 {files.map((file) => (
-
                                     <div
                                         key={file.id}
-                                        onClick={() =>
-                                            isImage(file)
-                                        }
+                                        onClick={() => isImage(file)}
                                         className="flex min-h-[64px] cursor-pointer items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 transition-all hover:border-[#039A63] hover:bg-[#f8fffc] hover:shadow-sm"
                                     >
                                         <Link
                                             href={`${process.env.NEXT_PUBLIC_BACKEND_API}/uploads/${file.name}`}
-                                            target="_blank">
+                                            target="_blank"
+                                        >
                                             <div className="flex min-w-0 items-center gap-4">
-
                                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-50">
                                                     {isImage(file) &&
-                                                        file.name ? (
-
+                                                    file.name ? (
                                                         <Image
                                                             alt={file.name}
                                                             width={100}
@@ -119,15 +113,11 @@ export default function ShowAllDocuments({
                                                             src={`${process.env.NEXT_PUBLIC_BACKEND_API}/uploads/${file.name}`}
                                                             className="h-full w-full object-cover"
                                                         />
-
                                                     ) : (
-
-
                                                         <FileTypeIcon
                                                             file={file}
                                                             size={22}
                                                         />
-
                                                     )}
                                                 </div>
 
@@ -138,14 +128,19 @@ export default function ShowAllDocuments({
 
                                                     <p className="mt-1 text-xs text-gray-400">
                                                         {file.extension?.toUpperCase()}
+
                                                         {file.size
                                                             ? ` • ${file.size}`
                                                             : ""}
                                                     </p>
                                                 </div>
-                                            </div></Link>
+                                            </div>
+                                        </Link>
 
-                                        <CommonActionMenu file={file} className="text-gray-500" />
+                                        <CommonActionMenu
+                                            file={file}
+                                            className="text-gray-500"
+                                        />
                                     </div>
                                 ))}
                             </div>
@@ -154,37 +149,30 @@ export default function ShowAllDocuments({
 
                     {!documents.length && <EmptyDocuments />}
                 </div>
-
-
             </>
         );
     }
-
 
     if (orientation === "image") {
         return (
             <>
                 <div className="mt-5">
-
                     {files.length > 0 && (
                         <div>
-
-
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                                 {files.map((file) => (
                                     <div
                                         key={file.id}
-                                        onClick={() =>
-                                            isImage(file)
-                                        }
+                                        onClick={() => isImage(file)}
                                         className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white transition hover:border-[#039A63] hover:shadow-sm"
                                     >
                                         <div className="relative flex h-[150px] items-center justify-center overflow-hidden bg-[#f8f9fa]">
                                             <ImagePreview file={file} />
 
-                                            <CommonActionMenu file={file}
-                                                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-500 opacity-0 shadow-sm transition-all group-hover:opacity-100 hover:bg-white hover:text-gray-800 focus:outline-none focus-visible:ring-0 data-[state=open]:opacity-100" />
-
+                                            <CommonActionMenu
+                                                file={file}
+                                                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-500 opacity-100 shadow-sm transition-all group-hover:bg-white group-hover:text-gray-800 focus:outline-none focus-visible:ring-0 data-[state=open]:opacity-100"
+                                            />
                                         </div>
 
                                         <div className="p-3">
@@ -194,6 +182,7 @@ export default function ShowAllDocuments({
 
                                             <p className="mt-1 text-xs text-gray-400">
                                                 {file.extension?.toUpperCase()}
+
                                                 {file.size
                                                     ? ` • ${file.size}`
                                                     : ""}
@@ -209,18 +198,13 @@ export default function ShowAllDocuments({
                         <EmptyDocuments />
                     )}
                 </div>
-
-
             </>
         );
     }
 
-
-
     return (
         <>
             <div className="mt-5 space-y-6">
-
                 {/* FOLDERS */}
                 {folders?.length > 0 && (
                     <div>
@@ -228,27 +212,29 @@ export default function ShowAllDocuments({
                             {folders.map((folder) => (
                                 <div
                                     key={folder.id}
-                                    className="group relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-yellow-300 hover:bg-yellow-50/30 hover:shadow-sm">
+                                    className="group relative flex cursor-pointer flex-col items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-yellow-300 hover:bg-yellow-50/30 hover:shadow-sm"
+                                >
                                     <Link
                                         href={`/dashboard/documents/folder/${folder.id}`}
                                     >
-
                                         <div className="flex h-[80px] items-center justify-center">
                                             <WindowsFolderIcon size={100} />
                                         </div>
+
                                         <p
                                             title={folder.name}
                                             className="max-w-[120px] truncate pt-3 text-center text-sm font-medium text-gray-700"
                                         >
                                             {folder.name}
                                         </p>
-
                                     </Link>
-                                 
+
                                     <CommonFolderActionMenu
                                         folder={folder}
-                                       
-                                        className="absolute right-0 cursor-pointer top-1 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-gray-500 opacity-0 shadow-md transition-all duration-200 group-hover:opacity-100 hover:bg-white hover:text-gray-800 focus:outline-none focus-visible:ring-0 data-[state=open]:opacity-100"
+                                        className="absolute right-0 top-1 flex h-8 w-8 items-center justify-center  text-gray-500 
+                                        opacity-100 cursor-pointer transition-all duration-200 hover:bg-white
+                                         hover:text-gray-800 focus:outline-none focus-visible:ring-0 
+                                         data-[state=open]:opacity-100"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -272,11 +258,13 @@ export default function ShowAllDocuments({
                                     <div className="relative flex h-[150px] items-center justify-center overflow-hidden bg-[#f8f9fa]">
                                         <ImagePreview file={file} />
 
-                                        <CommonActionMenu file={file}
-                                            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-500 opacity-0 shadow-sm transition-all group-hover:opacity-100 hover:bg-white hover:text-gray-800 focus:outline-none focus-visible:ring-0 data-[state=open]:opacity-100" />
-
+                                        <CommonActionMenu
+                                            file={file}
+                                            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-500 opacity-100 shadow-sm transition-all group-hover:bg-white group-hover:text-gray-800 focus:outline-none focus-visible:ring-0 data-[state=open]:opacity-100"
+                                        />
                                     </div>
-                                    <div className="px-3 pt-3 pb-2">
+
+                                    <div className="px-3 pb-2 pt-3">
                                         <p
                                             title={file.name}
                                             className="truncate text-sm font-medium text-[#202124]"
@@ -285,7 +273,6 @@ export default function ShowAllDocuments({
                                         </p>
 
                                         <div className="mt-1 flex items-center gap-1 text-[11px] text-[#70757a]">
-
                                             <span>
                                                 {file.extension?.toUpperCase()}
                                             </span>
@@ -315,11 +302,9 @@ export default function ShowAllDocuments({
                     <EmptyDocuments />
                 )}
             </div>
-
         </>
     );
 }
-
 
 const EmptyDocuments = () => {
     return (

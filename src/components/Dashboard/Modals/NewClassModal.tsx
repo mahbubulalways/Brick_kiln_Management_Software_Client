@@ -141,7 +141,7 @@ const NewClassModal = ({ isOpen, onClose }: TCustomModal) => {
           </div>
           <button
             type="submit"
-            className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
+            className="text-[14px] disabled:bg-gray-500 bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer"
             disabled={isLoading}
           >
             {isLoading ? "অ্যাড হচ্ছে..." : "অ্যাড করুন"}

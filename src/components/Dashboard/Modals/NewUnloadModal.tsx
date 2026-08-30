@@ -67,10 +67,10 @@ const NewUnloadModal = ({
     isLoading: classLoading,
     data: fetchedData,
     isError: classError,
-  } = useGetAllClassAndRateQuery(undefined);
+  } = useGetAllClassAndRateQuery({limit:100000,page:1});
 
   const formatClassLabelValue =
-    fetchedData?.data
+    fetchedData?.data?.data
       ?.filter(
         (dt: TClassAndRate) =>
           dt.classType !== "অন্যান্য"

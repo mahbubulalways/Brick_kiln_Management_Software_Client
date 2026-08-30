@@ -110,14 +110,14 @@ const CustomDatePickerState = ({
             <button
               type="button"
               className={`relative flex ${height} w-full items-center overflow-hidden rounded-lg border bg-white px-4 py-2 text-left transition-colors ${error
-                  ? "border-2 border-red-500"
-                  : "border-gray-300 focus-within:ring-2 focus-within:ring-[#00664A]"
+                ? "border-2 border-red-500"
+                : "border-gray-300 focus-within:ring-2 focus-within:ring-[#00664A]"
                 }`}
             >
               <span
                 className={`w-full truncate pr-8 text-sm ${safeDate
-                    ? "text-gray-900"
-                    : "text-gray-400"
+                  ? "text-gray-900"
+                  : "text-gray-400"
                   }`}
               >
                 {safeDate
@@ -141,6 +141,8 @@ const CustomDatePickerState = ({
               selected={safeDate}
               captionLayout="dropdown"
               onSelect={handleDateChange}
+              startMonth={new Date(2020, 0)}
+              endMonth={new Date(2035, 11)}
               disabled={(date) => {
                 if (
                   resolvedMinDate &&

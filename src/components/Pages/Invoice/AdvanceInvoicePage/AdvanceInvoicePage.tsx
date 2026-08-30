@@ -22,6 +22,7 @@ import { TQuery } from "@/interface/query";
 import { useGetAllAdvanceInvoicesQuery, } from "@/redux/features/invoice.features";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -126,33 +127,39 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                       {index === 0 && (
                         <>
                           <TableData
-                            td={`৳ ${row?.productPrice}`}
+                            td={`৳ ${toBanglaNumber(row?.productPrice)}`}
                             cls="text-green-600 hidden lg:table-cell"
-                            rowSpan={row?.items?.length}
-                          />
-                          <TableData
-                            td={`৳ ${row?.discount}`}
-                            cls="text-orange-500 hidden lg:table-cell"
-                            rowSpan={row?.items?.length}
-                          />
-                          <TableData
-                            td={`৳ ${row?.carRent}`}
-                            cls="text-blue-600 hidden lg:table-cell"
-                            rowSpan={row?.items?.length}
-                          />
-                          <TableData
-                            td={`৳ ${row?.totalPrice}`}
                             rowSpan={row?.items?.length}
                           />
 
                           <TableData
-                            td={`৳ ${row?.cash}`}
+                            td={`৳ ${toBanglaNumber(row?.discount)}`}
+                            cls="text-orange-500 hidden lg:table-cell"
+                            rowSpan={row?.items?.length}
+                          />
+
+                          <TableData
+                            td={`৳ ${toBanglaNumber(row?.carRent)}`}
+                            cls="text-blue-600 hidden lg:table-cell"
+                            rowSpan={row?.items?.length}
+                          />
+
+                          <TableData
+                            td={`৳ ${toBanglaNumber(row?.totalPrice)}`}
+                            rowSpan={row?.items?.length}
+                          />
+
+                          <TableData
+                            td={`৳ ${toBanglaNumber(row?.cash)}`}
                             cls="text-green-600 hidden lg:table-cell"
                             rowSpan={row?.items?.length}
                           />
+
                           <TableData
-                            td={`৳ ${row?.due}`}
-                            cls={`border p-2 ${row?.due > 0 ? "text-red-500" : "text-green-600"
+                            td={`৳ ${toBanglaNumber(row?.due)}`}
+                            cls={`border p-2 ${row?.due > 0
+                              ? "text-red-500"
+                              : "text-green-600"
                               } hidden lg:table-cell`}
                             rowSpan={row?.items?.length}
                           />
@@ -235,42 +242,61 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
                   >
                     <TableData td={idx + 1} />
                     <TableData td={row?.customer?.name} />
+
                     <TableData
                       td={row?.customer?.address}
                       cls="hidden lg:table-cell"
                     />
+
                     <TableData td={row.items[0]?.class} />
-                    <TableData td={row.items[0]?.quantity.toLocaleString()} />
+
                     <TableData
-                      td={row.items[0]?.rate}
-                      cls="hidden lg:table-cell"
+                      td={toBanglaNumber(
+                        row.items[0]?.quantity?.toLocaleString(),
+                      )}
                     />
+
                     <TableData
-                      td={`৳ ${row.items[0]?.price.toLocaleString()}`}
+                      td={toBanglaNumber(row.items[0]?.rate)}
                       cls="hidden lg:table-cell"
                     />
 
                     <TableData
-                      td={`৳ ${row?.productPrice}`}
+                      td={`৳ ${toBanglaNumber(
+                        row.items[0]?.price?.toLocaleString(),
+                      )}`}
+                      cls="hidden lg:table-cell"
+                    />
+
+                    <TableData
+                      td={`৳ ${toBanglaNumber(row?.productPrice)}`}
                       cls="text-green-600 hidden lg:table-cell"
                     />
+
                     <TableData
-                      td={`৳ ${row?.discount}`}
+                      td={`৳ ${toBanglaNumber(row?.discount)}`}
                       cls="text-orange-500 hidden lg:table-cell"
                     />
-                    <TableData
-                      td={`৳ ${row?.carRent}`}
-                      cls="text-blue-600 hidden lg:table-cell"
-                    />
-                    <TableData td={`৳ ${row.totalPrice}`} />
 
                     <TableData
-                      td={`৳ ${row?.cash}`}
+                      td={`৳ ${toBanglaNumber(row?.carRent)}`}
+                      cls="text-blue-600 hidden lg:table-cell"
+                    />
+
+                    <TableData
+                      td={`৳ ${toBanglaNumber(row?.totalPrice)}`}
+                    />
+
+                    <TableData
+                      td={`৳ ${toBanglaNumber(row?.cash)}`}
                       cls="text-green-600 hidden lg:table-cell"
                     />
+
                     <TableData
-                      td={`৳ ${row?.due}`}
-                      cls={`border p-2 ${row.due > 0 ? "text-red-500" : "text-green-600"
+                      td={`৳ ${toBanglaNumber(row?.due)}`}
+                      cls={`border p-2 ${row.due > 0
+                        ? "text-red-500"
+                        : "text-green-600"
                         } hidden lg:table-cell`}
                     />
                     <td className="border p-2">
@@ -361,6 +387,8 @@ const AdvanceInvoicePage = ({ limit, page, search }: TQuery) => {
 
       {openReportModal && (
         <SellingModal
+          date={" "}
+          challanType="ADVANCED"
           isOpen={openReportModal}
           onClose={() => setOpenReportModal(false)}
         />

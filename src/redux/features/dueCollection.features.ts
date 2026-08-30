@@ -29,7 +29,7 @@ const dueCollectionApi = baseApi.injectEndpoints({
         url: `/due/today-have-due?date=${query.date}&page=${query.page}&limit=${query.limit}&search=${query.search}`,
         method: "GET",
       }),
-      providesTags: ['DueCollection']
+      providesTags: ['DueCollection', "SEASON"]
     }),
 
     // SEARCH CUSTOMER FOR DWU
@@ -48,7 +48,7 @@ const dueCollectionApi = baseApi.injectEndpoints({
         url: `/due/today-paid?date=${query.date}&page=${query.page}&limit=${query.limit}`,
         method: "GET",
       }),
-      providesTags: ["DueCollection"],
+      providesTags: ["DueCollection", "SEASON"],
     }),
 
     // GET ALL DUES
@@ -58,9 +58,11 @@ const dueCollectionApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       keepUnusedDataFor: 0,
-      providesTags: ["DueCollection"]
+      providesTags: ["DueCollection", "SEASON"]
     }),
-    // GET ALL DUES
+
+
+    // GET SINGLE DUE
     getSingleDue: builder.query({
       query: (id) => ({
         url: `/due/get-single/${id}`,

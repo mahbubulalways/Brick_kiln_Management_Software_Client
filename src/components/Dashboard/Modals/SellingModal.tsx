@@ -9,18 +9,18 @@ import { TbDatabaseOff } from "react-icons/tb";
 type TCustomReportModal = {
   isOpen: boolean;
   onClose: () => void;
-  startDate?: string;
-  endDate?: string;
+  date?: string
+  challanType?: string
 };
 
 const SellingModal = ({
   isOpen,
   onClose,
-  startDate,
-  endDate = "",
+  challanType,
+  date
 }: TCustomReportModal) => {
-  const { isLoading, data, isError,error } = useGetItemsWithInvoicesQuery(
-    { startDate: startDate as string, endDate: endDate as string },
+  const { isLoading, data, isError } = useGetItemsWithInvoicesQuery(
+    { date, search: challanType },
     {
       refetchOnMountOrArgChange: true,
     }

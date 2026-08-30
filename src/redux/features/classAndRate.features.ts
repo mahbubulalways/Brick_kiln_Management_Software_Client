@@ -1,3 +1,4 @@
+import { TQuery } from "@/interface/query";
 import { baseApi } from "../baseApi";
 
 const authApi = baseApi.injectEndpoints({
@@ -15,8 +16,8 @@ const authApi = baseApi.injectEndpoints({
 
     // GET ALL CLASS AND RATE
     getAllClassAndRate: builder.query({
-      query: () => ({
-        url: "/class/class-and-rate",
+      query: (query: TQuery) => ({
+        url: `/class/class-and-rate?page=${query.page}&limit=${query.limit}`,
         method: "GET",
       }),
       providesTags: ["ClassAndRate"],
@@ -42,7 +43,7 @@ const authApi = baseApi.injectEndpoints({
 
     // DELETE CLASS AND RATE
     deleteClassAndRate: builder.mutation({
-      query: (id:number) => ({
+      query: (id: number) => ({
         url: `/class/delete/${id}`,
         method: "DELETE",
       }),

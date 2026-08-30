@@ -235,9 +235,9 @@ const CustomSelect = ({
                         <FaSpinner className="h-7 w-7 animate-spin" />
                       </div>
                     ) : filteredOptions.length ? (
-                      filteredOptions.map((item) => (
+                      filteredOptions.map((item,idx) => (
                         <button
-                          key={`${String(item.value)}-${item.label}`}
+                          key={`${idx}-${item.label}`}
                           type="button"
                           onClick={() => selectOption(item)}
                           className={`block w-full px-4 py-2 text-[14px] cursor-pointer text-left transition-colors hover:bg-gray-100 ${

@@ -75,7 +75,7 @@ export default function CreateFolderModal({ isOpen, onClose }: TCustomModal) {
                     <button
                         disabled={isLoading}
                         type="submit"
-                        className="w-full cursor-pointer rounded bg-[#039A63] px-8 py-1.5 text-[14px] font-medium text-gray-100"
+                        className="w-full disabled:bg-gray-500 cursor-pointer rounded bg-[#039A63] px-8 py-1.5 text-[14px] font-medium text-gray-100"
                     >
                         সেভ করুন
                     </button>

@@ -47,14 +47,14 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
     useGetInvoiceSerialQuery({ refetchOnMountOrArgChange: true });
   // GET CLASS AND RATE FOR DROPDOWN
   const { isLoading: classRateLoading, data: fetchedData, isError } =
-    useGetAllClassAndRateQuery(undefined);
-  const classAndRate = fetchedData?.data || [];
+    useGetAllClassAndRateQuery({ limit: 100000, page: 1 });
+  const classAndRate = fetchedData?.data?.data || [];
 
   // CREATE NEW INVOICE
   const [mutateAsync, { isLoading: createInvoiceLoading }] =
     useCreateInvoiceMutation();
   const classOptions = classAndRate?.map((cls: TClassAndRate) => ({
-    label: cls?.className,
+    label: `${cls?.className}`,
     value: cls?.className,
   }));
   // REACT HOOK FORM
@@ -376,7 +376,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
               </div>
             </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
               <div className="mb-3 flex items-center justify-between border-b border-gray-100 pb-2">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
@@ -403,9 +403,9 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="rounded-xl border border-gray-200 bg-gray-50 p-3 transition hover:border-green-200"
+                    className="rounded-xl border border-gray-200 bg-gray-50 p-2 transition hover:border-green-200"
                   >
-                    <div className="flex flex-col gap-3 md:flex-row md:items-end">
+                    <div className="flex flex-col gap-1 md:flex-row md:items-end">
                       <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-4">
                         <CustomSelect
                           name={`invoiceItems.items.${index}.class`}
@@ -457,7 +457,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                         />
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-1">
                         <button
                           type="button"
                           onClick={() =>
@@ -469,9 +469,9 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                             })
                           }
                           title="নতুন সারি যোগ করুন"
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-green-200 bg-green-50 text-green-600 transition hover:bg-green-600 hover:text-white active:scale-95"
+                          className="flex h-10 w-8 shrink-0 items-center justify-center rounded-lg border border-green-200 bg-green-50 text-green-600 transition hover:bg-green-600 hover:text-white active:scale-95"
                         >
-                          <Plus size={16} strokeWidth={2.5} />
+                          <Plus size={14} strokeWidth={2.5} />
                         </button>
 
                         <button
@@ -479,12 +479,12 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
                           disabled={fields.length === 1}
                           onClick={() => remove(index)}
                           title="সারি মুছে ফেলুন"
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition active:scale-95 ${fields.length === 1
+                          className={`flex h-10 w-8 shrink-0 items-center justify-center rounded-lg border transition active:scale-95 ${fields.length === 1
                             ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
                             : "border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white"
                             }`}
                         >
-                          <Trash size={16} strokeWidth={2.5} />
+                          <Trash size={14} strokeWidth={2.5} />
                         </button>
                       </div>
                     </div>
@@ -663,7 +663,7 @@ const NewChalanModal = ({ isOpen, onClose }: TCustomModal) => {
               <button
                 type="submit"
                 disabled={createInvoiceLoading}
-                className="rounded-lg bg-[#039A63] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#028a58] disabled:cursor-not-allowed disabled:bg-gray-400"
+                className="rounded-lg cursor-pointer bg-[#039A63] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#028a58] disabled:cursor-not-allowed disabled:bg-gray-400"
               >
                 {createInvoiceLoading ? "সেভ হচ্ছে..." : "সেভ করুন"}
               </button>

@@ -28,7 +28,7 @@ const invoiceApi = baseApi.injectEndpoints({
         url: `/invoice/search?search=${payload?.search}`,
         method: "GET",
       }),
-      providesTags: ["Invoice", "SEASON"],
+      providesTags: ["Invoice",],
     }),
 
     // GET ALL INVOICE
@@ -45,13 +45,13 @@ const invoiceApi = baseApi.injectEndpoints({
         url: `/invoice/all-advance-invoices?limit=${payload?.limit}&page=${payload?.page}&search=${payload?.search}&date=${payload?.date}`,
         method: "GET",
       }),
-      providesTags: ["Invoice"],
+      providesTags: ["Invoice","SEASON"],
     }),
 
     // GET ITEMS WITH INVOICE
     getItemsWithInvoices: builder.query({
-      query: (date: { startDate: string; endDate: string }) => ({
-        url: `/invoice/items?startDate=${date.startDate}&endDate=${date.endDate}`,
+      query: (query:TQuery) => ({
+        url: `/invoice/items?date=${query.date}&search=${query.search}`,
         method: "GET",
       }),
       providesTags: ["Invoice"],

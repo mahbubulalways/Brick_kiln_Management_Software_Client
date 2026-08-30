@@ -70,10 +70,10 @@ const UpdateLoadModal = ({
         isLoading: classLoading,
         data: fetchedData,
         isError
-    } = useGetAllClassAndRateQuery(undefined);
+    } = useGetAllClassAndRateQuery({limit:1000000, page:1});
 
     const formatLabelValue =
-        fetchedData?.data?.map(
+        fetchedData?.data?.data?.map(
             (dt: TClassAndRate) => ({
                 label: dt.className,
                 value: dt.className,

@@ -243,9 +243,9 @@ const NewPaymentModal = ({ isOpen, onClose }: TCustomModal) => {
           control={control}
           name="file"
           label="ডকুমেন্ট / মানি রিসিপ্ট"
-          required
-          error={errors.file}
-          rules={{ required: "ফাইল আপলোড করুন" }}
+          // required
+          // error={errors.file}
+          // rules={{ required: "ফাইল আপলোড করুন" }}
         />
         <div className="flex items-center justify-between pt-5">
           <div className="text-[14px] border border-gray-300 bg-white hover:border-[#039A63] px-10 py-1.5  text-gray-500 duration-500 hover:text-[#039A63] font-medium rounded cursor-pointer">
@@ -253,7 +253,7 @@ const NewPaymentModal = ({ isOpen, onClose }: TCustomModal) => {
           </div>
           <button
             disabled={isLoading}
-            className="text-[14px] bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer disabled:bg-gray-500"
+            className="text-[14px] disabled:cursor-default  bg-[#039A63] px-8 py-1.5 text-gray-100 font-medium rounded cursor-pointer disabled:bg-gray-500"
           >
             অ্যাড করুন
           </button>

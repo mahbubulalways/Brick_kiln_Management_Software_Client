@@ -34,7 +34,10 @@ const DashboardSettings = ({
                 return <VataInformation />;
 
             case 2:
-                return <ChangeClassAndRate />;
+                return <ChangeClassAndRate
+                    page={pagination}
+                    limit={limit}
+                />;
 
             case 3:
                 return (
@@ -104,7 +107,7 @@ const DashboardSettings = ({
                 SMALL DEVICE
                 ========================================= */}
             <div className="block md:hidden">
-                <SettingsMenu  />
+                <SettingsMenu />
             </div>
 
         </div>

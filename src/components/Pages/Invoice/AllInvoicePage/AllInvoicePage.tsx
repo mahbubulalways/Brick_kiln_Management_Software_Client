@@ -23,6 +23,7 @@ import { TQuery } from "@/interface/query";
 import { useGetAllInvoicesQuery } from "@/redux/features/invoice.features";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -43,8 +44,8 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
         useGetAllInvoicesQuery(
             { limit, page, search, date: dateRange }
             , { refetchOnMountOrArgChange: true });
-  // VATA INFO
-  const { data: vata } = useGetVataInfoQuery(undefined)
+    // VATA INFO
+    const { data: vata } = useGetVataInfoQuery(undefined)
     const invoices = data?.data?.data || []
     const meta = data?.data?.meta as TMetaConfig;
     return (
@@ -101,18 +102,20 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                     row?.items?.map((item: IChallanItem, index: number) => (
                                         <tr
                                             key={`${row?.id}-${item?.id}`}
-                                            className="hover:bg-gray-50 transition-colors"
+                                            className="transition-colors hover:bg-gray-50"
                                         >
                                             {index === 0 && (
                                                 <>
                                                     <TableData
-                                                        td={index + 1}
+                                                        td={toBanglaNumber(index + 1)}
                                                         rowSpan={row?.items?.length}
                                                     />
+
                                                     <TableData
                                                         td={row?.customer?.name}
                                                         rowSpan={row?.items?.length}
                                                     />
+
                                                     <TableData
                                                         td={row?.customer?.address}
                                                         cls="hidden lg:table-cell"
@@ -121,62 +124,91 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                 </>
                                             )}
 
-                                            <TableData td={item?.class} />
-                                            <TableData td={item?.quantity?.toLocaleString()} />
-                                            <TableData td={item?.rate} cls="hidden lg:table-cell" />
+                                            {/* Class */}
                                             <TableData
-                                                td={`৳ ${item?.price?.toLocaleString()}`}
+                                                td={item?.class}
+                                            />
+
+                                            {/* Quantity */}
+                                            <TableData
+                                                td={toBanglaNumber(item?.quantity)}
+                                            />
+
+                                            {/* Rate */}
+                                            <TableData
+                                                td={toBanglaNumber(item?.rate)}
+                                                cls="hidden lg:table-cell"
+                                            />
+
+                                            {/* Item Price */}
+                                            <TableData
+                                                td={`৳ ${toBanglaNumber(item?.price)}`}
                                                 cls="hidden lg:table-cell"
                                             />
 
                                             {index === 0 && (
                                                 <>
+                                                    {/* Product Price */}
                                                     <TableData
-                                                        td={`৳ ${row?.productPrice}`}
+                                                        td={`৳ ${toBanglaNumber(row?.productPrice)}`}
                                                         cls="text-green-600 hidden lg:table-cell"
-                                                        rowSpan={row?.items?.length}
-                                                    />
-                                                    <TableData
-                                                        td={`৳ ${row?.discount}`}
-                                                        cls="text-orange-500 hidden lg:table-cell"
-                                                        rowSpan={row?.items?.length}
-                                                    />
-                                                    <TableData
-                                                        td={`৳ ${row?.carRent}`}
-                                                        cls="text-blue-600 hidden lg:table-cell"
-                                                        rowSpan={row?.items?.length}
-                                                    />
-                                                    <TableData
-                                                        td={`৳ ${row?.totalPrice}`}
                                                         rowSpan={row?.items?.length}
                                                     />
 
+                                                    {/* Discount */}
                                                     <TableData
-                                                        td={`৳ ${row?.cash}`}
+                                                        td={`৳ ${toBanglaNumber(row?.discount)}`}
+                                                        cls="text-orange-500 hidden lg:table-cell"
+                                                        rowSpan={row?.items?.length}
+                                                    />
+
+                                                    {/* Car Rent */}
+                                                    <TableData
+                                                        td={`৳ ${toBanglaNumber(row?.carRent)}`}
+                                                        cls="text-blue-600 hidden lg:table-cell"
+                                                        rowSpan={row?.items?.length}
+                                                    />
+
+                                                    {/* Total Price */}
+                                                    <TableData
+                                                        td={`৳ ${toBanglaNumber(row?.totalPrice)}`}
+                                                        rowSpan={row?.items?.length}
+                                                    />
+
+                                                    {/* Cash */}
+                                                    <TableData
+                                                        td={`৳ ${toBanglaNumber(row?.cash)}`}
                                                         cls="text-green-600 hidden lg:table-cell"
                                                         rowSpan={row?.items?.length}
                                                     />
+
+                                                    {/* Due */}
                                                     <TableData
-                                                        td={`৳ ${row?.due}`}
-                                                        cls={`border p-2 ${row?.due > 0 ? "text-red-500" : "text-green-600"
+                                                        td={`৳ ${toBanglaNumber(row?.due)}`}
+                                                        cls={`border p-2 ${row?.due > 0
+                                                                ? "text-red-500"
+                                                                : "text-green-600"
                                                             } hidden lg:table-cell`}
                                                         rowSpan={row?.items?.length}
                                                     />
+
+                                                    {/* Action */}
                                                     <td
                                                         className="border p-2"
                                                         rowSpan={row?.items?.length}
                                                     >
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <button className="p-1.5 rounded hover:bg-gray-100 transition">
-                                                                    <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
+                                                                <button className="rounded p-1.5 transition hover:bg-gray-100">
+                                                                    <MoreVertical className="h-4 w-4 cursor-pointer text-gray-600" />
                                                                 </button>
                                                             </DropdownMenuTrigger>
+
                                                             <DropdownMenuContent
                                                                 align="end"
                                                                 className="rounded-md border bg-white shadow-md"
                                                             >
-                                                                {/* for lg desktop */}
+                                                                {/* Desktop Print */}
                                                                 <DropdownMenuItem
                                                                     className="hidden lg:block"
                                                                     onClick={() => {
@@ -190,9 +222,9 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                     />
                                                                 </DropdownMenuItem>
 
-                                                                {/* for mobile */}
+                                                                {/* Mobile Print */}
                                                                 <DropdownMenuItem
-                                                                    className="lg:hidden block"
+                                                                    className="block lg:hidden"
                                                                     onClick={() => {
                                                                         setOpenThermalModal(true);
                                                                         setInvoiceId(row?.serial);
@@ -204,6 +236,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                     />
                                                                 </DropdownMenuItem>
 
+                                                                {/* Delivery */}
                                                                 <DropdownMenuItem
                                                                     onClick={() => {
                                                                         setIsDeliveryModalOpen(true);
@@ -215,6 +248,8 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                         title="ডেলিভারি দিন"
                                                                     />
                                                                 </DropdownMenuItem>
+
+                                                                {/* Details */}
                                                                 <DropdownMenuItem
                                                                     onClick={() => {
                                                                         setInvoiceId(row?.serial);
@@ -226,6 +261,8 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                                         title="চালান বিস্তারিত"
                                                                     />
                                                                 </DropdownMenuItem>
+
+                                                                {/* Profile */}
                                                                 <DropdownMenuItem>
                                                                     <CustomDropDownMenuItem
                                                                         Icon={User}
@@ -242,60 +279,98 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                 ) : (
                                     <tr
                                         key={row?.id}
-                                        className="hover:bg-gray-50 transition-colors"
+                                        className="transition-colors hover:bg-gray-50"
                                     >
-                                        <TableData td={idx + 1} />
-                                        <TableData td={row?.customer?.name} />
+                                        <TableData
+                                            td={toBanglaNumber(idx + 1)}
+                                        />
+
+                                        <TableData
+                                            td={row?.customer?.name}
+                                        />
+
                                         <TableData
                                             td={row?.customer?.address}
                                             cls="hidden lg:table-cell"
                                         />
-                                        <TableData td={row.items[0]?.class} />
-                                        <TableData td={row.items[0]?.quantity.toLocaleString()} />
+
                                         <TableData
-                                            td={row.items[0]?.rate}
-                                            cls="hidden lg:table-cell"
+                                            td={row?.items[0]?.class}
                                         />
+
                                         <TableData
-                                            td={`৳ ${row.items[0]?.price.toLocaleString()}`}
+                                            td={toBanglaNumber(row?.items[0]?.quantity)}
+                                        />
+
+                                        <TableData
+                                            td={toBanglaNumber(row?.items[0]?.rate)}
                                             cls="hidden lg:table-cell"
                                         />
 
                                         <TableData
-                                            td={`৳ ${row?.productPrice}`}
+                                            td={`৳ ${toBanglaNumber(
+                                                row?.items[0]?.price?.toLocaleString()
+                                            )}`}
+                                            cls="hidden lg:table-cell"
+                                        />
+
+                                        <TableData
+                                            td={`৳ ${toBanglaNumber(
+                                                row?.productPrice?.toLocaleString()
+                                            )}`}
                                             cls="text-green-600 hidden lg:table-cell"
                                         />
+
                                         <TableData
-                                            td={`৳ ${row?.discount}`}
+                                            td={`৳ ${toBanglaNumber(
+                                                row?.discount?.toLocaleString()
+                                            )}`}
                                             cls="text-orange-500 hidden lg:table-cell"
                                         />
-                                        <TableData
-                                            td={`৳ ${row?.carRent}`}
-                                            cls="text-blue-600 hidden lg:table-cell"
-                                        />
-                                        <TableData td={`৳ ${row.totalPrice}`} />
 
                                         <TableData
-                                            td={`৳ ${row?.cash}`}
+                                            td={`৳ ${toBanglaNumber(
+                                                row?.carRent?.toLocaleString()
+                                            )}`}
+                                            cls="text-blue-600 hidden lg:table-cell"
+                                        />
+
+                                        <TableData
+                                            td={`৳ ${toBanglaNumber(
+                                                row?.totalPrice?.toLocaleString()
+                                            )}`}
+                                        />
+
+                                        <TableData
+                                            td={`৳ ${toBanglaNumber(
+                                                row?.cash?.toLocaleString()
+                                            )}`}
                                             cls="text-green-600 hidden lg:table-cell"
                                         />
+
                                         <TableData
-                                            td={`৳ ${row?.due}`}
-                                            cls={`border p-2 ${row.due > 0 ? "text-red-500" : "text-green-600"
+                                            td={`৳ ${toBanglaNumber(
+                                                row?.due?.toLocaleString()
+                                            )}`}
+                                            cls={`border p-2 ${row?.due > 0
+                                                ? "text-red-500"
+                                                : "text-green-600"
                                                 } hidden lg:table-cell`}
                                         />
+
                                         <td className="border p-2">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <button className="p-1.5 rounded hover:bg-gray-100 transition">
-                                                        <MoreVertical className="w-4 h-4 text-gray-600 cursor-pointer" />
+                                                    <button className="rounded p-1.5 transition hover:bg-gray-100">
+                                                        <MoreVertical className="h-4 w-4 cursor-pointer text-gray-600" />
                                                     </button>
                                                 </DropdownMenuTrigger>
+
                                                 <DropdownMenuContent
                                                     align="end"
                                                     className="rounded-md border bg-white shadow-md"
                                                 >
-                                                    {/* for lg desktop */}
+                                                    {/* Desktop Print */}
                                                     <DropdownMenuItem
                                                         className="hidden lg:block"
                                                         onClick={() => {
@@ -309,9 +384,9 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                         />
                                                     </DropdownMenuItem>
 
-                                                    {/* for mobile */}
+                                                    {/* Mobile Print */}
                                                     <DropdownMenuItem
-                                                        className="lg:hidden block"
+                                                        className="block lg:hidden"
                                                         onClick={() => {
                                                             setOpenThermalModal(true);
                                                             setInvoiceId(row?.serial);
@@ -322,6 +397,8 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                             title="প্রিন্ট চালান"
                                                         />
                                                     </DropdownMenuItem>
+
+                                                    {/* Delivery */}
                                                     <DropdownMenuItem
                                                         onClick={() => {
                                                             setIsDeliveryModalOpen(true);
@@ -333,6 +410,8 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                             title="ডেলিভারি দিন"
                                                         />
                                                     </DropdownMenuItem>
+
+                                                    {/* Details */}
                                                     <DropdownMenuItem
                                                         onClick={() => {
                                                             setOpenChalanDetailsModal(true);
@@ -344,8 +423,12 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                             title="চালান বিস্তারিত"
                                                         />
                                                     </DropdownMenuItem>
+
+                                                    {/* Profile */}
                                                     <DropdownMenuItem>
-                                                        <Link href={`/dashboard/customer/profile/${row?.customer?.customerCode}`}>
+                                                        <Link
+                                                            href={`/dashboard/customer/profile/${row?.customer?.customerCode}`}
+                                                        >
                                                             <CustomDropDownMenuItem
                                                                 Icon={User}
                                                                 title="প্রোফাইলে যান"
@@ -374,10 +457,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                 <SellingModal
                     isOpen={openReportModal}
                     onClose={() => setOpenReportModal(false)}
-                    endDate={dateRange?.split("_")[0] ? dateRange?.split("_")[0] : ""}
-                    startDate={
-                        dateRange?.split("_")[1] ? dateRange?.split("_")[1] : ""
-                    }
+                   date={dateRange}
                 />
             )}
 
