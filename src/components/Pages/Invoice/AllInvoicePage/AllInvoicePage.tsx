@@ -23,6 +23,7 @@ import { TQuery } from "@/interface/query";
 import { useGetAllInvoicesQuery } from "@/redux/features/invoice.features";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import { IChallanForDataShow, IChallanItem } from "@/types/types";
+import { formatDateRange } from "@/utils/formatDateRange";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import { MoreVertical, Printer, Truck, Notebook, User } from "lucide-react";
 import Link from "next/link";
@@ -42,7 +43,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
 
     const { isLoading: fetchInvoiceLoading, data } =
         useGetAllInvoicesQuery(
-            { limit, page, search, date: dateRange }
+            { limit, page, search, date: formatDateRange(dateRange) }
             , { refetchOnMountOrArgChange: true });
     // VATA INFO
     const { data: vata } = useGetVataInfoQuery(undefined)
@@ -186,8 +187,8 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                                                     <TableData
                                                         td={`৳ ${toBanglaNumber(row?.due)}`}
                                                         cls={`border p-2 ${row?.due > 0
-                                                                ? "text-red-500"
-                                                                : "text-green-600"
+                                                            ? "text-red-500"
+                                                            : "text-green-600"
                                                             } hidden lg:table-cell`}
                                                         rowSpan={row?.items?.length}
                                                     />
@@ -457,7 +458,7 @@ const AllInvoicePage = ({ limit, page, search }: TQuery) => {
                 <SellingModal
                     isOpen={openReportModal}
                     onClose={() => setOpenReportModal(false)}
-                   date={dateRange}
+                    date={dateRange}
                 />
             )}
 

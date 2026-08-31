@@ -33,8 +33,10 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<TLogin>({
     defaultValues: {
-      username: "rahim",
-      password: "123456",
+      username: "systemadmin",
+      password: "12345678",
+      // username: "rahim",
+      // password: "123456",
     },
   });
 

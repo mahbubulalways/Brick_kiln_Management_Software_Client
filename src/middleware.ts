@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkSubdomain } from "@/utils/checkSubdomain";
+import { UserRole } from "./constant";
+import { IToken } from "./interface/token";
+import { jwtDecode } from "jwt-decode";
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -102,11 +105,10 @@ export async function middleware(request: NextRequest) {
 
     // =========================================
     // AUTH CHECK
-    // =========================================
+
 
     const token = request.cookies.get("token")?.value;
 
-    // No token
     if (!token) {
         if (pathname === "/login") {
             return NextResponse.next();
@@ -117,21 +119,92 @@ export async function middleware(request: NextRequest) {
         );
     }
 
-    // Already logged in
-    if (pathname === "/login") {
+    let decodedToken: IToken;
+
+    try {
+        decodedToken = jwtDecode<IToken>(token);
+    } catch {
         return NextResponse.redirect(
-            new URL("/dashboard", request.url)
+            new URL("/login", request.url)
         );
     }
 
-    return NextResponse.next();
+    const { role } = decodedToken;
+
+
+    // ========================================
+    // OWNER / ADMIN / MANAGER
+    // Access: / and /dashboard
+    // ========================================
+    if (
+        role === UserRole.OWNER ||
+        role === UserRole.ADMIN ||
+        role === UserRole.MANAGER
+    ) {
+        // Login → Dashboard
+        if (pathname === "/login") {
+            return NextResponse.redirect(
+                new URL("/dashboard", request.url)
+            );
+        }
+
+        // System panel এ ঢুকতে পারবে না
+        if (pathname.startsWith("/system")) {
+            return NextResponse.redirect(
+                new URL("/dashboard", request.url)
+            );
+        }
+
+        // / এবং /dashboard → allowed
+        return NextResponse.next();
+    }
+
+
+    // ========================================
+    // SYSTEM_ADMIN / SUPER_ADMIN
+    // Access: ONLY /system
+    // ========================================
+    if (
+        role === UserRole.SYSTEM_ADMIN ||
+        role === UserRole.SUPER_ADMIN
+    ) {
+        // Login → System
+        if (pathname === "/login") {
+            return NextResponse.redirect(
+                new URL("/system", request.url)
+            );
+        }
+
+        // / এবং /dashboard এ ঢুকতে পারবে না
+        if (
+            pathname === "/" ||
+            pathname.startsWith("/dashboard")
+        ) {
+            return NextResponse.redirect(
+                new URL("/system", request.url)
+            );
+        }
+
+        // System allowed
+        return NextResponse.next();
+    }
+
+
+    // ========================================
+    // Invalid role
+    // ========================================
+    return NextResponse.redirect(
+        new URL("/login", request.url)
+    );
 }
+
 
 export const config = {
     matcher: [
         "/",
         "/login",
         "/dashboard/:path*",
+        "/system/:path*",
         "/domain-not-found",
     ],
 };

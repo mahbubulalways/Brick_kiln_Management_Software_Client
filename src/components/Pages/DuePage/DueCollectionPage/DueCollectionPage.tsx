@@ -32,6 +32,7 @@ import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint"
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import CollectionDeuPrint from "@/components/PrintComponent/CollectionDeuPrint";
 import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 
 
@@ -46,8 +47,8 @@ const DueCollectionPage = ({ limit, page }: TQuery) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [customerId, setCustomerId] = useState<string>();
   const [deuId, setDeuId] = useState<string>();
-  const isoDate = date ? date.toISOString() : "";
-  const { data, isLoading, isError, error } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
+  const isoDate = formatDateRange(String(date));
+  const { data, isLoading, isError } = useGetTodayPaidQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
   });
   const printRef = useRef<TCommonPrintRef>(null);

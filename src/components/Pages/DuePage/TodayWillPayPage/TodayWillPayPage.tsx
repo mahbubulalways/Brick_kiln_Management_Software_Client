@@ -26,6 +26,7 @@ import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollect
 import Link from "next/link";
 import TodayWillPayPrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/TodayWillPayPrintModal";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 type PaymentRow = {
   challans: IChallanForDataShow[];
@@ -40,11 +41,14 @@ const TodayWillPayPage = ({ limit, page, search }: TQuery) => {
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const isoDate = date ? date.toISOString() : "";
+  const isoDate = formatDateRange(String(date));
 
-  const { data, isLoading, isError, } = useGetTodayHaveDueQuery({ date: isoDate, limit, page, search }, {
+  const { data, isLoading, isError, } = useGetTodayHaveDueQuery({
+     date: isoDate, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
+
+
 
   const dues = data?.data?.data as PaymentRow[]
   const meta = data?.data?.meta as TMetaConfig;

@@ -31,6 +31,7 @@ import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint"
 import CashPagePrint from "./CashPagePrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import CashReportModal from "@/components/Dashboard/Modals/ReportModal/CashReportModal";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const CashPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
@@ -48,7 +49,7 @@ const CashPage = ({ limit, page, search }: TQuery) => {
     page,
     limit,
     search: search || undefined,
-    date: date ? date.toISOString() : undefined,
+    date: formatDateRange(String(date)) ,
   });
   const [deleteCash, { isLoading: isDeleting }] =
     useDeleteCashMutation();

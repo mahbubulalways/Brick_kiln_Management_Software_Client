@@ -4,11 +4,12 @@ import "./globals.css";
 import { Anek_Bangla, Hind_Siliguri } from "next/font/google";
 import Providers from "@/components/Providers/Providers";
 import { Toaster } from "sonner";
+import NetworkStatusProvider from "@/components/Dashboard/common/NetworkStatusProvider";
 
 const anekBangla = Anek_Bangla({
-    subsets: ["bengali"],
-    weight: ["300", "400", "500", "600", "700"],
-    display: "swap",
+  subsets: ["bengali"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,10 +27,12 @@ export default function RootLayout({
     <html lang="bn">
       <body
         cz-shortcut-listen="true"
-      className={`${anekBangla.className} antialiased no-scrollbar`}
-        >
+        className={`${anekBangla.className} antialiased no-scrollbar`}
+      >
         <Providers>
-          {children}
+          <NetworkStatusProvider>
+            {children}
+          </NetworkStatusProvider>
           <Toaster />
         </Providers>
       </body>

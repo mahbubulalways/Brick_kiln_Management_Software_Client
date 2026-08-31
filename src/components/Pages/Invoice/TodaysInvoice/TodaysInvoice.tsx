@@ -49,6 +49,7 @@ import DailyChallanPrint from "@/components/PrintComponent/DailyChallanPrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
 import SendCustomerSmsModal from "@/components/Dashboard/Modals/SendCustomerSmsModal";
+import { formatDateRange } from "@/utils/formatDateRange";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
 const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
@@ -71,11 +72,13 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   // VATA INFORMATIONS
   const { data: vata } = useGetVataInfoQuery(undefined)
   // FETCH ALL INVOICES
-  const formatDate = date?.toISOString() ?? ""
-  const { isLoading: fetchInvoiceLoading, data: invoices } =
+  const formatDate = formatDateRange(String(date))
+  const { isFetching: fetchInvoiceLoading, data: invoices } =
     useGetAllInvoicesQuery(
       { limit, page, search, date: formatDate }
       , { refetchOnMountOrArgChange: true });
+
+
   //  CALL DELETE INVOICE HOOK
   const [deleteInvoice] = useDeleteInvoiceMutation();
   const printRef = useRef<TCommonPrintRef>(null);

@@ -4,14 +4,7 @@ import { baseApi } from "../baseApi";
 const vataApi = baseApi.injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
-        // CREATE VATA
-        createNewVata: builder.mutation({
-            query: (payload) => ({
-                url: "/vata/create",
-                method: "POST",
-                body: payload,
-            }),
-        }),
+       
 
         // DOMAIN
         verifySubDomain: builder.mutation({
@@ -40,7 +33,6 @@ const vataApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useCreateNewVataMutation,
     useVerifySubDomainMutation,
     useGetVataInfoQuery,
     useGetMyVataInformationQuery

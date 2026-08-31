@@ -37,6 +37,7 @@ import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint"
 import UnloadPagePrint from "./UploadPagePrint";
 import UnloadReportModal from "@/components/Dashboard/Modals/ReportModal/UnloadReportModal";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const UnloadPage = ({ limit, page }: TQuery) => {
     const [date, setDate] = useState<Date | undefined>();
@@ -58,7 +59,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
         isLoading,
     } = useGetAllUnloadInfoQuery(
         {
-            date: String(date),
+            date: formatDateRange(String(date)),
             search: selected,
             limit,
             page,

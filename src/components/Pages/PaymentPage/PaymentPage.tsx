@@ -35,6 +35,7 @@ import CustomLoader from "@/components/Reusable/CustomLoader";
 import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
 import PaymentPrint from "@/components/PrintComponent/PaymentPrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const PaymentPage = ({ limit, page, search }: TQuery) => {
   const [searchItems, setSearchItem] = useState("");
@@ -49,12 +50,13 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
       limit,
       page,
       search,
-      date: date?.toISOString() ?? undefined,
+      date: formatDateRange(String(date))
     },
     {
       refetchOnMountOrArgChange: true,
     },
   );
+  
   const printRef = useRef<TCommonPrintRef>(null);
   const [deletePaymentAsync, { isLoading: deleteLoading }] = useDeletePaymentMutation()
   // VATA INFORMATIONS

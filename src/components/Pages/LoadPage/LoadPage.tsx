@@ -39,6 +39,7 @@ import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import UpdateLoadModal from "@/components/Dashboard/Modals/EditModals/UpdateLoadModal";
 import Swal from "sweetalert2";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const LoadPage = ({ limit, page }: TQuery) => {
   const [date, setDate] = useState<Date | undefined>();
@@ -52,7 +53,7 @@ const LoadPage = ({ limit, page }: TQuery) => {
     data,
     isLoading,
   } = useGetAllLoadInfoQuery(
-    { date: String(date), search: selected, limit, page },
+    { date: formatDateRange(String(date)), search: selected, limit, page },
     { refetchOnMountOrArgChange: true }
   );
 
