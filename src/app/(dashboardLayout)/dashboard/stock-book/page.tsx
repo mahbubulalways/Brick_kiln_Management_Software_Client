@@ -1,9 +1,9 @@
-import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import StockBookPage from "@/components/Pages/StockBookPage/StockBookPage";
 
 const Page = () => {
   return (
     <div>
-      <UnderConstructionPage />
+      <StockBookPage />
     </div>
   );
 };

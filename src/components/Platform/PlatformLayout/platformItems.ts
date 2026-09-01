@@ -61,6 +61,10 @@ export const navigationItems: TNavigationItem[] = [
                 href: "/system/subscriptions/plans",
             },
             {
+                label: "নতুন প্ল্যান",
+                href: "/system/subscriptions/plans/create",
+            },
+            {
                 label: "সাবস্ক্রাইবার",
                 href: "/system/subscriptions",
             },
@@ -70,7 +74,6 @@ export const navigationItems: TNavigationItem[] = [
             },
         ],
     },
-
     {
         label: "প্ল্যাটফর্ম রিপোর্ট",
         icon: BarChart3,

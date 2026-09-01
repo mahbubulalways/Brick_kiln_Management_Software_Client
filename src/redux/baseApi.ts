@@ -40,7 +40,8 @@ export const baseApi = createApi({
     "CONTACT",
     "WEATHER",
     "SEASON",
-    "DRIVER"
+    "DRIVER",
+    "STOCK_BOOK"
   ],
   endpoints: () => ({}),
 });
