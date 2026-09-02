@@ -14,3 +14,22 @@ export type TStockBook = {
     seasonId: string;
     vataId: string;
 };
+
+
+
+export type TMainStock = {
+  className: string;
+  rate: number;
+  totalStock: number;
+  deliveryPending: number;
+  mainStock: number;
+  stockValue: number;
+};
+
+export type TMainStockTotal = {
+  totalStock: number;
+  deliveryPending: number;
+  mainStock: number;
+  stockValue: number;
+};
+

@@ -33,7 +33,8 @@ export const TablePagination = ({
 
   
   return (
-    <div className="flex w-full min-w-0 items-center justify-between gap-2 overflow-x-auto border-t border-gray-200 bg-gray-50 px-3 py-3 sm:px-4 md:px-6 md:py-4">
+    <div className="flex w-full min-w-0 items-center justify-between gap-2 overflow-x-auto
+     border-t border-gray-200 bg-gray-50 px-3 py-3 sm:px-4 md:px-6 md:py-2">
       {/* Left Side */}
       <div className="flex shrink-0 items-center gap-2 sm:gap-4">
         {/* Page Info */}

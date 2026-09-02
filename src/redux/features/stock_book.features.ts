@@ -23,6 +23,15 @@ const stockBookApi = baseApi.injectEndpoints({
             providesTags: ["STOCK_BOOK"],
         }),
 
+
+        getMainStock: builder.query({
+            query: () => ({
+                url: `/stock-book/main`,
+                method: "GET",
+            }),
+            providesTags: ["STOCK_BOOK"],
+        }),
+
         deleteStock: builder.mutation({
             query: (id) => ({
                 url: `/stock-book/delete/${id}`,
@@ -36,5 +45,6 @@ const stockBookApi = baseApi.injectEndpoints({
 export const {
     useCreateNewStockBookMutation,
     useGetAllStocksQuery,
-    useDeleteStockMutation
+    useDeleteStockMutation,
+    useGetMainStockQuery
 } = stockBookApi;

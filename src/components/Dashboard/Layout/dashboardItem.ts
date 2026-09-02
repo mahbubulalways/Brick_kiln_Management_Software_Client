@@ -153,11 +153,24 @@ export const dashboardItems1: TDashboardItem[] = [
     icon: HiDocumentReport,
   },
   {
-    id: "21",
-    title: "মালামাল স্টক",
-    path: "/dashboard/assests",
-    icon: HiDocumentReport,
-  },
+  id: "21",
+  title: "মালামাল স্টক",
+  icon: HiDocumentReport,
+  children: [
+    {
+      id: "21-1",
+      title: "মালামালের ক্যাটাগরি",
+      path: "/dashboard/assests/category",
+      icon: MdKeyboardArrowRight,
+    },
+    {
+      id: "21-2",
+      title: "মালামালের স্টক",
+      path: "/dashboard/assests",
+      icon: MdKeyboardArrowRight,
+    },
+  ],
+}
 ];
 
 export const dashboardItems2: TDashboardItem[] = [

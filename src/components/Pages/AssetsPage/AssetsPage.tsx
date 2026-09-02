@@ -18,6 +18,7 @@ import DamagedAssetList from "./DamagedAssetList";
 import LostAssetList from "./LostAssetList";
 import AssetHistory from "./AssetHistory";
 import NewProductEntryModal from "@/components/Dashboard/Modals/NewProductEntryModal";
+import CreateNewIGoodsIssueModal from "@/components/Dashboard/Modals/CreateNewIGoodsIssueModal";
 
 const tabs = [
     {
@@ -57,6 +58,7 @@ const tabs = [
 export default function AssetsPage() {
     const [activeTab, setActiveTab] = useState("dashboard");
     const [openNewProduct, setOpenNewProduct] = useState<boolean>(false)
+    const [openNewIssueModal, setOpenNewIssueModal] = useState<boolean>(false)
     const renderTabContent = () => {
         switch (activeTab) {
             case "dashboard":
@@ -89,23 +91,24 @@ export default function AssetsPage() {
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
 
                 {/* ================= HEADER ================= */}
-               <div className="flex flex-col gap-3 border-b border-gray-200 px-3 py-3 sm:px-5 sm:py-4 md:flex-row md:items-center md:justify-between">
-  {/* Logo / Title */}
-  <div className="flex items-center gap-2 sm:gap-3">
-    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e9f8f2] sm:h-9 sm:w-9">
-      <Grid2X2 className="h-4 w-4 text-[#039A63] sm:h-5 sm:w-5" />
-    </div>
+                <div className="flex flex-col gap-3 border-b border-gray-200 px-3 py-3 sm:px-5 sm:py-4 md:flex-row md:items-center md:justify-between">
+                    {/* Logo / Title */}
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e9f8f2] sm:h-9 sm:w-9">
+                            <Grid2X2 className="h-4 w-4 text-[#039A63] sm:h-5 sm:w-5" />
+                        </div>
 
-    <h1 className="text-lg font-bold text-[#039A63] sm:text-2xl">
-      অ্যাসেট ম্যানেজমেন্ট
-    </h1>
-  </div>
+                        <h1 className="text-lg font-bold text-[#039A63] sm:text-2xl">
+                            অ্যাসেট ম্যানেজমেন্ট
+                        </h1>
+                    </div>
 
-  {/* Header Buttons */}
-  <div className="flex w-full items-center gap-2 sm:gap-3 md:w-auto">
-    <button
-      type="button"
-      className="
+                    {/* Header Buttons */}
+                    <div className="flex w-full items-center gap-2 sm:gap-3 md:w-auto">
+                        <button
+                            onClick={() => setOpenNewIssueModal(true)}
+                            type="button"
+                            className="
         flex w-full items-center justify-center
         gap-2 rounded-lg
         border border-gray-300
@@ -115,15 +118,15 @@ export default function AssetsPage() {
         sm:px-4 sm:text-sm
         md:w-auto
       "
-    >
-      <ExternalLink className="h-4 w-4" />
-      এক্সপোর্ট
-    </button>
+                        >
+                            <ExternalLink className="h-4 w-4" />
+                            ইস্যু করুন
+                        </button>
 
-    <button
-      onClick={() => setOpenNewProduct(true)}
-      type="button"
-      className="
+                        <button
+                            onClick={() => setOpenNewProduct(true)}
+                            type="button"
+                            className="
         flex w-full items-center justify-center
         gap-2 rounded-lg
         bg-[#039A63]
@@ -133,12 +136,12 @@ export default function AssetsPage() {
         sm:px-4 sm:text-sm
         md:w-auto
       "
-    >
-      <Plus className="h-4 w-4" />
-      নতুন স্টক
-    </button>
-  </div>
-</div>
+                        >
+                            <Plus className="h-4 w-4" />
+                            নতুন স্টক
+                        </button>
+                    </div>
+                </div>
 
                 {/* ================= NAVIGATION ================= */}
                 <div className="border-b border-gray-200 px-5">
@@ -206,6 +209,13 @@ export default function AssetsPage() {
                 <NewProductEntryModal
                     isOpen={openNewProduct}
                     onClose={() => setOpenNewProduct(false)}
+                />
+            }
+
+            {openNewIssueModal &&
+                <CreateNewIGoodsIssueModal
+                    isOpen={openNewIssueModal}
+                    onClose={() => setOpenNewIssueModal(false)}
                 />
             }
         </div>
