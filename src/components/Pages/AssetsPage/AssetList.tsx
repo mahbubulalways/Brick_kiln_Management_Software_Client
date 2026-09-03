@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
 import {
     ChevronLeft,
     ChevronRight,
@@ -10,25 +9,30 @@ import {
     Search,
     Trash2,
 } from "lucide-react";
-
 import TableHead from "@/components/Reusable/TableHead";
 import TableData from "@/components/Reusable/TableData";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import { TGoodsStock } from "@/interface/good_stock";
-import { useGetAllGoodsStockQuery } from "@/redux/features/good_stock.features";
+import { useDeleteGoodStockMutation, useGetAllGoodsStockQuery } from "@/redux/features/good_stock.features";
 import Image from "next/image";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import CalculateAssets from "./CalculateAssets";
+import Swal from "sweetalert2";
+import ImageViewModal from "@/components/Dashboard/common/ImageViewModal";
+import SingleGoodDetailsModal from "@/components/Dashboard/Modals/ReportModal/SingleGoodDetailsModal/SingleGoodDetailsModal";
 
 export default function AssetList() {
     const { data, isError, isLoading } =
         useGetAllGoodsStockQuery(undefined);
-
+    const [deleteGoodAsync, { isLoading: deleteLoading }] = useDeleteGoodStockMutation()
     const goods = (data?.data as TGoodsStock[]) || [];
-
+    const [imageModal, setImageModal] = useState(false);
+    // GOOD DETAILS
+    const [isGoodDetailsOpen, setIsGoodDetailsOpen] = useState(false);
+    const [selectedGoodId, setSelectedGoodId] = useState("");
+    const [image, setImage] = useState("");
     const [search, setSearch] = useState("");
-    const [category, setCategory] =
-        useState("সকল ক্যাটাগরি");
-
+    const [category, setCategory] = useState("সকল ক্যাটাগরি");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -89,11 +93,6 @@ export default function AssetList() {
         setCurrentPage(1);
     };
 
-    const handleItemsPerPageChange = (value: number) => {
-        setItemsPerPage(value);
-        setCurrentPage(1);
-    };
-
     const getPageNumbers = () => {
         const pages: (number | string)[] = [];
 
@@ -104,17 +103,14 @@ export default function AssetList() {
 
             return pages;
         }
+
         pages.push(1);
 
         if (currentPage > 3) {
             pages.push("...");
         }
 
-        const start = Math.max(
-            2,
-            currentPage - 1
-        );
-
+        const start = Math.max(2, currentPage - 1);
         const end = Math.min(
             totalPages - 1,
             currentPage + 1
@@ -133,8 +129,60 @@ export default function AssetList() {
         return pages;
     };
 
+
+
+    // function
+    const handleOpenGoodDetails = (id: string) => {
+        setSelectedGoodId(id);
+        setIsGoodDetailsOpen(true);
+    };
+
+    const handleCloseGoodDetails = () => {
+        setIsGoodDetailsOpen(false);
+        setSelectedGoodId("");
+    };
+
+    const handleDeleteGood = async (id: string) => {
+        const result = await Swal.fire({
+            title: "আপনি কি নিশ্চিত?",
+            text: "এই মালামালটি ডিলেট করলে এটি আর ফিরে পাওয়া যাবে না!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#039A63",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "হ্যাঁ, ডিলেট করুন",
+            cancelButtonText: "বাতিল",
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            await deleteGoodAsync(id).unwrap();
+
+            await Swal.fire({
+                title: "ডিলেট হয়েছে!",
+                text: "মালামালটি সফলভাবে ডিলেট করা হয়েছে।",
+                icon: "success",
+                confirmButtonColor: "#039A63",
+                confirmButtonText: "ঠিক আছে",
+            });
+        } catch (error: any) {
+            await Swal.fire({
+                title: "ব্যর্থ!",
+                text:
+                    error?.data?.message ||
+                    "মালামালটি ডিলেট করা সম্ভব হয়নি।",
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "ঠিক আছে",
+            });
+        }
+    };
+
     return (
         <div className="w-full">
+            <CalculateAssets goods={goods} />
+
             <div className="mb-5 rounded-xl border border-gray-100 bg-white p-4">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-3">
@@ -189,9 +237,7 @@ export default function AssetList() {
                             type="text"
                             value={search}
                             onChange={(e) =>
-                                handleSearch(
-                                    e.target.value
-                                )
+                                handleSearch(e.target.value)
                             }
                             placeholder="খুঁজুন..."
                             className="h-9 w-full rounded-md border border-gray-300 pl-9 pr-3 text-sm outline-none focus:border-[#039A63]"
@@ -265,24 +311,21 @@ export default function AssetList() {
                                 </tr>
                             ) : (
                                 paginatedGoods.map((item) => {
-                                    const total =
-                                        Number(
-                                            item.quantity || 0
-                                        );
+                                    const total = Number(
+                                        item.quantity || 0
+                                    );
 
-                                    const issue =
-                                        Number(
-                                            item._count
-                                                ?.goodsIssues || 0
-                                        );
+                                    const issue = Number(
+                                        item.totalIssue || 0
+                                    );
 
-                                    const damage =
-                                        Number(
-                                            item._count
-                                                ?.goodsLosses || 0
-                                        );
+                                    const damage = Number(
+                                        item.totalDamage || 0
+                                    );
 
-                                    const lost = 0;
+                                    const lost = Number(
+                                        item.totalLost || 0
+                                    );
 
                                     const current =
                                         total -
@@ -291,9 +334,8 @@ export default function AssetList() {
                                         lost;
 
                                     const itemTotalPrice =
-                                        Number(
-                                            item.price || 0
-                                        ) * total;
+                                        Number(item.price || 0) *
+                                        total;
 
                                     return (
                                         <tr
@@ -303,7 +345,12 @@ export default function AssetList() {
                                             <td className="w-[80px] border-r border-gray-200 px-3 py-3">
                                                 <div className="flex items-center justify-center">
                                                     {item.image ? (
-                                                        <div className="relative h-10 w-10 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+                                                        <div
+                                                            onClick={() => {
+                                                                setImage(item.image);
+                                                                setImageModal(true);
+                                                            }}
+                                                            className="relative cursor-pointer h-10 w-10 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
                                                             <Image
                                                                 fill
                                                                 unoptimized
@@ -327,8 +374,7 @@ export default function AssetList() {
 
                                             <TableData
                                                 td={
-                                                    item.name ||
-                                                    "-"
+                                                    item.name || "-"
                                                 }
                                                 cls="border-r border-gray-200 text-left font-medium"
                                             />
@@ -336,8 +382,7 @@ export default function AssetList() {
                                             <TableData
                                                 td={
                                                     item.category
-                                                        ?.name ||
-                                                    "-"
+                                                        ?.name || "-"
                                                 }
                                                 cls="border-r border-gray-200 text-left"
                                             />
@@ -394,6 +439,7 @@ export default function AssetList() {
                                             <td className="w-[110px] border-r border-gray-200 px-3 py-3">
                                                 <div className="flex items-center justify-center gap-2">
                                                     <button
+                                                        onClick={() => handleOpenGoodDetails(item.id)}
                                                         type="button"
                                                         title="বিস্তারিত দেখুন"
                                                         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-600 transition hover:border-[#039A63] hover:bg-green-50 hover:text-[#039A63]"
@@ -404,9 +450,11 @@ export default function AssetList() {
                                                     </button>
 
                                                     <button
+                                                        disabled={deleteLoading}
+                                                        onClick={() => handleDeleteGood(item?.id)}
                                                         type="button"
                                                         title="ডিলিট"
-                                                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-red-200 bg-white text-red-500 transition hover:bg-red-50"
+                                                        className="flex cursor-pointer h-8 w-8 shrink-0 items-center justify-center rounded-md border border-red-200 bg-white text-red-500 transition hover:bg-red-50"
                                                     >
                                                         <Trash2
                                                             size={15}
@@ -426,32 +474,22 @@ export default function AssetList() {
                     !isError &&
                     filteredGoods.length > 0 && (
                         <div className="flex items-center justify-end border-t border-gray-200 px-4 py-3">
-                           
-
                             <div className="flex items-center gap-1">
                                 <button
                                     type="button"
-                                    disabled={
-                                        currentPage === 1
-                                    }
+                                    disabled={currentPage === 1}
                                     onClick={() =>
                                         setCurrentPage(
-                                            (prev) =>
-                                                prev - 1
+                                            (prev) => prev - 1
                                         )
                                     }
                                     className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
                                 >
-                                    <ChevronLeft
-                                        size={16}
-                                    />
+                                    <ChevronLeft size={16} />
                                 </button>
 
                                 {getPageNumbers().map(
-                                    (
-                                        page,
-                                        index
-                                    ) =>
+                                    (page, index) =>
                                         page === "..." ? (
                                             <span
                                                 key={`dots-${index}`}
@@ -469,12 +507,12 @@ export default function AssetList() {
                                                     )
                                                 }
                                                 className={`flex h-8 min-w-8 items-center justify-center rounded-md border px-2 text-sm transition ${currentPage ===
-                                                        page
-                                                        ? "border-[#039A63] bg-[#039A63] text-white"
-                                                        : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
+                                                    page
+                                                    ? "border-[#039A63] bg-[#039A63] text-white"
+                                                    : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50"
                                                     }`}
                                             >
-                                               {page}
+                                                {page}
                                             </button>
                                         )
                                 )}
@@ -487,22 +525,34 @@ export default function AssetList() {
                                     }
                                     onClick={() =>
                                         setCurrentPage(
-                                            (prev) =>
-                                                prev + 1
+                                            (prev) => prev + 1
                                         )
                                     }
                                     className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
                                 >
-                                    <ChevronRight
-                                        size={16}
-                                    />
+                                    <ChevronRight size={16} />
                                 </button>
                             </div>
-
-                           
                         </div>
                     )}
             </div>
+
+            {imageModal && image &&
+                <ImageViewModal
+                    image={image}
+                    isOpen={imageModal}
+                    onClose={() => {
+                        setImageModal(false);
+                        setImage("");
+                    }}
+                />
+            }
+
+            <SingleGoodDetailsModal
+                id={selectedGoodId}
+                isOpen={isGoodDetailsOpen}
+                onClose={handleCloseGoodDetails}
+            />
         </div>
     );
 }

@@ -4,6 +4,8 @@ import CustomInput from "@/components/Reusable/CustomInput";
 import CustomSelect from "@/components/Reusable/CustomSelect";
 import { useForm } from "react-hook-form";
 import { billingCycleOptions, features, planTypeOptions, TFeatureKey } from "./subscription.features";
+import { useCreateSubscriptionMutation } from "@/redux/system.features/system.subscription.featurs";
+import { showToast } from "@/components/Toast/CustomToast";
 
 
 type TSubscriptionPlanForm = {
@@ -28,6 +30,7 @@ type TSubscriptionPlanForm = {
 
 
 const CreateSubscriptionPage = () => {
+    const [createSubscription, { isLoading }] = useCreateSubscriptionMutation()
     const {
         register,
         handleSubmit,
@@ -90,10 +93,26 @@ const CreateSubscriptionPage = () => {
         }
     };
 
-    const onSubmit = (
-        data: TSubscriptionPlanForm,
-    ) => {
-        console.log("Subscription Plan:", data);
+    const onSubmit = async (data: TSubscriptionPlanForm) => {
+        try {
+            const result = await createSubscription(data).unwrap();
+
+            if (result?.success) {
+                showToast({
+                    title:
+                        result?.message ||
+                        "সাবস্ক্রিপশন প্ল্যান সফলভাবে তৈরি হয়েছে।",
+                    type: "success",
+                });
+            }
+        } catch (error: any) {
+            showToast({
+                title:
+                    error?.data?.message ||
+                    "সাবস্ক্রিপশন প্ল্যান তৈরি করা সম্ভব হয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+                type: "error",
+            });
+        }
     };
 
     return (
@@ -295,13 +314,13 @@ const CreateSubscriptionPage = () => {
                         register={register}
                         placeholder="Unlimited"
                         error={errors.maxStorage}
-                        rules={{
-                            min: {
-                                value: 1,
-                                message:
-                                    "কমপক্ষে ১ GB দিতে হবে",
-                            },
-                        }}
+                        // rules={{
+                        //     min: {
+                        //         value: 1,
+                        //         message:
+                        //             "কমপক্ষে ১ GB দিতে হবে",
+                        //     },
+                        // }}
                     />
 
                     <CustomInput
@@ -311,13 +330,13 @@ const CreateSubscriptionPage = () => {
                         register={register}
                         placeholder="Unlimited"
                         error={errors.maxTasks}
-                        rules={{
-                            min: {
-                                value: 1,
-                                message:
-                                    "কমপক্ষে ১ দিতে হবে",
-                            },
-                        }}
+                        // rules={{
+                        //     min: {
+                        //         value: 1,
+                        //         message:
+                        //             "কমপক্ষে ১ দিতে হবে",
+                        //     },
+                        // }}
                     />
 
                     <CustomInput
@@ -364,7 +383,8 @@ const CreateSubscriptionPage = () => {
             <div className="flex justify-end">
                 <button
                     type="submit"
-                    className="rounded-lg bg-[#039A63] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#028653]"
+                    disabled={isLoading}
+                    className="rounded-lg disabled:bg-gray-500 bg-[#039A63] px-6 py-2.5 text-sm font-medium text-white transition hover:bg-[#028653]"
                 >
                     প্ল্যান তৈরি করুন
                 </button>

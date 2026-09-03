@@ -26,20 +26,20 @@ const goodIssueApi = baseApi.injectEndpoints({
 
         // GET SINGLE 
         getSingleGoodIssue: builder.query({
-            query: (id:string) => ({
+            query: (id: string) => ({
                 url: `/goods-issue/single/${id}`,
                 method: "GET",
             }),
             providesTags: ["GOOD_ISSUE"],
         }),
 
-          // GET ISSUE HISTORY
+        // GET ISSUE HISTORY
         getGoodIssueHistory: builder.query({
-            query: () => ({
-                url: `/goods-issue/history`,
+            query: (query: TQuery) => ({
+                url: `/goods-issue/history?limit=${query.limit}&page=${query.page}`,
                 method: "GET",
             }),
-            providesTags: ["GOOD_ISSUE"],
+            providesTags: ["GOOD_ISSUE","GOODS"],
         }),
 
     }),

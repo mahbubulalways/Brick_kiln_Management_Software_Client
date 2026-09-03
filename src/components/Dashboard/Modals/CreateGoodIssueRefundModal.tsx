@@ -141,10 +141,14 @@ const CreateGoodIssueRefundModal = ({
         onClose();
     };
 
-    const onSubmit: SubmitHandler<TRefundForm> = async (
-        formData
-    ) => {
+    const onSubmit: SubmitHandler<TRefundForm> = async (formData) => {
         if (!issue) return;
+
+        const good = Number(formData.goodQuantity || 0);
+        const damaged = Number(formData.damagedQuantity || 0);
+        const lost = Number(formData.lostQuantity || 0);
+
+        const totalRefund = good + damaged + lost;
 
         if (!formData.name.trim()) {
             setError("name", {
@@ -154,61 +158,50 @@ const CreateGoodIssueRefundModal = ({
             return;
         }
 
-        if (totalRefund > issuedQuantity) {
-            setError("goodQuantity", {
-                type: "manual",
-                message: `মোট ফেরতের পরিমাণ ${issuedQuantity} এর বেশি হতে পারবে না।`,
-            });
+        if (totalRefund !== issuedQuantity) {
+            showToast({
+               title: `মোট পরিমাণ ${issuedQuantity} হতে হবে। বর্তমানে ${totalRefund} টি।`,
+                type: "info"
+            })
+
             return;
         }
 
-        if (totalRefund === 0) {
-            setError("goodQuantity", {
-                type: "manual",
-                message: "কমপক্ষে একটি ফেরতের পরিমাণ দিন।",
-            });
-            return;
-        }
+        clearErrors("goodQuantity");
 
         try {
             const payload = {
                 issueId: issue.id,
                 name: formData.name,
-                goodQuantity: Number(
-                    formData.goodQuantity
-                ),
-                damagedQuantity: Number(
-                    formData.damagedQuantity
-                ),
-                lostQuantity: Number(
-                    formData.lostQuantity
-                ),
+                goodQuantity: good,
+                damagedQuantity: damaged,
+                lostQuantity: lost,
                 date: formData.date,
                 note: formData.note,
                 file: image,
             };
 
-            const modifyData = modifyPayload(payload)
+            const modifyData = modifyPayload(payload);
 
-            const result = await mutateAsync(modifyData)
-            console.log(result)
+            const result = await mutateAsync(modifyData);
 
-            // reset();
-            // removeImage();
-            // onClose();
+            console.log(result);
+
+            reset();
+            removeImage();
+            onClose();
 
             showToast({
                 title: "মালামাল ফেরত নেওয়া হয়েছে।",
                 type: "success",
                 options: {
                     duration: 4000,
-                    icon: (
-                        <FaCircleCheck className="h-5 w-5" />
-                    ),
+                    icon: <FaCircleCheck className="h-5 w-5" />,
                 },
             });
         } catch (error: any) {
-            console.log(error)
+            console.log(error);
+
             showToast({
                 title:
                     error?.data?.message ||
@@ -216,9 +209,7 @@ const CreateGoodIssueRefundModal = ({
                 type: "error",
                 options: {
                     duration: 4000,
-                    icon: (
-                        <MdOutlineError className="h-5 w-5" />
-                    ),
+                    icon: <MdOutlineError className="h-5 w-5" />,
                 },
             });
         }
@@ -294,7 +285,7 @@ const CreateGoodIssueRefundModal = ({
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <CustomInput
-                            label="      ভালো (স্টক)"
+                            label="ভালো (স্টক)"
                             name="goodQuantity"
                             placeholder="0"
                             register={register}
@@ -385,9 +376,12 @@ const CreateGoodIssueRefundModal = ({
                     </div>
 
                     <button
+
                         type="submit"
-                        disabled={isQuantityExceeded}
-                        className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#16A34A] text-base font-semibold text-white shadow-sm transition hover:bg-[#15803D] disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={isQuantityExceeded || createLoading}
+                        className="flex h-11 w-full items-center justify-center gap-2 
+                        rounded-lg bg-[#16A34A] text-base font-semibold text-white 
+                        shadow-sm transition hover:bg-[#15803D] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <CheckCircle2 size={18} />
                         ফেরত সম্পন্ন করুন

@@ -15,6 +15,7 @@ import CustomLoader from "@/components/Reusable/CustomLoader";
 import { useGetAllGoodIssueQuery } from "@/redux/features/goods_issue.features";
 import { TGoodsIssue } from "@/interface/good_stock";
 import CreateGoodIssueRefundModal from "@/components/Dashboard/Modals/CreateGoodIssueRefundModal";
+import ImageViewModal from "@/components/Dashboard/common/ImageViewModal";
 
 export default function AssetIssueList() {
     const {
@@ -24,6 +25,8 @@ export default function AssetIssueList() {
     } = useGetAllGoodIssueQuery(undefined);
 
     const issues = (data?.data as TGoodsIssue[]) || [];
+    const [imageModal, setImageModal] = useState(false);
+    const [image, setImage] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [refundId, setRefundId] = useState<string | null>(null);
     const [refundModal, setRefundModal] = useState(false);
@@ -191,7 +194,12 @@ export default function AssetIssueList() {
                                             <td className="w-[80px] border-r border-gray-100 px-3 py-3">
                                                 <div className="flex items-center justify-center">
                                                     {issue.good?.image ? (
-                                                        <div className="relative h-10 w-10 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+                                                        <div
+                                                            onClick={() => {
+                                                                setImage(issue?.good.image);
+                                                                setImageModal(true);
+                                                            }}
+                                                            className="relative cursor-pointer h-10 w-10 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
                                                             <Image
                                                                 fill
                                                                 unoptimized
@@ -340,6 +348,17 @@ export default function AssetIssueList() {
                     onClose={() => {
                         setRefundModal(false);
                         setRefundId(null);
+                    }}
+                />
+            }
+
+            {imageModal && image &&
+                <ImageViewModal
+                    image={image}
+                    isOpen={imageModal}
+                    onClose={() => {
+                        setImageModal(false);
+                        setImage("");
                     }}
                 />
             }

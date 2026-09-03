@@ -1,10 +1,16 @@
+import { Suspense } from "react";
 import StockBookPage from "@/components/Pages/StockBookPage/StockBookPage";
+import CustomLoader from "@/components/Reusable/CustomLoader";
 
 const Page = () => {
   return (
-    <div>
+    <Suspense
+      fallback={
+        <CustomLoader cls="h-[30vh]" />
+      }
+    >
       <StockBookPage />
-    </div>
+    </Suspense>
   );
 };
 

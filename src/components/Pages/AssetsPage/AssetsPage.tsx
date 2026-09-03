@@ -11,7 +11,6 @@ import {
     ExternalLink,
     Plus,
 } from "lucide-react";
-import AssetDashboard from "./AssetDashboard";
 import AssetList from "./AssetList";
 import AssetIssueList from "./AssetIssueList";
 import DamagedAssetList from "./DamagedAssetList";
@@ -19,13 +18,14 @@ import LostAssetList from "./LostAssetList";
 import AssetHistory from "./AssetHistory";
 import NewProductEntryModal from "@/components/Dashboard/Modals/NewProductEntryModal";
 import CreateNewIGoodsIssueModal from "@/components/Dashboard/Modals/CreateNewIGoodsIssueModal";
+import { TQuery } from "@/interface/query";
 
 const tabs = [
-    {
-        id: "dashboard",
-        title: "ড্যাশবোর্ড",
-        icon: LayoutDashboard,
-    },
+    // {
+    //     id: "dashboard",
+    //     title: "ড্যাশবোর্ড",
+    //     icon: LayoutDashboard,
+    // },
     {
         id: "assets",
         title: "স্টক তালিকা",
@@ -55,14 +55,14 @@ const tabs = [
     },
 ];
 
-export default function AssetsPage() {
-    const [activeTab, setActiveTab] = useState("dashboard");
+export default function AssetsPage({ limit, page }: TQuery) {
+    const [activeTab, setActiveTab] = useState("assets");
     const [openNewProduct, setOpenNewProduct] = useState<boolean>(false)
     const [openNewIssueModal, setOpenNewIssueModal] = useState<boolean>(false)
     const renderTabContent = () => {
         switch (activeTab) {
-            case "dashboard":
-                return <AssetDashboard />;
+            // case "dashboard":
+            //     return <AssetDashboard />;
 
             case "assets":
                 return <AssetList />;
@@ -77,10 +77,13 @@ export default function AssetsPage() {
                 return <LostAssetList />;
 
             case "history":
-                return <AssetHistory />;
+                return <AssetHistory
+                    limit={limit}
+                    page={page}
+                />;
 
             default:
-                return <AssetDashboard />;
+                return <AssetList />;
         }
     };
 

@@ -6,13 +6,19 @@ import {
     ShieldCheck,
     UserRound,
 } from "lucide-react";
+
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import CustomInput from "@/components/Reusable/CustomInput";
-import { handleApiError } from "@/utils/handleApiError";
 import CustomDatePicker from "@/components/Reusable/CustomDatePicker";
+import CustomSelect from "@/components/Reusable/CustomSelect";
+
+import { handleApiError } from "@/utils/handleApiError";
+import formatLabelValuePair from "@/utils/formatLabelValuePair";
+
 import { useCreateNewVataMutation } from "@/redux/system.features/system.vata.features";
+import { useGetSubscriptionOptionsQuery } from "@/redux/system.features/system.subscription.featurs";
 
 export type TVata = {
     vata: {
@@ -24,8 +30,7 @@ export type TVata = {
         ownerName: string;
         ownerPhoneNumber: string;
         challansPhoneNumber: string;
-        smsRate: string;
-        softwareFee: string;
+        susbscriptionPlanId: string;
         nextPaymentDate: string;
     };
 
@@ -37,8 +42,22 @@ export type TVata = {
 };
 
 const CreateBrickPage = () => {
-    const [createNewVata, { isLoading }] = useCreateNewVataMutation();
+    const [createNewVata, { isLoading }] =
+        useCreateNewVataMutation();
 
+    const {
+        isError,
+        isLoading: optionsLoading,
+        data,
+        error
+    } = useGetSubscriptionOptionsQuery(undefined);
+
+    const subscriptionOptions = formatLabelValuePair({
+        data: data?.data,
+        label: "name",
+        value: "id",
+    });
+console.log(error)
     const {
         register,
         handleSubmit,
@@ -54,11 +73,12 @@ const CreateBrickPage = () => {
                 subdomain: "royal-bricks",
                 ownerName: "সোহেল মিয়া",
                 ownerPhoneNumber: "01987654321",
-                challansPhoneNumber: "01687654321,01687654322",
-                smsRate: "0.40",
-                softwareFee: "3500",
+                challansPhoneNumber:
+                    "01687654321,01687654322",
+                susbscriptionPlanId: "",
                 nextPaymentDate: "2026-12-01",
             },
+
             owner: {
                 name: "সোহেল মিয়া",
                 username: "sohel",
@@ -74,7 +94,9 @@ const CreateBrickPage = () => {
             if (res?.success) {
                 toast.success("ভাটা সফলভাবে তৈরি হয়েছে");
             } else {
-                toast.error(res?.message || "ভাটা তৈরি করা যায়নি");
+                toast.error(
+                    res?.message || "ভাটা তৈরি করা যায়নি"
+                );
             }
         } catch (error: any) {
             handleApiError({ error });
@@ -82,7 +104,7 @@ const CreateBrickPage = () => {
     };
 
     return (
-        <div className="min-h-full w-full bg-[#f8fafc] ">
+        <div className="min-h-full w-full bg-[#f8fafc]">
             <div className="mx-auto w-full max-w-7xl">
                 {/* ================= PAGE HEADER ================= */}
                 <div className="mb-6 rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
@@ -103,8 +125,8 @@ const CreateBrickPage = () => {
                             </div>
 
                             <p className="mt-1.5 text-sm text-gray-500">
-                                নতুন ভাটা, সফটওয়্যার এবং অ্যাডমিন অ্যাকাউন্ট
-                                তৈরি করুন।
+                                নতুন ভাটা, সাবস্ক্রিপশন এবং অ্যাডমিন
+                                অ্যাকাউন্ট তৈরি করুন।
                             </p>
                         </div>
 
@@ -122,7 +144,7 @@ const CreateBrickPage = () => {
                 >
                     {/* ================= VATA BASIC INFORMATION ================= */}
                     <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        {/* Section Header */}
+                        {/* Header */}
                         <div className="border-b border-gray-100 bg-gradient-to-r from-[#039A63]/5 to-transparent px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#039A63]/10">
@@ -139,14 +161,14 @@ const CreateBrickPage = () => {
                                     </h2>
 
                                     <p className="mt-0.5 text-xs text-gray-500">
-                                        ভাটার পরিচয়, নাম, ঠিকানা ও যোগাযোগের
-                                        তথ্য
+                                        ভাটার পরিচয়, নাম, ঠিকানা ও
+                                        যোগাযোগের তথ্য
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Section Body */}
+                        {/* Body */}
                         <div className="p-5">
                             <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                                 <CustomInput
@@ -157,7 +179,8 @@ const CreateBrickPage = () => {
                                     register={register}
                                     name="vata.vataId"
                                     rules={{
-                                        required: "ভাটার আইডি দিন",
+                                        required:
+                                            "ভাটার আইডি দিন",
                                     }}
                                 />
 
@@ -165,11 +188,14 @@ const CreateBrickPage = () => {
                                     label="সাবডোমেইন"
                                     placeholder="hasan"
                                     type="text"
-                                    error={errors.vata?.subdomain}
+                                    error={
+                                        errors.vata?.subdomain
+                                    }
                                     register={register}
                                     name="vata.subdomain"
                                     rules={{
-                                        required: "সাবডোমেইন দিন",
+                                        required:
+                                            "সাবডোমেইন দিন",
                                         pattern: {
                                             value: /^[a-z0-9-]+$/,
                                             message:
@@ -182,11 +208,14 @@ const CreateBrickPage = () => {
                                     label="ভাটার নাম (ইংরেজি)"
                                     placeholder="Hasan Bricks"
                                     type="text"
-                                    error={errors.vata?.nameEnglish}
+                                    error={
+                                        errors.vata?.nameEnglish
+                                    }
                                     register={register}
                                     name="vata.nameEnglish"
                                     rules={{
-                                        required: "ইংরেজি নাম দিন",
+                                        required:
+                                            "ইংরেজি নাম দিন",
                                     }}
                                 />
 
@@ -194,14 +223,16 @@ const CreateBrickPage = () => {
                                     label="ভাটার নাম (বাংলায়)"
                                     placeholder="হাসান ব্রিকস"
                                     type="text"
-                                    error={errors.vata?.nameBangla}
+                                    error={
+                                        errors.vata?.nameBangla
+                                    }
                                     register={register}
                                     name="vata.nameBangla"
                                     rules={{
-                                        required: "বাংলা নাম দিন",
+                                        required:
+                                            "বাংলা নাম দিন",
                                     }}
                                 />
-
 
                                 <CustomInput
                                     label="ভাটার ঠিকানা"
@@ -211,20 +242,23 @@ const CreateBrickPage = () => {
                                     register={register}
                                     name="vata.address"
                                     rules={{
-                                        required: "ঠিকানা দিন",
+                                        required:
+                                            "ঠিকানা দিন",
                                     }}
                                 />
-
 
                                 <CustomInput
                                     label="মালিকের নাম"
                                     placeholder="মালিকের নাম"
                                     type="text"
-                                    error={errors.vata?.ownerName}
+                                    error={
+                                        errors.vata?.ownerName
+                                    }
                                     register={register}
                                     name="vata.ownerName"
                                     rules={{
-                                        required: "মালিকের নাম দিন",
+                                        required:
+                                            "মালিকের নাম দিন",
                                     }}
                                 />
 
@@ -232,7 +266,10 @@ const CreateBrickPage = () => {
                                     label="মালিকের ফোন নম্বর"
                                     placeholder="017XXXXXXXX"
                                     type="text"
-                                    error={errors.vata?.ownerPhoneNumber}
+                                    error={
+                                        errors.vata
+                                            ?.ownerPhoneNumber
+                                    }
                                     register={register}
                                     name="vata.ownerPhoneNumber"
                                     rules={{
@@ -250,26 +287,24 @@ const CreateBrickPage = () => {
                                     label="চালানের ফোন নম্বর"
                                     placeholder="018XXXXXXXX"
                                     type="text"
-                                    error={errors.vata?.challansPhoneNumber}
+                                    error={
+                                        errors.vata
+                                            ?.challansPhoneNumber
+                                    }
                                     register={register}
                                     name="vata.challansPhoneNumber"
                                     rules={{
                                         required:
                                             "চালানের ফোন নম্বর দিন",
-                                        // pattern: {
-                                        //     value: /^01[3-9]\d{8}$/,
-                                        //     message:
-                                        //         "সঠিক মোবাইল নম্বর দিন",
-                                        // },
                                     }}
                                 />
                             </div>
                         </div>
                     </section>
 
-                    {/* ================= SOFTWARE & BILLING ================= */}
+                    {/* ================= SUBSCRIPTION & PAYMENT ================= */}
                     <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        {/* Section Header */}
+                        {/* Header */}
                         <div className="border-b border-gray-100 bg-gradient-to-r from-[#039A63]/5 to-transparent px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#039A63]/10">
@@ -282,47 +317,51 @@ const CreateBrickPage = () => {
 
                                 <div>
                                     <h2 className="text-base font-semibold text-[#34495e]">
-                                        সফটওয়্যার ও পেমেন্ট
+                                        সাবস্ক্রিপশন ও পেমেন্ট
                                     </h2>
 
                                     <p className="mt-0.5 text-xs text-gray-500">
-                                        SMS রেট, সফটওয়্যার ফি এবং পেমেন্টের
-                                        তথ্য
+                                        সাবস্ক্রিপশন প্ল্যান এবং
+                                        পরবর্তী পেমেন্টের তথ্য নির্বাচন করুন
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Section Body */}
+                        {/* Body */}
                         <div className="p-5">
                             <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-3">
-                                <CustomInput
-                                    label="SMS Rate"
-                                    placeholder="0.35"
-                                    type=""
-                                    error={errors.vata?.smsRate}
-                                    register={register}
-                                    name="vata.smsRate"
+                                {/* Subscription Plan */}
+                                <CustomSelect
+                                    label="সাবস্ক্রিপশন প্ল্যান"
+                                    placeholder={
+                                        optionsLoading
+                                            ? "প্ল্যান লোড হচ্ছে..."
+                                            : "সাবস্ক্রিপশন প্ল্যান নির্বাচন করুন"
+                                    }
+                                    options={
+                                        subscriptionOptions || []
+                                    }
+                                    control={control}
+                                    name="vata.susbscriptionPlanId"
+                                    error={
+                                        errors.vata
+                                            ?.susbscriptionPlanId
+                                    }
                                     rules={{
-                                        required: "SMS rate দিন",
+                                        required:
+                                            "সাবস্ক্রিপশন প্ল্যান নির্বাচন করুন",
                                     }}
                                 />
 
-                                <CustomInput
-                                    label="Software Fee"
-                                    placeholder="1500"
-                                    type="number"
-                                    error={errors.vata?.softwareFee}
-                                    register={register}
-                                    name="vata.softwareFee"
-                                    rules={{
-                                        required: "Software fee দিন",
-                                    }}
-                                />
 
+                                {/* Next Payment Date */}
                                 <CustomDatePicker
                                     label="পরবর্তী পেমেন্টের তারিখ"
-                                    error={errors.vata?.nextPaymentDate}
+                                    error={
+                                        errors.vata
+                                            ?.nextPaymentDate
+                                    }
                                     control={control}
                                     name="vata.nextPaymentDate"
                                     rules={{
@@ -336,7 +375,7 @@ const CreateBrickPage = () => {
 
                     {/* ================= ADMIN USER ================= */}
                     <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        {/* Section Header */}
+                        {/* Header */}
                         <div className="border-b border-gray-100 bg-gradient-to-r from-[#039A63]/5 to-transparent px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#039A63]/10">
@@ -353,14 +392,14 @@ const CreateBrickPage = () => {
                                     </h2>
 
                                     <p className="mt-0.5 text-xs text-gray-500">
-                                        ভাটার জন্য অ্যাডমিন লগইন অ্যাকাউন্ট
-                                        তৈরি করুন
+                                        ভাটার জন্য অ্যাডমিন লগইন
+                                        অ্যাকাউন্ট তৈরি করুন
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Section Body */}
+                        {/* Body */}
                         <div className="p-5">
                             <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-3">
                                 <CustomInput
@@ -380,11 +419,14 @@ const CreateBrickPage = () => {
                                     label="ইউজারনেম"
                                     placeholder="hasan"
                                     type="text"
-                                    error={errors.owner?.username}
+                                    error={
+                                        errors.owner?.username
+                                    }
                                     register={register}
                                     name="owner.username"
                                     rules={{
-                                        required: "ইউজারনেম দিন",
+                                        required:
+                                            "ইউজারনেম দিন",
                                         minLength: {
                                             value: 3,
                                             message:
@@ -397,11 +439,14 @@ const CreateBrickPage = () => {
                                     label="পাসওয়ার্ড"
                                     placeholder="••••••••"
                                     type="password"
-                                    error={errors.owner?.password}
+                                    error={
+                                        errors.owner?.password
+                                    }
                                     register={register}
                                     name="owner.password"
                                     rules={{
-                                        required: "পাসওয়ার্ড দিন",
+                                        required:
+                                            "পাসওয়ার্ড দিন",
                                         minLength: {
                                             value: 6,
                                             message:
@@ -424,9 +469,10 @@ const CreateBrickPage = () => {
                                     </p>
 
                                     <p className="mt-0.5 text-xs leading-5 text-gray-500">
-                                        অ্যাডমিনের ইউজারনেম ও পাসওয়ার্ড
-                                        নিরাপদে সংরক্ষণ করুন। পাসওয়ার্ড
-                                        কারও সাথে শেয়ার করবেন না।
+                                        অ্যাডমিনের ইউজারনেম ও
+                                        পাসওয়ার্ড নিরাপদে সংরক্ষণ
+                                        করুন। পাসওয়ার্ড কারও সাথে
+                                        শেয়ার করবেন না।
                                     </p>
                                 </div>
                             </div>
