@@ -10,7 +10,7 @@ export type TBillingCycle =
     | "YEARLY";
 
 export type TSubscriptionPlan = {
-    id:string
+    id: string
     name: string;
     type: TSubscriptionType;
     billingCycle: TBillingCycle;
@@ -23,4 +23,7 @@ export type TSubscriptionPlan = {
     maxTasks: number;
     maxUsers: number;
     isActive: boolean;
+    _count: {
+        vatas: number
+    }
 };

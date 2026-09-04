@@ -45,7 +45,11 @@ export const baseApi = createApi({
     "GOODS_CATEGORY",
     "GOODS",
     "GOOD_ISSUE",
-    "GOOD_ISSUE_REFUND"
+    "GOOD_ISSUE_REFUND",
+
+    "SOFTWARE_PAYMENT", // both
+    // ADMIN
+    "ADMIN_VATA"
   ],
   endpoints: () => ({}),
 });

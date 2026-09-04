@@ -1,8 +1,9 @@
 import AssetsCategoryPage from '@/components/Pages/AssetsPage/AssetsCategoryPage/AssetsCategoryPage'
+import PrivateComponent from '@/components/Reusable/PrivateComponent'
 import React from 'react'
 
 export default function page() {
   return (
-    <div><AssetsCategoryPage/></div>
+    <PrivateComponent feature='ASSETS'><AssetsCategoryPage/></PrivateComponent>
   )
 }

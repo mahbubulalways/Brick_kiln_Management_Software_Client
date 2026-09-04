@@ -64,89 +64,101 @@ export const navigationItems: TNavigationItem[] = [
                 label: "নতুন প্ল্যান",
                 href: "/system/subscriptions/plans/create",
             },
-            {
-                label: "সাবস্ক্রাইবার",
-                href: "/system/subscriptions",
-            },
-            {
-                label: "মেয়াদ শেষ",
-                href: "/system/subscriptions/expired",
-            },
-        ],
-    },
-    {
-        label: "প্ল্যাটফর্ম রিপোর্ট",
-        icon: BarChart3,
-        children: [
-            {
-                label: "ব্যবহার রিপোর্ট",
-                href: "/system/reports/usage",
-            },
-            {
-                label: "রেভিনিউ রিপোর্ট",
-                href: "/system/reports/revenue",
-            },
-            {
-                label: "ভাটা রিপোর্ট",
-                href: "/system/reports/vata",
-            },
-            {
-                label: "ইউজার রিপোর্ট",
-                href: "/system/reports/users",
-            },
         ],
     },
 
     {
-        label: "সিস্টেম মনিটরিং",
-        icon: Activity,
+        label: "পেমেন্ট",
+        icon: CreditCard,
         children: [
             {
-                label: "সিস্টেম স্ট্যাটাস",
-                href: "/system/monitoring",
+                label: "নতুন পেমেন্ট",
+                href: "/system/payments",
             },
             {
-                label: "অ্যাক্টিভিটি লগ",
-                href: "/system/activity-logs",
+                label: "পেমেন্ট হিস্টোরি",
+                href: "/system/payments/history",
             },
-            {
-                label: "এরর লগ",
-                href: "/system/error-logs",
-            },
+            // {
+            //     label: "পেন্ডিং পেমেন্ট",
+            //     href: "/system/payments/pending",
+            // },
         ],
     },
 
-    {
-        label: "সাপোর্ট",
-        icon: LifeBuoy,
-        children: [
-            {
-                label: "সাপোর্ট টিকিট",
-                href: "/system/support",
-            },
-            {
-                label: "অভিযোগ",
-                href: "/system/support/complaints",
-            },
-        ],
-    },
+    // {
+    //     label: "প্ল্যাটফর্ম রিপোর্ট",
+    //     icon: BarChart3,
+    //     children: [
+    //         {
+    //             label: "ব্যবহার রিপোর্ট",
+    //             href: "/system/reports/usage",
+    //         },
+    //         {
+    //             label: "রেভিনিউ রিপোর্ট",
+    //             href: "/system/reports/revenue",
+    //         },
+    //         {
+    //             label: "ভাটা রিপোর্ট",
+    //             href: "/system/reports/vata",
+    //         },
+    //         {
+    //             label: "ইউজার রিপোর্ট",
+    //             href: "/system/reports/users",
+    //         },
+    //     ],
+    // },
 
-    {
-        label: "সিস্টেম সেটিংস",
-        icon: Settings,
-        children: [
-            {
-                label: "সাধারণ সেটিংস",
-                href: "/system/settings",
-            },
-            {
-                label: "নোটিফিকেশন",
-                href: "/system/settings/notifications",
-            },
-            {
-                label: "সিকিউরিটি",
-                href: "/system/settings/security",
-            },
-        ],
-    },
+    // {
+    //     label: "সিস্টেম মনিটরিং",
+    //     icon: Activity,
+    //     children: [
+    //         {
+    //             label: "সিস্টেম স্ট্যাটাস",
+    //             href: "/system/monitoring",
+    //         },
+    //         {
+    //             label: "অ্যাক্টিভিটি লগ",
+    //             href: "/system/activity-logs",
+    //         },
+    //         {
+    //             label: "এরর লগ",
+    //             href: "/system/error-logs",
+    //         },
+    //     ],
+    // },
+
+    // {
+    //     label: "সাপোর্ট",
+    //     icon: LifeBuoy,
+    //     children: [
+    //         {
+    //             label: "সাপোর্ট টিকিট",
+    //             href: "/system/support",
+    //         },
+    //         {
+    //             label: "অভিযোগ",
+    //             href: "/system/support/complaints",
+    //         },
+    //     ],
+    // },
+
+    // {
+    //     label: "সিস্টেম সেটিংস",
+    //     icon: Settings,
+    //     children: [
+    //         {
+    //             label: "সাধারণ সেটিংস",
+    //             href: "/system/settings",
+    //         },
+    //         {
+    //             label: "নোটিফিকেশন",
+    //             href: "/system/settings/notifications",
+    //         },
+    //         {
+    //             label: "সিকিউরিটি",
+    //             href: "/system/settings/security",
+    //         },
+    //     ],
+    // },
 ];

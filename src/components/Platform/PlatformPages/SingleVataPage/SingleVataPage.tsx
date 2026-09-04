@@ -1,9 +1,6 @@
-"use client"
+"use client";
 
-import React from "react";
-import Link from "next/link";
 import {
-    ArrowLeft,
     Building2,
     CalendarDays,
     CheckCircle2,
@@ -19,7 +16,10 @@ import {
 } from "lucide-react";
 
 import { useGetSingleVataQuery } from "@/redux/system.features/system.vata.features";
-import { TSubscription, TVataResponse } from "@/interface/vata";
+import {
+    TSubscription,
+    TVataResponse,
+} from "@/interface/vata";
 
 type TSingleVataPageProps = {
     id: string;
@@ -40,7 +40,7 @@ const formatCurrency = (value?: string | number | null) => {
         return "৳ 0";
     }
 
-    return `৳ ${Number(value).toLocaleString("en-BD")}`;
+    return `৳ ${Number(value).toLocaleString("bn-BD")}`;
 };
 
 const getSubscriptionStatus = (
@@ -73,6 +73,46 @@ const getSubscriptionStatus = (
         color: "bg-green-50 text-green-600",
         icon: CheckCircle2,
     };
+};
+
+const getPaymentStatus = (status?: string | null) => {
+    switch (status?.toUpperCase()) {
+        case "PAID":
+            return {
+                label: "পরিশোধিত",
+                color: "bg-green-50 text-green-600",
+                icon: CheckCircle2,
+            };
+
+        case "PENDING":
+            return {
+                label: "অপেক্ষমান",
+                color: "bg-yellow-50 text-yellow-600",
+                icon: Clock3,
+            };
+
+        case "FAILED":
+            return {
+                label: "ব্যর্থ",
+                color: "bg-red-50 text-red-600",
+                icon: XCircle,
+            };
+
+        case "CANCELLED":
+        case "CANCELED":
+            return {
+                label: "বাতিল",
+                color: "bg-gray-100 text-gray-600",
+                icon: XCircle,
+            };
+
+        default:
+            return {
+                label: status || "অজানা",
+                color: "bg-gray-100 text-gray-600",
+                icon: Clock3,
+            };
+    }
 };
 
 const InfoItem = ({
@@ -116,6 +156,7 @@ export default function SingleVataPage({
     });
 
     const vata = data?.data as TVataResponse;
+
     if (isLoading || isFetching) {
         return (
             <div className="space-y-5">
@@ -165,7 +206,7 @@ export default function SingleVataPage({
 
     today.setHours(0, 0, 0, 0);
 
-    let remainingDays = null;
+    let remainingDays: number | null = null;
 
     if (subscriptionEnd) {
         subscriptionEnd.setHours(0, 0, 0, 0);
@@ -178,33 +219,34 @@ export default function SingleVataPage({
 
     return (
         <div className="space-y-5">
-            {/* ================= HEADER ================= */}
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-800">
-                            ভাটার বিস্তারিত
-                        </h1>
 
-                        <p className="mt-0.5 text-xs text-gray-500">
-                            ভাটার সকল তথ্য ও সাবস্ক্রিপশন দেখুন
-                        </p>
-                    </div>
+            {/* ================= HEADER ================= */}
+
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <div>
+                    <h1 className="text-xl font-bold text-gray-800">
+                        ভাটার বিস্তারিত
+                    </h1>
+
+                    <p className="mt-0.5 text-xs text-gray-500">
+                        ভাটার সকল তথ্য ও সাবস্ক্রিপশন দেখুন
+                    </p>
                 </div>
 
                 <div
                     className={`flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${subscriptionStatus.color}`}
                 >
                     <StatusIcon size={15} />
-
                     {subscriptionStatus.label}
                 </div>
             </div>
 
             {/* ================= HERO ================= */}
+
             <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
                 <div className="relative bg-gradient-to-r from-[#039A63] to-[#027A50] px-5 py-6 sm:px-7">
                     <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
                         <div className="flex items-center gap-4">
                             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/15 text-white backdrop-blur-sm">
                                 <Building2
@@ -236,7 +278,32 @@ export default function SingleVataPage({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 divide-y divide-gray-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+                <div className="grid grid-cols-1 divide-y divide-gray-100 sm:grid-cols-4 sm:divide-x sm:divide-y-0">
+
+                    {/* Plan */}
+
+                    <div className="p-5">
+                        <div className="mb-2 flex items-center gap-2 text-gray-500">
+                            <CreditCard size={16} />
+
+                            <span className="text-xs">
+                                সাবস্ক্রিপশন প্ল্যান
+                            </span>
+                        </div>
+
+                        <p className="text-sm font-semibold text-gray-800">
+                            {vata.subscriptionPlan?.name || "—"}
+                        </p>
+
+                        <p className="mt-1 text-xs text-gray-500">
+                            {formatCurrency(
+                                vata.subscriptionPlan?.price,
+                            )}
+                        </p>
+                    </div>
+
+                    {/* Start */}
+
                     <div className="p-5">
                         <div className="mb-2 flex items-center gap-2 text-gray-500">
                             <CalendarDays size={16} />
@@ -250,6 +317,8 @@ export default function SingleVataPage({
                             {formatDate(vata.subscriptionStart)}
                         </p>
                     </div>
+
+                    {/* End */}
 
                     <div className="p-5">
                         <div className="mb-2 flex items-center gap-2 text-gray-500">
@@ -265,6 +334,8 @@ export default function SingleVataPage({
                         </p>
                     </div>
 
+                    {/* Remaining */}
+
                     <div className="p-5">
                         <div className="mb-2 flex items-center gap-2 text-gray-500">
                             <Wallet size={16} />
@@ -276,15 +347,17 @@ export default function SingleVataPage({
 
                         <p
                             className={`text-sm font-semibold ${remainingDays !== null &&
-                                remainingDays < 0
-                                ? "text-red-500"
-                                : "text-[#039A63]"
+                                    remainingDays < 0
+                                    ? "text-red-500"
+                                    : "text-[#039A63]"
                                 }`}
                         >
                             {remainingDays === null
                                 ? "—"
                                 : remainingDays < 0
-                                    ? `${Math.abs(remainingDays)} দিন আগে শেষ`
+                                    ? `${Math.abs(
+                                        remainingDays,
+                                    )} দিন আগে শেষ`
                                     : `${remainingDays} দিন বাকি`}
                         </p>
                     </div>
@@ -292,8 +365,11 @@ export default function SingleVataPage({
             </div>
 
             {/* ================= MAIN CONTENT ================= */}
+
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+
                 {/* ================= VATA INFORMATION ================= */}
+
                 <div className="rounded-2xl border border-gray-200 bg-white p-5 xl:col-span-2">
                     <div className="mb-5 flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-[#039A63]">
@@ -312,6 +388,7 @@ export default function SingleVataPage({
                     </div>
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
                         <InfoItem
                             icon={Building2}
                             label="ভাটার নাম (বাংলা)"
@@ -333,7 +410,11 @@ export default function SingleVataPage({
                         <InfoItem
                             icon={Globe2}
                             label="সাবডোমেইন"
-                            value={`${vata.subdomain}.itvata.com`}
+                            value={
+                                vata.subdomain
+                                    ? `${vata.subdomain}.itvata.com`
+                                    : "—"
+                            }
                         />
 
                         <InfoItem
@@ -351,6 +432,7 @@ export default function SingleVataPage({
                 </div>
 
                 {/* ================= OWNER ================= */}
+
                 <div className="rounded-2xl border border-gray-200 bg-white p-5">
                     <div className="mb-5 flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-[#039A63]">
@@ -385,10 +467,14 @@ export default function SingleVataPage({
             </div>
 
             {/* ================= SUBSCRIPTION & BILLING ================= */}
+
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+
                 {/* Subscription */}
+
                 <div className="rounded-2xl border border-gray-200 bg-white p-5">
                     <div className="mb-5 flex items-center justify-between">
+
                         <div className="flex items-center gap-3">
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-[#039A63]">
                                 <CalendarDays size={18} />
@@ -413,6 +499,23 @@ export default function SingleVataPage({
                     </div>
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                        <InfoItem
+                            icon={CreditCard}
+                            label="সাবস্ক্রিপশন প্ল্যান"
+                            value={
+                                vata.subscriptionPlan?.name || "—"
+                            }
+                        />
+
+                        <InfoItem
+                            icon={Wallet}
+                            label="প্ল্যান মূল্য"
+                            value={formatCurrency(
+                                vata.subscriptionPlan?.price,
+                            )}
+                        />
+
                         <InfoItem
                             icon={CalendarDays}
                             label="শুরুর তারিখ"
@@ -431,7 +534,8 @@ export default function SingleVataPage({
                     </div>
                 </div>
 
-                {/* Billing */}
+                {/* Next Payment */}
+
                 <div className="rounded-2xl border border-gray-200 bg-white p-5">
                     <div className="mb-5 flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-[#039A63]">
@@ -440,45 +544,77 @@ export default function SingleVataPage({
 
                         <div>
                             <h3 className="text-base font-semibold text-gray-800">
-                                বিলিং তথ্য
+                                পেমেন্ট তথ্য
                             </h3>
 
                             <p className="text-xs text-gray-500">
-                                সফটওয়্যার ও SMS চার্জ
+                                পরবর্তী পেমেন্টের তথ্য
                             </p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
                         <InfoItem
                             icon={Wallet}
-                            label="সফটওয়্যার ফি"
+                            label="সাবস্ক্রিপশন ফি"
                             value={formatCurrency(
-                                vata.softwareFee,
+                                vata.subscriptionPlan?.price,
+                            )}
+                        />
+
+                        <InfoItem
+                            icon={CalendarDays}
+                            label="পরবর্তী পেমেন্ট"
+                            value={formatDate(
+                                vata.nextPaymentDate,
+                            )}
+                        />
+
+                        <InfoItem
+                            icon={CreditCard}
+                            label="মোট পেমেন্ট"
+                            value={formatCurrency(
+                                vata.subscriptionPayments?.reduce(
+                                    (total: number, payment: TSubscription) =>
+                                        total +
+                                        Number(
+                                            payment.amount || 0,
+                                        ),
+                                    0,
+                                ),
                             )}
                         />
 
                         <InfoItem
                             icon={MessageSquare}
-                            label="SMS Rate"
-                            value={`${vata.smsRate ?? 0} টাকা / SMS`}
+                            label="মোট পেমেন্ট সংখ্যা"
+                            value={
+                                vata.subscriptionPayments?.length
+                                    ? `${vata.subscriptionPayments.length} টি`
+                                    : "০ টি"
+                            }
                         />
                     </div>
                 </div>
             </div>
 
             {/* ================= SUBSCRIPTION HISTORY ================= */}
+
             <div className="rounded-2xl border border-gray-200 bg-white p-5">
+
                 {/* Header */}
+
                 <div className="mb-5 flex items-center justify-between">
                     <div className="flex items-center gap-3">
+
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-[#039A63]">
                             <CreditCard size={18} />
                         </div>
 
                         <div>
                             <h3 className="text-base font-semibold text-gray-800">
-                                সাবস্ক্রিপশন ইতিহাস
+                                পেমেন্ট ইতিহাস
                             </h3>
 
                             <p className="text-xs text-gray-500">
@@ -488,11 +624,14 @@ export default function SingleVataPage({
                     </div>
                 </div>
 
-                {vata.subscriptions?.length ? (
+                {vata.subscriptionPayments?.length ? (
                     <div className="overflow-x-auto">
+
                         <table className="w-full min-w-[1100px] text-left">
+
                             <thead>
                                 <tr className="border-b border-gray-200 bg-gray-50">
+
                                     <th className="px-4 py-3 text-xs font-semibold text-gray-600">
                                         #
                                     </th>
@@ -528,51 +667,64 @@ export default function SingleVataPage({
                             </thead>
 
                             <tbody>
-                                {vata?.subscriptions.map(
-                                    (subscription: TSubscription, index: number) => {
-                                        const status = getSubscriptionStatus(
-                                            subscription.endDate,
-                                        );
+                                {vata.subscriptionPayments.map(
+                                    (
+                                        subscription: TSubscription,
+                                        index: number,
+                                    ) => {
+                                        const paymentStatus =
+                                            getPaymentStatus(
+                                                subscription.status,
+                                            );
 
-                                        const SubscriptionIcon = status.icon;
+                                        const PaymentStatusIcon =
+                                            paymentStatus.icon;
 
                                         return (
                                             <tr
-                                                key={subscription.id}
+                                                key={
+                                                    subscription.id
+                                                }
                                                 className="border-b border-gray-100 last:border-0 hover:bg-gray-50/70"
                                             >
                                                 {/* Serial */}
+
                                                 <td className="px-4 py-4 text-sm text-gray-500">
                                                     {index + 1}
                                                 </td>
 
                                                 {/* Amount */}
+
                                                 <td className="px-4 py-4">
                                                     <div>
                                                         <p className="text-sm font-bold text-gray-800">
-                                                            ৳
-                                                            {Number(
+                                                            {formatCurrency(
                                                                 subscription.amount,
-                                                            ).toLocaleString("bn-BD")}
+                                                            )}
                                                         </p>
 
                                                         <p className="mt-0.5 text-[11px] text-gray-400">
-                                                            পরিশোধিত
+                                                            সাবস্ক্রিপশন
                                                         </p>
                                                     </div>
                                                 </td>
 
-                                                {/* Phone Number */}
+                                                {/* Phone */}
+
                                                 <td className="px-4 py-4">
                                                     <p className="text-sm font-medium text-gray-700">
-                                                        {subscription.phoneNumber}
+                                                        {subscription.phoneNumber ||
+                                                            "—"}
                                                     </p>
                                                 </td>
 
                                                 {/* Payment Date */}
+
                                                 <td className="px-4 py-4">
                                                     <p className="text-sm font-medium text-gray-700">
-                                                        {formatDate(subscription.paidAt)}
+                                                        {formatDate(
+                                                            subscription.paidAt,
+                                                        )}
                                                     </p>
 
                                                     <p className="mt-0.5 text-[11px] text-gray-400">
@@ -581,29 +733,36 @@ export default function SingleVataPage({
                                                 </td>
 
                                                 {/* Payment Method */}
+
                                                 <td className="px-4 py-4">
                                                     <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium capitalize text-gray-700">
-                                                        {subscription.paymentMethod}
+                                                        {subscription.paymentMethod ||
+                                                            "—"}
                                                     </span>
                                                 </td>
 
                                                 {/* Transaction ID */}
+
                                                 <td className="px-4 py-4">
                                                     <div className="max-w-[170px]">
                                                         <p
                                                             className="truncate text-xs font-semibold text-gray-700"
                                                             title={
-                                                                subscription.transactionId
+                                                                subscription.transactionId ||
+                                                                ""
                                                             }
                                                         >
-                                                            {subscription.transactionId}
+                                                            {subscription.transactionId ||
+                                                                "—"}
                                                         </p>
                                                     </div>
                                                 </td>
 
                                                 {/* Subscription Period */}
+
                                                 <td className="px-4 py-4">
                                                     <div className="space-y-1">
+
                                                         <div className="flex items-center gap-1.5">
                                                             <span className="text-[11px] text-gray-400">
                                                                 শুরু:
@@ -631,13 +790,18 @@ export default function SingleVataPage({
                                                 </td>
 
                                                 {/* Status */}
+
                                                 <td className="px-4 py-4">
                                                     <span
-                                                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${status.color}`}
+                                                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${paymentStatus.color}`}
                                                     >
-                                                        <SubscriptionIcon size={13} />
+                                                        <PaymentStatusIcon
+                                                            size={13}
+                                                        />
 
-                                                        {status.label}
+                                                        {
+                                                            paymentStatus.label
+                                                        }
                                                     </span>
                                                 </td>
                                             </tr>
@@ -649,12 +813,13 @@ export default function SingleVataPage({
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 py-10">
+
                         <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-gray-50 text-gray-400">
                             <CreditCard size={20} />
                         </div>
 
                         <p className="text-sm font-medium text-gray-600">
-                            কোনো সাবস্ক্রিপশন ইতিহাস নেই
+                            কোনো পেমেন্ট ইতিহাস নেই
                         </p>
 
                         <p className="mt-1 text-xs text-gray-400">

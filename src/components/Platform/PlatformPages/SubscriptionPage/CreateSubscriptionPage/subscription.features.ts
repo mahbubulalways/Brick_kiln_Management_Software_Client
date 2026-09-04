@@ -19,6 +19,7 @@ export type TFeatureKey =
     | "LOAN"
     | "WEATHER"
     | "SMS"
+    | "DRIVER"
     | "CONTACT";
 
 

@@ -4,7 +4,6 @@ import { baseApi } from "../baseApi";
 const vataApi = baseApi.injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
-       
 
         // DOMAIN
         verifySubDomain: builder.mutation({
@@ -16,17 +15,28 @@ const vataApi = baseApi.injectEndpoints({
         }),
 
         // GET VATA INFO
-         getVataInfo: builder.query({
+        getVataInfo: builder.query({
             query: () => ({
                 url: `/vata/info`,
             }),
         }),
-        
+
         // GET VATA INFO
-         getMyVataInformation: builder.query({
+        getMyVataInformation: builder.query({
             query: () => ({
                 url: `/vata/me`,
             }),
+        }),
+
+
+        // GET MY NAVBAR FEATURES
+        getMyVataNavbarFeatures: builder.query({
+            query: () => ({
+                url: "/vata/nav",
+                method: "GET",
+            }),
+
+            keepUnusedDataFor: 86400,
         }),
 
     }),
@@ -35,5 +45,6 @@ const vataApi = baseApi.injectEndpoints({
 export const {
     useVerifySubDomainMutation,
     useGetVataInfoQuery,
-    useGetMyVataInformationQuery
+    useGetMyVataInformationQuery,
+    useGetMyVataNavbarFeaturesQuery
 } = vataApi;

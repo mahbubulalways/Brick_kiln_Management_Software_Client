@@ -37,22 +37,38 @@ export type TSubscription = {
     phoneNumber: string;
     createdAt: string;
     updatedAt: string;
+
 };
+
+
 
 export type TVataResponse = {
     vataId: string;
     id: string;
     nameBangla: string;
     nameEnglish: string;
-    nextPaymentDate: string | Date;
+
+    nextPaymentDate: string | Date | null;
+
     ownerName: string;
-    address: string;
     ownerPhoneNumber: string;
+    challansPhoneNumber: string;
+
+    address: string;
+
     createdAt: string | Date;
-    softwareFee: number | string;
-    smsRate: number | string;
-    subscriptionEnd: string | Date | null;
+
     subscriptionStart: string | Date | null;
+    subscriptionEnd: string | Date | null;
+
     subdomain: string;
-    subscriptions: TSubscription[];
+
+    subscriptionPlan: {
+        name: string;
+        price: number | string;
+        billingCycle: "MONTHLY" | "YEARLY"
+    }
+
+
+    subscriptionPayments: TSubscription[];
 };

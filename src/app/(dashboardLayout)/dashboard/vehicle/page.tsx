@@ -1,10 +1,11 @@
 import UnderConstructionPage from "@/components/Pages/UnderContructionPage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 
 const Page = () => {
   return (
-    <div>
+    <PrivateComponent feature="VEHICLE">
       <UnderConstructionPage />
-    </div>
+    </PrivateComponent>
   );
 };
 

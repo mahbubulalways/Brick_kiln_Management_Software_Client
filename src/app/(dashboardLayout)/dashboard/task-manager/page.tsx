@@ -1,10 +1,11 @@
 import TaskManagerPage from "@/components/Pages/TaskManagerPage/TaskManagerPage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 
 const Page = () => {
   return (
-    <div>
+    <PrivateComponent feature="TASK_MANAGER">
       <TaskManagerPage />
-    </div>
+    </PrivateComponent>
   );
 };
 

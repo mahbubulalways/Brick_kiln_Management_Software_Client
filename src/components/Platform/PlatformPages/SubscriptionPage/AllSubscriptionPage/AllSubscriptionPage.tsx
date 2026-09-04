@@ -12,10 +12,16 @@ import {
     HardDrive,
     FileText,
     ListTodo,
+    Pencil,
+    Trash2,
+    Power,
 } from "lucide-react";
 
 import { TSubscriptionPlan } from "@/interface/subscription";
 import { useGetAllSubscriptionQuery } from "@/redux/system.features/system.subscription.featurs";
+import Link from "next/link";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 
 export default function AllSubscriptionPage() {
     const { isError, isLoading, data } =
@@ -160,11 +166,10 @@ export default function AllSubscriptionPage() {
                         >
                             {/* Top Green Line */}
                             <div
-                                className={`h-1 w-full ${
-                                    subscription.isActive
-                                        ? "bg-[#039A63]"
-                                        : "bg-gray-300"
-                                }`}
+                                className={`h-1 w-full ${subscription.isActive
+                                    ? "bg-[#039A63]"
+                                    : "bg-gray-300"
+                                    }`}
                             />
 
                             <div className="p-5">
@@ -178,11 +183,10 @@ export default function AllSubscriptionPage() {
                                             {/* Plan Header */}
                                             <div className="flex items-center gap-3">
                                                 <div
-                                                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
-                                                        subscription.isActive
-                                                            ? "bg-[#039A63]/10 text-[#039A63]"
-                                                            : "bg-gray-100 text-gray-400"
-                                                    }`}
+                                                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${subscription.isActive
+                                                        ? "bg-[#039A63]/10 text-[#039A63]"
+                                                        : "bg-gray-100 text-gray-400"
+                                                        }`}
                                                 >
                                                     <Crown className="h-6 w-6" />
                                                 </div>
@@ -202,11 +206,10 @@ export default function AllSubscriptionPage() {
                                                         <span className="h-1 w-1 rounded-full bg-gray-300" />
 
                                                         <span
-                                                            className={`text-xs font-semibold ${
-                                                                subscription.isActive
-                                                                    ? "text-[#039A63]"
-                                                                    : "text-red-500"
-                                                            }`}
+                                                            className={`text-xs font-semibold ${subscription.isActive
+                                                                ? "text-[#039A63]"
+                                                                : "text-red-500"
+                                                                }`}
                                                         >
                                                             {subscription.isActive
                                                                 ? "Active"
@@ -214,13 +217,35 @@ export default function AllSubscriptionPage() {
                                                         </span>
                                                     </div>
                                                 </div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <button
+                                                            type="button"
+                                                            className="ml-auto cursor-pointer rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
+                                                        >
+                                                            <MoreVertical className="h-5 w-5" />
+                                                        </button>
+                                                    </DropdownMenuTrigger>
 
-                                                <button
-                                                    type="button"
-                                                    className="ml-auto rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
-                                                >
-                                                    <MoreVertical className="h-5 w-5" />
-                                                </button>
+                                                    <DropdownMenuContent
+                                                        align="end"
+                                                        className="rounded-md border bg-white shadow-md"
+                                                    >
+                                                        <DropdownMenuItem>
+                                                            <CustomDropDownMenuItem
+                                                                Icon={Power}
+                                                                title="ডিঅ্যাক্টিভেট করুন"
+                                                            />
+                                                        </DropdownMenuItem>
+
+                                                        <DropdownMenuItem>
+                                                            <CustomDropDownMenuItem
+                                                                Icon={Trash2}
+                                                                title="ডিলিট করুন"
+                                                            />
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
 
                                             {/* Price */}
@@ -255,13 +280,17 @@ export default function AllSubscriptionPage() {
 
                                         {/* Buttons */}
                                         <div className="mt-5 flex gap-2">
-                                            <button
-                                                type="button"
-                                                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#039A63] px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-[#028653]"
+                                            <Link href={`/system/subscriptions/${subscription.id}`}
+                                                className="w-full cursor-pointer"
                                             >
-                                                <Edit className="h-4 w-4" />
-                                                এডিট করুন
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    className="flex cursor-pointer w-full flex-1 items-center justify-center gap-2 rounded-lg bg-[#039A63] px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-[#028653]"
+                                                >
+                                                    <Edit className="h-4 w-4" />
+                                                    এডিট করুন
+                                                </button>
+                                            </Link>
 
                                             <button
                                                 type="button"
@@ -347,7 +376,7 @@ export default function AllSubscriptionPage() {
                                                     <FileText className="h-5 w-5" />
                                                 }
                                                 label="Purchases"
-                                                value={2}
+                                                value={subscription?._count?.vatas}
                                             />
                                         </div>
                                     </div>
@@ -388,11 +417,11 @@ export default function AllSubscriptionPage() {
 
                                             {!subscription.features
                                                 ?.length && (
-                                                <p className="text-sm text-gray-400">
-                                                    কোনো feature যোগ করা
-                                                    হয়নি।
-                                                </p>
-                                            )}
+                                                    <p className="text-sm text-gray-400">
+                                                        কোনো feature যোগ করা
+                                                        হয়নি।
+                                                    </p>
+                                                )}
                                         </div>
                                     </div>
                                 </div>

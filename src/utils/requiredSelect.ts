@@ -1,5 +1,7 @@
 "use client";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { RegisterOptions } from "react-hook-form";
 
 export const requiredSelect = (
@@ -15,7 +17,16 @@ export const requiredSelect = (
   return {
     ...rules,
     required: undefined,
-    validate: (value: any) =>
-      value !== undefined && value !== null ? true : message,
+    validate: (value: any) => {
+      if (
+        value === undefined ||
+        value === null ||
+        value === ""
+      ) {
+        return message;
+      }
+
+      return true;
+    },
   };
 };

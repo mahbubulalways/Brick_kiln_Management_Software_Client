@@ -6,19 +6,18 @@ import {
     ShieldCheck,
     UserRound,
 } from "lucide-react";
-
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import CustomInput from "@/components/Reusable/CustomInput";
 import CustomDatePicker from "@/components/Reusable/CustomDatePicker";
+import CustomInput from "@/components/Reusable/CustomInput";
 import CustomSelect from "@/components/Reusable/CustomSelect";
-
-import { handleApiError } from "@/utils/handleApiError";
-import formatLabelValuePair from "@/utils/formatLabelValuePair";
 
 import { useCreateNewVataMutation } from "@/redux/system.features/system.vata.features";
 import { useGetSubscriptionOptionsQuery } from "@/redux/system.features/system.subscription.featurs";
+
+import formatLabelValuePair from "@/utils/formatLabelValuePair";
+import { handleApiError } from "@/utils/handleApiError";
 
 export type TVata = {
     vata: {
@@ -30,7 +29,7 @@ export type TVata = {
         ownerName: string;
         ownerPhoneNumber: string;
         challansPhoneNumber: string;
-        susbscriptionPlanId: string;
+        subscriptionPlanId: string;
         nextPaymentDate: string;
     };
 
@@ -42,14 +41,12 @@ export type TVata = {
 };
 
 const CreateBrickPage = () => {
-    const [createNewVata, { isLoading }] =
-        useCreateNewVataMutation();
+    const [createNewVata, { isLoading }] = useCreateNewVataMutation();
 
     const {
-        isError,
         isLoading: optionsLoading,
         data,
-        error
+        error,
     } = useGetSubscriptionOptionsQuery(undefined);
 
     const subscriptionOptions = formatLabelValuePair({
@@ -57,7 +54,8 @@ const CreateBrickPage = () => {
         label: "name",
         value: "id",
     });
-console.log(error)
+
+
     const {
         register,
         handleSubmit,
@@ -75,7 +73,7 @@ console.log(error)
                 ownerPhoneNumber: "01987654321",
                 challansPhoneNumber:
                     "01687654321,01687654322",
-                susbscriptionPlanId: "",
+                subscriptionPlanId: "",
                 nextPaymentDate: "2026-12-01",
             },
 
@@ -106,7 +104,9 @@ console.log(error)
     return (
         <div className="min-h-full w-full bg-[#f8fafc]">
             <div className="mx-auto w-full max-w-7xl">
+
                 {/* ================= PAGE HEADER ================= */}
+
                 <div className="mb-6 rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -142,9 +142,10 @@ console.log(error)
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-5"
                 >
-                    {/* ================= VATA BASIC INFORMATION ================= */}
+
+                    {/* ================= VATA INFORMATION ================= */}
+
                     <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        {/* Header */}
                         <div className="border-b border-gray-100 bg-gradient-to-r from-[#039A63]/5 to-transparent px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#039A63]/10">
@@ -161,16 +162,17 @@ console.log(error)
                                     </h2>
 
                                     <p className="mt-0.5 text-xs text-gray-500">
-                                        ভাটার পরিচয়, নাম, ঠিকানা ও
-                                        যোগাযোগের তথ্য
+                                        ভাটার পরিচয়, নাম, ঠিকানা ও যোগাযোগের তথ্য
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Body */}
                         <div className="p-5">
                             <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+
+                                {/* VATA ID */}
+
                                 <CustomInput
                                     label="ভাটার আইডি"
                                     placeholder="VATA-001"
@@ -179,113 +181,190 @@ console.log(error)
                                     register={register}
                                     name="vata.vataId"
                                     rules={{
-                                        required:
-                                            "ভাটার আইডি দিন",
-                                    }}
-                                />
+                                        required: "ভাটার আইডি দিন",
 
-                                <CustomInput
-                                    label="সাবডোমেইন"
-                                    placeholder="hasan"
-                                    type="text"
-                                    error={
-                                        errors.vata?.subdomain
-                                    }
-                                    register={register}
-                                    name="vata.subdomain"
-                                    rules={{
-                                        required:
-                                            "সাবডোমেইন দিন",
-                                        pattern: {
-                                            value: /^[a-z0-9-]+$/,
+                                        minLength: {
+                                            value: 3,
                                             message:
-                                                "শুধু ছোট হাতের অক্ষর, সংখ্যা ও - ব্যবহার করুন",
+                                                "ভাটার আইডি কমপক্ষে ৩ অক্ষরের হতে হবে",
+                                        },
+
+                                        maxLength: {
+                                            value: 50,
+                                            message:
+                                                "ভাটার আইডি সর্বোচ্চ ৫০ অক্ষরের হতে পারে",
                                         },
                                     }}
                                 />
 
+                                {/* SUBDOMAIN */}
+
+                                <CustomInput
+                                    label="সাবডোমেইন"
+                                    placeholder="royal-bricks"
+                                    type="text"
+                                    error={errors.vata?.subdomain}
+                                    register={register}
+                                    name="vata.subdomain"
+                                    rules={{
+                                        required: "সাবডোমেইন দিন",
+
+                                        minLength: {
+                                            value: 3,
+                                            message:
+                                                "সাবডোমেইন কমপক্ষে ৩ অক্ষরের হতে হবে",
+                                        },
+
+                                        maxLength: {
+                                            value: 50,
+                                            message:
+                                                "সাবডোমেইন সর্বোচ্চ ৫০ অক্ষরের হতে পারে",
+                                        },
+
+                                        pattern: {
+                                            value: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+                                            message:
+                                                "সাবডোমেইনে শুধু ছোট হাতের ইংরেজি অক্ষর, সংখ্যা ও হাইফেন (-) ব্যবহার করুন",
+                                        },
+                                    }}
+                                />
+
+                                {/* ENGLISH NAME */}
+
                                 <CustomInput
                                     label="ভাটার নাম (ইংরেজি)"
-                                    placeholder="Hasan Bricks"
+                                    placeholder="Royal Bricks"
                                     type="text"
-                                    error={
-                                        errors.vata?.nameEnglish
-                                    }
+                                    error={errors.vata?.nameEnglish}
                                     register={register}
                                     name="vata.nameEnglish"
                                     rules={{
                                         required:
-                                            "ইংরেজি নাম দিন",
+                                            "ভাটার ইংরেজি নাম দিন",
+
+                                        minLength: {
+                                            value: 2,
+                                            message:
+                                                "ভাটার নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+                                        },
+
+                                        maxLength: {
+                                            value: 100,
+                                            message:
+                                                "ভাটার নাম সর্বোচ্চ ১০০ অক্ষরের হতে পারে",
+                                        },
                                     }}
                                 />
 
+                                {/* BANGLA NAME */}
+
                                 <CustomInput
                                     label="ভাটার নাম (বাংলায়)"
-                                    placeholder="হাসান ব্রিকস"
+                                    placeholder="রয়্যাল ব্রিকস"
                                     type="text"
-                                    error={
-                                        errors.vata?.nameBangla
-                                    }
+                                    error={errors.vata?.nameBangla}
                                     register={register}
                                     name="vata.nameBangla"
                                     rules={{
                                         required:
-                                            "বাংলা নাম দিন",
+                                            "ভাটার বাংলা নাম দিন",
+
+                                        minLength: {
+                                            value: 2,
+                                            message:
+                                                "ভাটার নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+                                        },
+
+                                        maxLength: {
+                                            value: 100,
+                                            message:
+                                                "ভাটার নাম সর্বোচ্চ ১০০ অক্ষরের হতে পারে",
+                                        },
                                     }}
                                 />
 
+                                {/* ADDRESS */}
+
                                 <CustomInput
                                     label="ভাটার ঠিকানা"
-                                    placeholder="ভাটার সম্পূর্ণ ঠিকানা"
+                                    placeholder="ধামরাই, ঢাকা"
                                     type="text"
                                     error={errors.vata?.address}
                                     register={register}
                                     name="vata.address"
                                     rules={{
                                         required:
-                                            "ঠিকানা দিন",
+                                            "ভাটার ঠিকানা দিন",
+
+                                        minLength: {
+                                            value: 3,
+                                            message:
+                                                "ঠিকানা কমপক্ষে ৩ অক্ষরের হতে হবে",
+                                        },
+
+                                        maxLength: {
+                                            value: 255,
+                                            message:
+                                                "ঠিকানা সর্বোচ্চ ২৫৫ অক্ষরের হতে পারে",
+                                        },
                                     }}
                                 />
 
+                                {/* OWNER NAME */}
+
                                 <CustomInput
                                     label="মালিকের নাম"
-                                    placeholder="মালিকের নাম"
+                                    placeholder="সোহেল মিয়া"
                                     type="text"
-                                    error={
-                                        errors.vata?.ownerName
-                                    }
+                                    error={errors.vata?.ownerName}
                                     register={register}
                                     name="vata.ownerName"
                                     rules={{
                                         required:
                                             "মালিকের নাম দিন",
+
+                                        minLength: {
+                                            value: 2,
+                                            message:
+                                                "মালিকের নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+                                        },
+
+                                        maxLength: {
+                                            value: 100,
+                                            message:
+                                                "মালিকের নাম সর্বোচ্চ ১০০ অক্ষরের হতে পারে",
+                                        },
                                     }}
                                 />
 
+                                {/* OWNER PHONE */}
+
                                 <CustomInput
                                     label="মালিকের ফোন নম্বর"
-                                    placeholder="017XXXXXXXX"
+                                    placeholder="019XXXXXXXX"
                                     type="text"
                                     error={
-                                        errors.vata
-                                            ?.ownerPhoneNumber
+                                        errors.vata?.ownerPhoneNumber
                                     }
                                     register={register}
                                     name="vata.ownerPhoneNumber"
                                     rules={{
                                         required:
                                             "মালিকের ফোন নম্বর দিন",
+
                                         pattern: {
                                             value: /^01[3-9]\d{8}$/,
                                             message:
-                                                "সঠিক মোবাইল নম্বর দিন",
+                                                "সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন",
                                         },
                                     }}
                                 />
 
+                                {/* CHALLAN PHONE */}
+
                                 <CustomInput
                                     label="চালানের ফোন নম্বর"
-                                    placeholder="018XXXXXXXX"
+                                    placeholder="016XXXXXXXX,017XXXXXXXX"
                                     type="text"
                                     error={
                                         errors.vata
@@ -296,15 +375,41 @@ console.log(error)
                                     rules={{
                                         required:
                                             "চালানের ফোন নম্বর দিন",
+
+                                        validate: (value: string) => {
+                                            const numbers = value
+                                                .split(",")
+                                                .map((phone) =>
+                                                    phone.trim()
+                                                )
+                                                .filter(Boolean);
+
+                                            if (!numbers.length) {
+                                                return "চালানের ফোন নম্বর দিন";
+                                            }
+
+                                            const invalidNumber =
+                                                numbers.some(
+                                                    (phone) =>
+                                                        !/^01[3-9]\d{8}$/.test(
+                                                            phone
+                                                        )
+                                                );
+
+                                            return (
+                                                !invalidNumber ||
+                                                "প্রতিটি ফোন নম্বর সঠিক ১১ সংখ্যার হতে হবে"
+                                            );
+                                        },
                                     }}
                                 />
                             </div>
                         </div>
                     </section>
 
-                    {/* ================= SUBSCRIPTION & PAYMENT ================= */}
+                    {/* ================= SUBSCRIPTION ================= */}
+
                     <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        {/* Header */}
                         <div className="border-b border-gray-100 bg-gradient-to-r from-[#039A63]/5 to-transparent px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#039A63]/10">
@@ -321,17 +426,18 @@ console.log(error)
                                     </h2>
 
                                     <p className="mt-0.5 text-xs text-gray-500">
-                                        সাবস্ক্রিপশন প্ল্যান এবং
-                                        পরবর্তী পেমেন্টের তথ্য নির্বাচন করুন
+                                        সাবস্ক্রিপশন প্ল্যান এবং পরবর্তী
+                                        পেমেন্টের তথ্য নির্বাচন করুন
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Body */}
                         <div className="p-5">
-                            <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-3">
-                                {/* Subscription Plan */}
+                            <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+
+                                {/* SUBSCRIPTION PLAN */}
+
                                 <CustomSelect
                                     label="সাবস্ক্রিপশন প্ল্যান"
                                     placeholder={
@@ -343,10 +449,10 @@ console.log(error)
                                         subscriptionOptions || []
                                     }
                                     control={control}
-                                    name="vata.susbscriptionPlanId"
+                                    name="vata.subscriptionPlanId"
                                     error={
                                         errors.vata
-                                            ?.susbscriptionPlanId
+                                            ?.subscriptionPlanId
                                     }
                                     rules={{
                                         required:
@@ -354,8 +460,8 @@ console.log(error)
                                     }}
                                 />
 
+                                {/* NEXT PAYMENT DATE */}
 
-                                {/* Next Payment Date */}
                                 <CustomDatePicker
                                     label="পরবর্তী পেমেন্টের তারিখ"
                                     error={
@@ -373,9 +479,9 @@ console.log(error)
                         </div>
                     </section>
 
-                    {/* ================= ADMIN USER ================= */}
+                    {/* ================= OWNER ACCOUNT ================= */}
+
                     <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        {/* Header */}
                         <div className="border-b border-gray-100 bg-gradient-to-r from-[#039A63]/5 to-transparent px-5 py-4">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#039A63]/10">
@@ -392,19 +498,20 @@ console.log(error)
                                     </h2>
 
                                     <p className="mt-0.5 text-xs text-gray-500">
-                                        ভাটার জন্য অ্যাডমিন লগইন
-                                        অ্যাকাউন্ট তৈরি করুন
+                                        ভাটার জন্য অ্যাডমিন লগইন অ্যাকাউন্ট তৈরি করুন
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Body */}
                         <div className="p-5">
                             <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-3">
+
+                                {/* NAME */}
+
                                 <CustomInput
                                     label="ইউজারের নাম"
-                                    placeholder="Mahbubul Hasan"
+                                    placeholder="সোহেল মিয়া"
                                     type="text"
                                     error={errors.owner?.name}
                                     register={register}
@@ -412,51 +519,79 @@ console.log(error)
                                     rules={{
                                         required:
                                             "ইউজারের নাম দিন",
+
+                                        minLength: {
+                                            value: 2,
+                                            message:
+                                                "ইউজারের নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+                                        },
+
                                     }}
                                 />
 
+                                {/* USERNAME */}
+
                                 <CustomInput
                                     label="ইউজারনেম"
-                                    placeholder="hasan"
+                                    placeholder="sohel"
                                     type="text"
-                                    error={
-                                        errors.owner?.username
-                                    }
+                                    error={errors.owner?.username}
                                     register={register}
                                     name="owner.username"
                                     rules={{
                                         required:
                                             "ইউজারনেম দিন",
+
                                         minLength: {
                                             value: 3,
                                             message:
                                                 "ইউজারনেম কমপক্ষে ৩ অক্ষরের হতে হবে",
                                         },
+
+                                        maxLength: {
+                                            value: 30,
+                                            message:
+                                                "ইউজারনেম সর্বোচ্চ ৩০ অক্ষরের হতে পারে",
+                                        },
+
+                                        pattern: {
+                                            value: /^[a-zA-Z0-9_]+$/,
+                                            message:
+                                                "ইউজারনেমে শুধু ইংরেজি অক্ষর, সংখ্যা এবং (_) ব্যবহার করুন",
+                                        },
                                     }}
                                 />
+
+                                {/* PASSWORD */}
 
                                 <CustomInput
                                     label="পাসওয়ার্ড"
                                     placeholder="••••••••"
                                     type="password"
-                                    error={
-                                        errors.owner?.password
-                                    }
+                                    error={errors.owner?.password}
                                     register={register}
                                     name="owner.password"
                                     rules={{
                                         required:
                                             "পাসওয়ার্ড দিন",
+
                                         minLength: {
                                             value: 6,
                                             message:
                                                 "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে",
                                         },
+
+                                        maxLength: {
+                                            value: 50,
+                                            message:
+                                                "পাসওয়ার্ড সর্বোচ্চ ৫০ অক্ষরের হতে পারে",
+                                        },
                                     }}
                                 />
                             </div>
 
-                            {/* Security Notice */}
+                            {/* SECURITY NOTICE */}
+
                             <div className="mt-5 flex items-start gap-3 rounded-lg border border-[#039A63]/10 bg-[#039A63]/5 p-3">
                                 <ShieldCheck
                                     size={18}
@@ -469,17 +604,16 @@ console.log(error)
                                     </p>
 
                                     <p className="mt-0.5 text-xs leading-5 text-gray-500">
-                                        অ্যাডমিনের ইউজারনেম ও
-                                        পাসওয়ার্ড নিরাপদে সংরক্ষণ
-                                        করুন। পাসওয়ার্ড কারও সাথে
-                                        শেয়ার করবেন না।
+                                        অ্যাডমিনের ইউজারনেম ও পাসওয়ার্ড
+                                        নিরাপদে সংরক্ষণ করুন।
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </section>
 
-                    {/* ================= ACTION ================= */}
+                    {/* ================= SUBMIT ================= */}
+
                     <div className="flex flex-col-reverse gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                         <p className="text-xs text-gray-500">
                             সব তথ্য সঠিকভাবে পূরণ করে ভাটা তৈরি করুন।

@@ -1,4 +1,3 @@
-import { TQuery } from "@/interface/query";
 import { baseApi } from "../baseApi";
 
 const systemSubscriptionApi = baseApi.injectEndpoints({
@@ -27,16 +26,41 @@ const systemSubscriptionApi = baseApi.injectEndpoints({
                 url: "/system/subscription/options",
             }),
         }),
-        
+
+        // GET SINGLE SUBSCRIPTION 
+        getSingleSubscription: builder.query({
+            query: (id) => ({
+                url: `/system/subscription/single/${id}`,
+            }),
+        }),
+
+        // GET VATA'S RUNNING SUBSCRIPTION 
+        getVataRunningSubscription: builder.query({
+            query: (id) => ({
+                url: `/system/subscription/vata-subscription/${id}`,
+            }),
+        }),
+
+        // CREATE SUBSCRIPTION
+        updateSubscription: builder.mutation({
+            query: (payload) => ({
+                url: `/system/subscription/update/${payload.id}`,
+                method: "PATCH",
+                body: payload.data,
+            }),
+        }),
       
 
-       
+
 
     }),
 });
 
 export const {
-useCreateSubscriptionMutation,
-useGetAllSubscriptionQuery,
-useGetSubscriptionOptionsQuery
+    useCreateSubscriptionMutation,
+    useGetAllSubscriptionQuery,
+    useGetSubscriptionOptionsQuery,
+    useGetSingleSubscriptionQuery,
+    useUpdateSubscriptionMutation,
+    useGetVataRunningSubscriptionQuery,
 } = systemSubscriptionApi;

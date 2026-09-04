@@ -1,11 +1,12 @@
 import LedgerPage from "@/components/Pages/LedgerPage/LedgerPage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 
 
 const Page = () => {
   return (
-    <div>
+    <PrivateComponent feature="LEDGER">
       <LedgerPage />
-    </div>
+    </PrivateComponent>
   );
 };
 

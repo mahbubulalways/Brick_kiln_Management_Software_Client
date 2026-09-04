@@ -2,10 +2,9 @@
 
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import CustomStatus from "@/components/Reusable/CustomStatus";
-import { TVataInformation } from "@/interface/vata";
+import {  TVataResponse } from "@/interface/vata";
 import { useGetMyVataInformationQuery } from "@/redux/features/vata.features";
 import { formatBanglaDate } from "@/utils/formatBanglaDate";
-import { SubmitHandler, useForm } from "react-hook-form";
 import {
     FiInfo,
     FiUser,
@@ -33,7 +32,7 @@ type TVataInfo = {
 const VataInformation = () => {
     const { isError, isLoading, data } = useGetMyVataInformationQuery(undefined)
 
-    const information = data?.data as TVataInformation
+    const information = data?.data as TVataResponse
 
     if (isLoading) {
         return <CustomLoader cls="h-[50vh]" />
@@ -205,17 +204,30 @@ const VataInformation = () => {
                                     <FiCreditCard className="h-4 w-4 text-gray-400" />
 
                                     <span className="text-sm font-medium text-gray-400">
-                                        মাসিক সফটওয়্যার ফি
+                                        প্ল্যান
                                     </span>
                                 </div>
 
                                 <p className="text-base font-semibold text-gray-700">
-                                    ৳   {information?.softwareFee}
+                                      {information?.subscriptionPlan?.name}
+                                </p>
+                            </div>
+                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                                <div className="mb-2 flex items-center gap-2">
+                                    <FiCreditCard className="h-4 w-4 text-gray-400" />
+
+                                    <span className="text-sm font-medium text-gray-400">
+                                         সফটওয়্যার ফি
+                                    </span>
+                                </div>
+
+                                <p className="text-base font-semibold text-gray-700">
+                                    ৳   {information?.subscriptionPlan?.price}/{information?.subscriptionPlan?.billingCycle}
                                 </p>
                             </div>
 
                             {/* ================= SMS RATE ================= */}
-                            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                            {/* <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                                 <div className="mb-2 flex items-center gap-2">
                                     <FiMessageSquare className="h-4 w-4 text-gray-400" />
 
@@ -227,7 +239,7 @@ const VataInformation = () => {
                                 <p className="text-base font-semibold text-gray-700">
                                     ৳   {information?.smsRate}
                                 </p>
-                            </div>
+                            </div> */}
 
                             {/* ================= NEXT PAYMENT ================= */}
                             <div className="rounded-xl border border-orange-100 bg-orange-50 p-5">

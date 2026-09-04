@@ -1,4 +1,5 @@
 import CustomerDetailsPage from "@/components/Pages/CustomerPage/CustomerDetails/CustomerDetailsPage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 import { TParams, TQuerySearch } from "@/interface/query";
 import { modifyQuery } from "@/utils/modifyQuery";
 
@@ -11,12 +12,12 @@ const Page = async ({
     const query = await searchParams;
     const { currentLimit, currentPage } = modifyQuery(query)
     return (
-        <div>
+        <PrivateComponent feature="CUSTOMER">
             <CustomerDetailsPage
                 id={id}
                 query={{ limit: currentLimit, page: currentPage }}
             />
-        </div>
+        </PrivateComponent>
     );
 };
 
