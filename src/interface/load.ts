@@ -1,5 +1,5 @@
 export type TLoadResponse = {
-  id: number;
+  id: string;
   roundId: number;
   date: string;
   quantity: number;

@@ -23,6 +23,15 @@ const authApi = baseApi.injectEndpoints({
       providesTags: ["ClassAndRate"],
     }),
 
+    // GET ALL CLASS AND RATE
+    getAllClassAndRateOptions: builder.query({
+      query: () => ({
+        url: `/class/options`,
+        method: "GET",
+      }),
+      providesTags: ["ClassAndRate"],
+    }),
+
     // GET SINGLE CLASS AND RATE
     getSingleClassAndRate: builder.query({
       query: (id: number) => ({
@@ -57,5 +66,6 @@ export const {
   useGetAllClassAndRateQuery,
   useGetSingleClassAndRateQuery,
   useUpdateClassAndRateMutation,
-  useDeleteClassAndRateMutation
+  useDeleteClassAndRateMutation,
+  useGetAllClassAndRateOptionsQuery
 } = authApi;

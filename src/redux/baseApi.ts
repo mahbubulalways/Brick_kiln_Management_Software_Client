@@ -46,6 +46,7 @@ export const baseApi = createApi({
     "GOODS",
     "GOOD_ISSUE",
     "GOOD_ISSUE_REFUND",
+    "CAR",
 
     "SOFTWARE_PAYMENT", // both
     // ADMIN

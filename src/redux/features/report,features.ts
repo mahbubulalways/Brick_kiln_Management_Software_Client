@@ -20,7 +20,19 @@ const reportAPi = baseApi.injectEndpoints({
             }),
         }),
 
+        // LOAD UNLOAD
+        loadUnloadReport: builder.query({
+            query: () => ({
+                url: "report/load-unload",
+              
+            }),
+        }),
+
     }),
 });
 
-export const { useGetSellReportQuery,useDashboardReportQuery } = reportAPi;
+export const { 
+    useGetSellReportQuery,
+    useDashboardReportQuery,
+    useLoadUnloadReportQuery 
+} = reportAPi;

@@ -92,6 +92,10 @@ export const features: {
             label: "গাড়ির হিসাব",
         },
         {
+            key: "DRIVER",
+            label: "ড্রাইভার",
+        },
+        {
             key: "CAR_RENTAL",
             label: "গাড়ির ভাড়া",
         },

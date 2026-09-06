@@ -1,20 +1,22 @@
 import { TDashboardItem } from "@/types/project";
 
-import { BsCash, BsTruck, BsClipboardData } from "react-icons/bs";
+import { BsCash } from "react-icons/bs";
 import { CiMobile4 } from "react-icons/ci";
-import { FaBalanceScale, FaSms, FaTasks, FaMoneyBillWave, FaVideo } from "react-icons/fa";
+import {
+    FaBalanceScale,
+    FaSms,
+    FaTasks,
+    FaMoneyBillWave,
+    FaVideo,
+} from "react-icons/fa";
 import { GrDashboard } from "react-icons/gr";
 import { HiDocumentReport } from "react-icons/hi";
 import { LiaTruckLoadingSolid } from "react-icons/lia";
-
 import {
-    MdCameraRoll,
     MdKeyboardArrowRight,
     MdOutlineEmojiTransportation,
-    MdPayment,
     MdLocalShipping,
     MdInventory,
-    MdPeople,
     MdFolder,
     MdOutlinePayments,
     MdSettings,
@@ -22,7 +24,6 @@ import {
     MdLogin,
     MdHistory,
 } from "react-icons/md";
-
 import {
     PiTrolleyFill,
     PiTruckBold,
@@ -30,7 +31,6 @@ import {
     PiBooks,
     PiReceipt,
 } from "react-icons/pi";
-
 import { RiStockFill } from "react-icons/ri";
 import { TiWeatherCloudy } from "react-icons/ti";
 
@@ -41,6 +41,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         icon: GrDashboard,
         iconColor: "#039A63",
         path: "/dashboard",
+        feature: "DASHBOARD",
     },
 
     // চালান
@@ -49,6 +50,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         title: "চালান",
         icon: PiReceipt,
         iconColor: "#2563EB",
+        feature: "INVOICE",
         children: [
             {
                 id: "2-1",
@@ -56,6 +58,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/invoice",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#2563EB",
+                feature: "INVOICE",
             },
             {
                 id: "2-2",
@@ -63,6 +66,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/advance-invoice",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#7C3AED",
+                feature: "INVOICE",
             },
             {
                 id: "2-3",
@@ -70,6 +74,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/all-invoice",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#0891B2",
+                feature: "INVOICE",
             },
         ],
     },
@@ -80,6 +85,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         title: "ডেলিভারি",
         icon: MdLocalShipping,
         iconColor: "#EA580C",
+        feature: "DELIVERY",
         children: [
             {
                 id: "4-1",
@@ -87,6 +93,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/todays-delivery",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#EA580C",
+                feature: "DELIVERY",
             },
             {
                 id: "4-2",
@@ -94,6 +101,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/delivery-today",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#F59E0B",
+                feature: "DELIVERY",
             },
             {
                 id: "4-3",
@@ -101,6 +109,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/all-deliveries",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#DC2626",
+                feature: "DELIVERY",
             },
         ],
     },
@@ -111,6 +120,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         title: "বাকি খাতা",
         icon: FaBalanceScale,
         iconColor: "#DC2626",
+        feature: "DUE",
         children: [
             {
                 id: "5-1",
@@ -118,6 +128,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/due-collection",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#16A34A",
+                feature: "DUE",
             },
             {
                 id: "5-2",
@@ -125,6 +136,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/today-will-pay",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#F59E0B",
+                feature: "DUE",
             },
             {
                 id: "5-3",
@@ -132,6 +144,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
                 path: "/dashboard/all-due-list",
                 icon: MdKeyboardArrowRight,
                 iconColor: "#DC2626",
+                feature: "DUE",
             },
         ],
     },
@@ -143,6 +156,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         icon: MdOutlinePayments,
         iconColor: "#16A34A",
         path: "/dashboard/payment",
+        feature: "PAYMENT",
     },
 
     // ক্যাশ
@@ -152,6 +166,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/cash",
         icon: BsCash,
         iconColor: "#059669",
+        feature: "CASH",
     },
 
     // লোড
@@ -161,6 +176,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/load",
         icon: PiTrolleyFill,
         iconColor: "#CA8A04",
+        feature: "LOAD",
     },
 
     // আনলোড
@@ -170,6 +186,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/unload",
         icon: LiaTruckLoadingSolid,
         iconColor: "#EA580C",
+        feature: "UNLOAD",
     },
 
     // স্টক
@@ -179,6 +196,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/stock-book",
         icon: RiStockFill,
         iconColor: "#7C3AED",
+        feature: "STOCK",
     },
 
     // বিক্রি রিপোর্ট
@@ -188,6 +206,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/sell-report",
         icon: HiDocumentReport,
         iconColor: "#2563EB",
+        feature: "SELL_REPORT",
     },
 
     // খতিয়ান
@@ -197,6 +216,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/ledger",
         icon: PiBooks,
         iconColor: "#0891B2",
+        feature: "LEDGER",
     },
 
     // কাস্টমার
@@ -206,6 +226,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/customer",
         icon: PiUserListFill,
         iconColor: "#DB2777",
+        feature: "CUSTOMER",
     },
 
     // দেনা-পাওনা
@@ -215,6 +236,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/loan",
         icon: FaMoneyBillWave,
         iconColor: "#DC2626",
+        feature: "LOAN",
     },
 
     // ডকুমেন্ট
@@ -224,6 +246,7 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/documents",
         icon: MdFolder,
         iconColor: "#F59E0B",
+        feature: "DOCUMENTS",
     },
 
     // মালামাল
@@ -233,110 +256,128 @@ export const dashboardItemsForMobile1: TDashboardItem[] = [
         path: "/dashboard/assests",
         icon: MdInventory,
         iconColor: "#9333EA",
+        feature: "ASSETS",
     },
 ];
 
-
-
-
-
 export const dashboardItemsForMobile2: TDashboardItem[] = [
+    // আবহাওয়া
     {
         id: "17",
         title: "আবহাওয়া",
         path: "/dashboard/weather",
         icon: TiWeatherCloudy,
         iconColor: "#0284C7",
+        feature: "WEATHER",
     },
 
+    // টাস্ক ম্যানেজার
     {
         id: "13",
         title: "টাস্ক ম্যানেজার",
         path: "/dashboard/task-manager",
         icon: FaTasks,
         iconColor: "#7C3AED",
+        feature: "TASK_MANAGER",
     },
 
+    // গাড়ির হিসাব
     {
         id: "14",
         title: "গাড়ির হিসাব",
         path: "/dashboard/vehicle",
         icon: PiTruckBold,
         iconColor: "#475569",
+        feature: "VEHICLE",
     },
 
+    // গাড়ির ভাড়া
     {
         id: "15",
         title: "গাড়ির ভাড়া",
         path: "/dashboard/car-rental",
         icon: MdOutlineEmojiTransportation,
         iconColor: "#EA580C",
+        feature: "CAR_RENTAL",
     },
 
+    // ফোন নম্বর
     {
         id: "19",
         title: "ফোন নম্বর",
         path: "/dashboard/contact",
         icon: CiMobile4,
         iconColor: "#0891B2",
+        feature: "CONTACT",
     },
 
+    // ভিডিও
     {
         id: "18",
         title: "ভিডিও দেখুন",
         path: "/dashboard/video",
         icon: FaVideo,
         iconColor: "#E11D48",
+        feature: "VIDEO",
     },
 
+    // হিস্ট্রি
     {
         id: "191",
         title: "আপ. হিস্ট্রি",
         path: "/dashboard/history",
         icon: MdHistory,
         iconColor: "#6366F1",
+        feature: "HISTORY",
     },
 
+    // লগইন রেকর্ড
     {
         id: "1921321",
         title: "লগইন রেকর্ড",
         path: "/dashboard/login-record",
         icon: MdLogin,
         iconColor: "#14B8A6",
+        feature: "LOGIN_RECORD",
     },
 
+    // SMS
     {
         id: "1321328",
         title: "এসএমএস",
         path: "/dashboard/sms",
         icon: FaSms,
         iconColor: "#E11D48",
+        feature: "SMS",
     },
 
+    // হেল্প লাইন
     {
         id: "1321342148",
         title: "হেল্প লাইন",
         path: "/dashboard/help-line",
         icon: MdHelpOutline,
         iconColor: "#16A34A",
+        feature: "HELP_LINE",
     },
 
+    // ফী পেমেন্ট
     {
         id: "0879718",
         title: "ফী পেমেন্ট",
         path: "/dashboard/software-payment",
         icon: FaMoneyBillWave,
         iconColor: "#CA8A04",
+        feature: "SOFTWARE_PAYMENT",
     },
 
+    // সেটিংস
     {
         id: "1678768",
         title: "সেটিংস",
         path: "/dashboard/settings",
         icon: MdSettings,
         iconColor: "#64748B",
+        feature: "SETTINGS",
     },
 ];
-
-
-

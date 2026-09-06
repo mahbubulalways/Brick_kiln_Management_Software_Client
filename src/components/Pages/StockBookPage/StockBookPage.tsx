@@ -13,6 +13,8 @@ import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import { TablePagination } from "@/components/Reusable/TablePagination";
 import CustomStatus from "@/components/Reusable/CustomStatus";
+import LoadUnloadHistory from "./LoadUnloadHistory";
+import RawBrickStock from "./RawBrickStock";
 
 export default function StockBookPage() {
 
@@ -60,7 +62,7 @@ export default function StockBookPage() {
                 {/* Table */}
                 <div className="overflow-hidden rounded-t-lg border border-gray-200 bg-white shadow-sm">
                     {isLoading ? (
-                         <CustomStatus type="loading" />
+                        <CustomStatus type="loading" />
                     ) : !stockData.length ? (
                         <CustomStatus type="empty" />
                     ) : (
@@ -89,100 +91,131 @@ export default function StockBookPage() {
                                 </thead>
 
                                 <tbody>
-                                    {/* মোট স্টক */}
-                                    <tr className="border-b border-gray-200">
-                                        <td className="sticky left-0 z-10 border-r border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700">
+                                    <tr className="border-b border-gray-200 text-blue-600">
+                                        <td className="sticky left-0 z-10 border-r
+                                         border-gray-200 bg-white 
+                                         px-4 py-3 text-sm font-semibold ">
                                             মোট স্টক
                                         </td>
 
                                         {stockData.map((item, idx) => (
                                             <td
                                                 key={idx}
-                                                className="border-r border-gray-100 px-4 py-3 text-center text-sm text-red-500 last:border-r-0"
+                                                className="border-r border-gray-100 
+                                                px-4 py-3 text-center text-sm 
+                                                font-semibold  last:border-r-0 "
                                             >
                                                 {toBanglaNumber(item.totalStock)}
                                             </td>
                                         ))}
 
-                                        <td className="px-4 py-3 text-center text-sm font-semibold text-red-500">
+                                        <td className="px-4 py-3 text-center text-sm 
+                                        font-semibold">
                                             {toBanglaNumber(total?.totalStock)}
                                         </td>
                                     </tr>
 
-                                    {/* ডেলিভারি বাকি */}
-                                    <tr className="border-b border-gray-200">
-                                        <td className="sticky left-0 z-10 border-r border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700">
-                                            ডেলিভারি বাকি
+                                    <tr className="border-b border-gray-200 text-emerald-600">
+                                        <td className="sticky left-0 z-10 border-r
+                                         border-gray-200 bg-white  px-4 py-3 
+                                         text-sm font-semibold ">
+                                            ডেলিভারি হয়েছে
                                         </td>
 
                                         {stockData.map((item, idx) => (
                                             <td
                                                 key={idx}
-                                                className="border-r border-gray-100 px-4 py-3 text-center text-sm text-gray-700 last:border-r-0"
+                                                className="border-r border-gray-100 
+                                                px-4 py-3 text-center text-sm font-semibold
+                                                last:border-r-0"
                                             >
-                                                {toBanglaNumber(item.deliveryPending)}
+                                                {toBanglaNumber(item.delivered)}
                                             </td>
                                         ))}
 
-                                        <td className="px-4 py-3 text-center text-sm font-semibold text-gray-700">
-                                            {toBanglaNumber(total?.deliveryPending)}
+                                        <td className="px-4 py-3 text-center text-sm font-semibold">
+                                            {toBanglaNumber(total?.delivered)}
                                         </td>
                                     </tr>
 
-                                    {/* অফিস স্টক */}
-                                    <tr className="border-b border-gray-200">
-                                        <td className="sticky left-0 z-10 border-r border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700">
+                                    <tr className="border-b border-gray-200 text-gray-800  font-semibold">
+                                        <td className="sticky left-0 z-10 border-r border-gray-200 
+                                        bg-white px-4 py-3 text-sm ">
                                             আসল স্টক
                                         </td>
 
                                         {stockData.map((item, idx) => (
                                             <td
                                                 key={idx}
-                                                className="border-r border-gray-100 px-4 py-3 text-center text-sm text-red-500 last:border-r-0"
+                                                className="border-r border-gray-100 px-4 py-3 text-center text-sm last:border-r-0"
                                             >
                                                 {toBanglaNumber(item.mainStock)}
                                             </td>
                                         ))}
 
-                                        <td className="px-4 py-3 text-center text-sm font-semibold text-red-500">
+                                        <td className="px-4 py-3 text-center text-sm">
                                             {toBanglaNumber(total?.mainStock)}
                                         </td>
                                     </tr>
-                                    <tr className="border-b border-gray-200">
-                                        <td className="sticky left-0 z-10 border-r border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700">
+
+                                    <tr className="border-b border-gray-200 font-semibold text-amber-600">
+                                        <td className="sticky left-0 z-10 border-r border-gray-200
+                                         bg-white px-4 py-3 text-sm ">
+                                            ডেলিভারি বাকি
+                                        </td>
+
+                                        {stockData.map((item, idx) => (
+                                            <td
+                                                key={idx}
+                                                className="border-r border-gray-100 px-4 py-3 text-center text-sm 
+                                                 last:border-r-0"
+                                            >
+                                                {toBanglaNumber(item?.deliveryPending)}
+                                            </td>
+                                        ))}
+
+                                        <td className="px-4 py-3 text-center text-sm ">
+                                            {toBanglaNumber(total?.deliveryPending)}
+                                        </td>
+                                    </tr>
+
+                                    <tr className="border-b border-gray-200 text-purple-600  font-semibold">
+                                        <td className="sticky left-0 z-10 border-r border-gray-200 bg-white px-4 py-3
+                                         text-sm ">
                                             শ্রেণী মূল্য
                                         </td>
 
                                         {stockData.map((item, idx) => (
                                             <td
                                                 key={idx}
-                                                className="border-r border-gray-100 px-4 py-3 text-center text-sm text-violet-700 last:border-r-0"
+                                                className="border-r border-gray-100 px-4 py-3 text-center text-s last:border-r-0"
                                             >
                                                 {toBanglaNumber(item.rate)}
                                             </td>
                                         ))}
 
-                                        <td className="px-4 py-3 text-center text-sm font-semibold text-red-500">
+                                        <td className="px-4 py-3 text-center text-sm">
                                             -
                                         </td>
                                     </tr>
 
-                                    {/* স্টক মূল্য */}
-                                    <tr>
-                                        <td className="sticky left-0 z-10 border-r border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-600">
+                                    <tr className="text-red-600  font-semibold">
+                                        <td className="sticky left-0 z-10 border-r border-gray-200 
+                                        bg-white px-4 py-3 text-sm font-semibold ">
                                             স্টক মূল্য
                                         </td>
 
                                         {stockData.map((item, idx) => (
                                             <td
                                                 key={idx}
-                                                className="border-r border-gray-100 px-4 py-3 text-center text-sm font-semibold text-emerald-600 last:border-r-0"
+                                                className="border-r border-gray-100 px-4 py-3 
+                                                text-center text-sm last:border-r-0"
                                             >
                                                 {toBanglaNumber(item.stockValue)}
                                             </td>
                                         ))}
 
-                                        <td className="px-4 py-3 text-center text-sm font-bold text-emerald-600">
+                                        <td className="px-4 py-3 text-center text-sm">
                                             {toBanglaNumber(total?.stockValue)}
                                         </td>
                                     </tr>
@@ -194,10 +227,12 @@ export default function StockBookPage() {
             </div>
 
 
-            <div className="grid grid-cols-6 pt-10">
-                <div className="col-span-2"></div>
+            <div className="grid grid-cols-6 pt-10 gap-5">
+                <div className="col-span-2">
+                    <RawBrickStock />
+                </div>
                 <div className="col-span-4">
-                    <div>
+                    <div className="border rounded-lg">
                         <table className="overflow-hidden rounded-lg w-full border-collapse border">
                             <thead>
                                 <tr className="bg-[#039A63] text-center text-white">

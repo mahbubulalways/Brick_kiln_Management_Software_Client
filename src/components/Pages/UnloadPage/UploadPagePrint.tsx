@@ -23,7 +23,7 @@ const UnloadPagePrint = ({
 
   const getRowTotal = (row: TUnloadResponse) => {
     return (
-      row.unloadItems?.reduce(
+      row.items?.reduce(
         (sum, item) => sum + Number(item.quantity || 0),
         0
       ) || 0
@@ -38,7 +38,7 @@ const UnloadPagePrint = ({
     row: TUnloadResponse,
     classId: number
   ) => {
-    const item = row.unloadItems?.find(
+    const item = row.items?.find(
       (item) => item.classId === classId
     );
 

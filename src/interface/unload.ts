@@ -3,7 +3,7 @@ export interface TUnloadItem {
   unloadId: number;
   classId: number;
   quantity: number;
-  classType: {
+  class: {
     className: string;
     id: number;
     classType: string
@@ -21,5 +21,5 @@ export interface TUnloadResponse {
     id: number;
     name: string;
   };
-  unloadItems: TUnloadItem[];
+  items: TUnloadItem[];
 }

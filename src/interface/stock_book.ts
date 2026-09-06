@@ -22,6 +22,7 @@ export type TMainStock = {
   rate: number;
   totalStock: number;
   deliveryPending: number;
+  delivered:number;
   mainStock: number;
   stockValue: number;
 };
@@ -30,6 +31,7 @@ export type TMainStockTotal = {
   totalStock: number;
   deliveryPending: number;
   mainStock: number;
+  delivered:number;
   stockValue: number;
 };
 

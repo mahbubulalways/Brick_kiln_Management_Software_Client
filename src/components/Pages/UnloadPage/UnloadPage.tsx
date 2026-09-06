@@ -21,7 +21,7 @@ import { useGetAllRoundQuery } from "@/redux/features/round.features";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import Swal from "sweetalert2";
 import NewUnloadModal from "@/components/Dashboard/Modals/NewUnloadModal";
-import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
+import { useGetAllClassAndRateOptionsQuery } from "@/redux/features/classAndRate.features";
 import { TClassAndRate } from "@/types/types";
 import {
 
@@ -37,7 +37,6 @@ import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint"
 import UnloadPagePrint from "./UploadPagePrint";
 import UnloadReportModal from "@/components/Dashboard/Modals/ReportModal/UnloadReportModal";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
-import { formatDateRange } from "@/utils/formatDateRange";
 
 const UnloadPage = ({ limit, page }: TQuery) => {
     const [date, setDate] = useState<Date | undefined>();
@@ -59,7 +58,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
         isLoading,
     } = useGetAllUnloadInfoQuery(
         {
-            date: formatDateRange(String(date)),
+            date: String(date),
             search: selected,
             limit,
             page,
@@ -94,10 +93,10 @@ const UnloadPage = ({ limit, page }: TQuery) => {
         isLoading: classLoading,
         data: fetchedData,
         isError: classError,
-    } = useGetAllClassAndRateQuery({ limit: 100000, page: 1 });
+    } = useGetAllClassAndRateOptionsQuery(undefined);
 
     const filtered =
-        fetchedData?.data?.data?.filter(
+        fetchedData?.data?.filter(
             (dt: TClassAndRate) =>
                 dt.classType !== "অন্যান্য"
         ) ?? [];
@@ -369,7 +368,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                                     // TOTAL QUANTITY
                                     // =========================
                                     const total =
-                                        row.unloadItems?.reduce(
+                                        row.items?.reduce(
                                             (
                                                 sum,
                                                 item
@@ -418,7 +417,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                                                      * থেকে current classId খুঁজে বের করছি
                                                      */
                                                     const classData =
-                                                        row.unloadItems?.find(
+                                                        row.items?.find(
                                                             (
                                                                 item
                                                             ) =>
