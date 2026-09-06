@@ -14,6 +14,7 @@ import UserLimit from "./UserLimit";
 
 import { useTitleStore } from "@/zustand/store/titleStore";
 import { TQuery } from "@/interface/query";
+import DownloadAppPage from "../DownloadAppPage/DownloadAppPage";
 
 const DashboardSettings = ({
     limit,
@@ -64,17 +65,18 @@ const DashboardSettings = ({
                     </div>
                 );
 
-            default:
-                return <VataInformation />;
+            case 8:
+                return "HELLLLLLLLL";
+
+            case 11: return  <DownloadAppPage />
+
+            // default:
+            //     return <VataInformation />;
         }
     };
 
     return (
         <div className="min-h-[90vh] w-full rounded-md bg-white p-2 sm:p-3">
-
-            {/* =========================================
-                LARGE DEVICE
-                ========================================= */}
             <div className="hidden md:block">
                 <div
                     className="
@@ -84,10 +86,7 @@ const DashboardSettings = ({
                         gap-5
                     "
                 >
-                    {/* Sidebar */}
                     <SidebarMenu setPage={setPage} />
-
-                    {/* Content */}
                     <main
                         className="
                             min-w-0
@@ -101,11 +100,6 @@ const DashboardSettings = ({
                     </main>
                 </div>
             </div>
-
-
-            {/* =========================================
-                SMALL DEVICE
-                ========================================= */}
             <div className="block md:hidden">
                 <SettingsMenu />
             </div>

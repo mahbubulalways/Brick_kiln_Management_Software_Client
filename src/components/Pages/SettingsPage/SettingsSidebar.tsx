@@ -13,6 +13,7 @@ import {
   FiGrid,
   FiMessageCircle,
   FiSettings,
+  FiDownload,
 } from "react-icons/fi";
 
 const menuItems = [
@@ -57,9 +58,9 @@ const menuItems = [
     icon: FiPrinter,
   },
   {
-    id: 9,
-    label: "স্টক সেটিং",
-    icon: FiGrid,
+    id: 11,
+    label: "অ্যাপ ইনস্টল করুন",
+    icon: FiDownload,
   },
   {
     id: 10,

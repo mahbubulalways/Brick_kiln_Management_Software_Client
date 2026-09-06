@@ -13,6 +13,7 @@ import {
     Printer,
     BrickWall,
     ChevronRight,
+    Download,
 } from "lucide-react";
 
 const menuItems = [
@@ -72,12 +73,12 @@ const menuItems = [
         iconColor: "text-slate-500",
         bgColor: "bg-slate-100",
     },
-    {
-        title: "স্টক সেটিং",
-        href: "/settings",
-        icon: BrickWall,
-        iconColor: "text-orange-500",
-        bgColor: "bg-orange-50",
+     {
+        title: "অ্যাপ ইনস্টল করুন",
+        href: "/settings/install-app",
+        icon: Download,
+        iconColor: "text-emerald-500",
+        bgColor: "bg-emerald-50",
     },
 ];
 
