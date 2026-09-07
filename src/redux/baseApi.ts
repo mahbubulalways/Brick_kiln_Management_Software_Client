@@ -47,10 +47,13 @@ export const baseApi = createApi({
     "GOOD_ISSUE",
     "GOOD_ISSUE_REFUND",
     "CAR",
+    "SMS",
+    "VATA_SMS_SITTINGS",
 
     "SOFTWARE_PAYMENT", // both
     // ADMIN
-    "ADMIN_VATA"
+    "ADMIN_VATA",
+    "SMS_RATE",
   ],
   endpoints: () => ({}),
 });

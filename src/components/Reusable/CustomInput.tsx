@@ -43,12 +43,12 @@ const CustomInput = ({
         <input
           id={name}
           type={inputType}
+          step={type === "number" ? "any" : undefined}
           readOnly={readonly}
           placeholder={placeholder}
           {...register(name, rules)}
-          className={`w-full px-4 h-9  bg-white border-gray-300 rounded-lg ${error ? "border-red-500 border-2" : "border-gray-300 border"} focus:outline-none focus:ring-2 focus:ring-[#00664A] transition ${
-            isPassword ? "pr-12" : ""
-          } placeholder:text-gray-400 text-[14px]`}
+          className={`w-full px-4 h-9  bg-white border-gray-300 rounded-lg ${error ? "border-red-500 border-2" : "border-gray-300 border"} focus:outline-none focus:ring-2 focus:ring-[#00664A] transition ${isPassword ? "pr-12" : ""
+            } placeholder:text-gray-400 text-[14px]`}
         />
 
         {/* Show/Hide Icon */}

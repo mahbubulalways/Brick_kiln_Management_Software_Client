@@ -7,7 +7,7 @@ import MarqueeOneLine from "@/components/Marquee/Marguee";
 import { FieldValues, useForm } from "react-hook-form";
 import { userLogin } from "@/service/actions/userLogin";
 import { storeUserInLocalStorage } from "@/service/auth.services";
-import CustomInputLabel from "@/components/Reusable/CustomInputLabel";
+import CustomInput from "@/components/Reusable/CustomInput";
 import { useRouter } from "next/navigation";
 import { getDeviceInfo } from "@/utils/getClientInfo";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
@@ -33,10 +33,10 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<TLogin>({
     defaultValues: {
-      // username: "systemadmin",
-      // password: "12345678",
-      username: "sohel",
-      password: "Sohel@123",
+      username: "systemadmin",
+      password: "12345678",
+      // username: "sohel",
+      // password: "Sohel@123",
     },
   });
 
@@ -108,25 +108,25 @@ export default function LoginPage() {
                   {errorMsg}
                 </p>
               )}
-              <CustomInputLabel
+              <CustomInput
+                type="text"
                 label="ইউজারনেম"
                 name="username"
                 placeholder="ইউজারনেম লিখুন"
                 register={register}
-                errMsg="ইউজারনেম আবশ্যক।"
+                rules={{ required: "ইউজারনেম আবশ্যক।" }}
                 error={errors.username}
-                required
+
               />
 
-              <CustomInputLabel
+              <CustomInput
                 label="পাসওয়ার্ড"
                 name="password"
                 type="password"
                 placeholder="আপনার পাসওয়ার্ড লিখুন"
                 register={register}
-                errMsg="পাসওয়ার্ড আবশ্যক।"
+                rules={{ required: "পাসওয়ার্ড আবশ্যক।" }}
                 error={errors.password}
-                required
               />
 
               <button

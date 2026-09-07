@@ -15,6 +15,7 @@ import UserLimit from "./UserLimit";
 import { useTitleStore } from "@/zustand/store/titleStore";
 import { TQuery } from "@/interface/query";
 import DownloadAppPage from "../DownloadAppPage/DownloadAppPage";
+import SmsSettings from "./SmsSettings";
 
 const DashboardSettings = ({
     limit,
@@ -55,23 +56,23 @@ const DashboardSettings = ({
             case 5:
                 return <PasswordChange />;
 
-            case 6:
-                return <UserLimit />;
 
-            case 7:
+            case 6:
                 return (
                     <div className="rounded-lg border border-gray-200 bg-white p-5">
                         ইউজার অ্যাক্সেস
                     </div>
                 );
 
-            case 8:
+            case 7:
                 return "HELLLLLLLLL";
 
-            case 11: return  <DownloadAppPage />
+            case 8: return <SmsSettings />
 
-            // default:
-            //     return <VataInformation />;
+            case 9: return <DownloadAppPage />
+
+            default:
+                return <VataInformation />;
         }
     };
 

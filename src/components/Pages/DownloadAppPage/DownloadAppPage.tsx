@@ -47,17 +47,17 @@ export default function DownloadAppPage() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
-  <button
-    type="button"
-    onClick={installApp}
-    className="group flex items-center gap-2.5 rounded bg-[#006A4E] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#00543E] hover:shadow-lg active:scale-[0.97]"
-  >
-    <span className="flex h-7 w-12 items-center justify-center rounded bg-white/15 transition-transform duration-200 group-hover:scale-105">
-      <Download size={17} strokeWidth={2.2} />
-    </span>
+      <button
+        type="button"
+        onClick={installApp}
+        className="group flex items-center gap-2.5 rounded bg-[#006A4E] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-[#00543E] hover:shadow-lg active:scale-[0.97]"
+      >
+        <span className="flex h-7 w-12 items-center justify-center rounded bg-white/15 transition-transform duration-200 group-hover:scale-105">
+          <Download size={17} strokeWidth={2.2} />
+        </span>
 
-    <span>অ্যাপ ইনস্টল করুন</span>
-  </button>
-</div>
+        <span>অ্যাপ ইনস্টল করুন</span>
+      </button>
+    </div>
   );
 }
