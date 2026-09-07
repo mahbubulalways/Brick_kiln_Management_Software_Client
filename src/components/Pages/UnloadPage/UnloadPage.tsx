@@ -21,7 +21,7 @@ import { useGetAllRoundQuery } from "@/redux/features/round.features";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import Swal from "sweetalert2";
 import NewUnloadModal from "@/components/Dashboard/Modals/NewUnloadModal";
-import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
+import { useGetAllClassAndRateOptionsQuery } from "@/redux/features/classAndRate.features";
 import { TClassAndRate } from "@/types/types";
 import {
 
@@ -93,7 +93,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
         isLoading: classLoading,
         data: fetchedData,
         isError: classError,
-    } = useGetAllClassAndRateQuery(undefined);
+    } = useGetAllClassAndRateOptionsQuery(undefined);
 
     const filtered =
         fetchedData?.data?.filter(
@@ -368,7 +368,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                                     // TOTAL QUANTITY
                                     // =========================
                                     const total =
-                                        row.unloadItems?.reduce(
+                                        row.items?.reduce(
                                             (
                                                 sum,
                                                 item
@@ -417,7 +417,7 @@ const UnloadPage = ({ limit, page }: TQuery) => {
                                                      * থেকে current classId খুঁজে বের করছি
                                                      */
                                                     const classData =
-                                                        row.unloadItems?.find(
+                                                        row.items?.find(
                                                             (
                                                                 item
                                                             ) =>

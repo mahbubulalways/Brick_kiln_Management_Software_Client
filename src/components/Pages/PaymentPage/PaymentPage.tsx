@@ -35,6 +35,7 @@ import CustomLoader from "@/components/Reusable/CustomLoader";
 import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
 import PaymentPrint from "@/components/PrintComponent/PaymentPrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const PaymentPage = ({ limit, page, search }: TQuery) => {
   const [searchItems, setSearchItem] = useState("");
@@ -49,12 +50,13 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
       limit,
       page,
       search,
-      date: date?.toISOString() ?? undefined,
+      date: formatDateRange(String(date))
     },
     {
       refetchOnMountOrArgChange: true,
     },
   );
+  
   const printRef = useRef<TCommonPrintRef>(null);
   const [deletePaymentAsync, { isLoading: deleteLoading }] = useDeletePaymentMutation()
   // VATA INFORMATIONS
@@ -150,8 +152,8 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
             />
           </div>
 
-          <CustomPrintButton 
-           onClick={() => printRef.current?.print()}
+          <CustomPrintButton
+            onClick={() => printRef.current?.print()}
           />
 
           <CustomReportButton
@@ -248,16 +250,20 @@ const PaymentPage = ({ limit, page, search }: TQuery) => {
                     td={`৳ ${row?.paymentDifference}`}
                   />
 
-                  <td
-                    className={`border hidden lg:table-cell p-1 lg:p-2 text-center whitespace-nowrap text-sm lg:text-[15px] text-green-600`}
-                  >
-                    <Link
-                      href={`${process.env.NEXT_PUBLIC_BACKEND_API}/uploads/${row?.document}`}
-                      target="_blank"
-                    >
-                      <IoDocumentTextOutline size={18} />
-                    </Link>
+                  <td className="border p-2 text-center align-middle">
+                    {row?.document ? (
+                      <Link
+                        href={`${process.env.NEXT_PUBLIC_BACKEND_API}/uploads/${row?.document}`}
+                        target="_blank"
+                        className="inline-flex items-center justify-center text-green-600 hover:text-green-700"
+                      >
+                        <IoDocumentTextOutline size={18} />
+                      </Link>
+                    ) : (
+                      "-"
+                    )}
                   </td>
+
                   <td className="border p-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

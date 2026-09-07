@@ -1,11 +1,12 @@
 
 import WeatherPage from "@/components/Pages/WeatherPage/WeatherPage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 
 const Page = () => {
   return (
-    <div>
+    <PrivateComponent feature="WEATHER">
       <WeatherPage />
-    </div>
+    </PrivateComponent >
   );
 };
 

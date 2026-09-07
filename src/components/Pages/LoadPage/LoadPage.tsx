@@ -39,20 +39,22 @@ import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import UpdateLoadModal from "@/components/Dashboard/Modals/EditModals/UpdateLoadModal";
 import Swal from "sweetalert2";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import { formatDateRange } from "@/utils/formatDateRange";
+import { getMovementTypeBangla } from "@/utils/getLoadTypeBangla";
 
 const LoadPage = ({ limit, page }: TQuery) => {
   const [date, setDate] = useState<Date | undefined>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState("");
   const [openUpdateModal, setUpdateOpenModal] = useState<boolean>(false);
-  const [loadId, setLoadId] = useState<number | undefined>(undefined)
+  const [loadId, setLoadId] = useState<string | undefined>(undefined)
   const printRef = useRef<TCommonPrintRef>(null);
   const {
     isError,
     data,
     isLoading,
   } = useGetAllLoadInfoQuery(
-    { date: String(date), search: selected, limit, page },
+    { date: formatDateRange(String(date)), search: selected, limit, page },
     { refetchOnMountOrArgChange: true }
   );
 
@@ -69,7 +71,7 @@ const LoadPage = ({ limit, page }: TQuery) => {
 
 
   //  DELETE LOAD
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     const result = await Swal.fire({
       title: "আপনি কি নিশ্চিত?",
       text: "এই লোডের তথ্য ডিলেট করলে এটি আর ফিরে পাওয়া যাবে না!",
@@ -209,7 +211,7 @@ const LoadPage = ({ limit, page }: TQuery) => {
                     />
 
 
-                    <TableData td={`${row.loadType} ${row?.classType ? `( ${row?.classType} )` : ""}`} />
+                    <TableData td={`${getMovementTypeBangla(row.loadType)} ${row?.classType ? `( ${row?.classType} )` : ""}`} />
 
                     <TableData td={toBanglaNumber(row.quantity)} />
 

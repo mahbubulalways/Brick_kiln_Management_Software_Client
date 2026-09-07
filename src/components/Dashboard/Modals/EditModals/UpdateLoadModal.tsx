@@ -15,7 +15,7 @@ import {
 
 import { SERVER_ERROR_MESSAGE } from "@/constant";
 
-import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
+import { useGetAllClassAndRateOptionsQuery, useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
 import { TClassAndRate } from "@/types/types";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import CustomStatus from "@/components/Reusable/CustomStatus";
@@ -23,8 +23,8 @@ import CustomStatus from "@/components/Reusable/CustomStatus";
 type TCustomModal = {
     isOpen: boolean;
     onClose: () => void;
-    id: number | undefined;
-    setId: Dispatch<SetStateAction<number | undefined>>
+    id: string | undefined;
+    setId: Dispatch<SetStateAction<string | undefined>>
 };
 
 export interface TLoadInfo {
@@ -46,10 +46,11 @@ const UpdateLoadModal = ({
         data: singleData,
         isLoading: singleLoading,
         isError: singleError,
+        error,
     } = useGetSingleLoadInfoQuery(id, {
         skip: !id || !isOpen,
     });
-
+    console.log(error)
     const [updateLoadInfo, { isLoading: updateLoading }] =
         useUpdateLoadInfoMutation();
 
@@ -70,7 +71,7 @@ const UpdateLoadModal = ({
         isLoading: classLoading,
         data: fetchedData,
         isError
-    } = useGetAllClassAndRateQuery(undefined);
+    } = useGetAllClassAndRateOptionsQuery(undefined);
 
     const formatLabelValue =
         fetchedData?.data?.map(
@@ -91,13 +92,9 @@ const UpdateLoadModal = ({
 
         reset({
             date: new Date(loadData.date),
-
             round: loadData.round?.name,
-
             quantity: Number(loadData.quantity),
-
             loadType: loadData.loadType,
-
             classType: loadData.classType || undefined,
         });
     }, [loadData, reset]);
@@ -209,16 +206,28 @@ const UpdateLoadModal = ({
                                     control={control}
                                     options={[
                                         {
-                                            label: "মাঠ থেকে লোড হয়েছে",
-                                            value: "মাঠ থেকে লোড হয়েছে",
+                                            label: "কাঁচা ইট এন্ট্রি",
+                                            value: "RAWENTRY",
                                         },
                                         {
-                                            label: "স্টক থেকে লোড হয়েছে",
-                                            value: "স্টক থেকে লোড হয়েছে",
+                                            label: "কাঁচা ইট মাঠে লোড",
+                                            value: "RAW_TO_FIELD",
                                         },
                                         {
-                                            label: "পাকা ইট লোড হয়েছে",
-                                            value: "পাকা ইট লোড হয়েছে",
+                                            label: "মাঠ থেকে চুল্লিতে লোড",
+                                            value: "FIELD_TO_CHULLI",
+                                        },
+                                        {
+                                            label: "স্টক থেকে চুল্লিতে লোড",
+                                            value: "STOCK_TO_CHULLI",
+                                        },
+                                        {
+                                            label: "মাঠ থেকে স্টকে লোড",
+                                            value: "FIELD_TO_STOCK",
+                                        },
+                                        {
+                                            label: "পাকা ইট লোড",
+                                            value: "PAKA_IT_LOAD",
                                         },
                                     ]}
                                 />

@@ -7,7 +7,7 @@ const loadInfoApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // GET ALL LOAD INFO
         getAllLoadInfo: builder.query({
-            query: (query:TQuery) => ({
+            query: (query: TQuery) => ({
                 url: "/load-info/all",
                 method: "GET",
                 params: {
@@ -17,7 +17,7 @@ const loadInfoApi = baseApi.injectEndpoints({
                     date: query.date,
                 },
             }),
-            providesTags: ["LOAD_INFO"],
+            providesTags: ["LOAD_INFO", "SEASON"],
         }),
 
         // GET SINGLE LOAD INFO

@@ -35,6 +35,7 @@ import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint"
 import DeliveryPrint from "@/components/PrintComponent/DeliveryPrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
+import { formatDateRange } from "@/utils/formatDateRange";
 const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -42,14 +43,14 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
   const [openDeliveryDetailsModal, setOpenDeliveryDetailsModal] = useState<boolean>(false);
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [deliveryId, setDeliveryId] = useState<number | undefined>();
-  const isoDate = date ? date.toISOString() : "";
+  const isoDate = formatDateRange(String(date));
   const { data, isFetching, isError } = useGetTodaysDeliveryQuery({ date: isoDate, limit, page }, {
     refetchOnMountOrArgChange: true,
   });
 
-    const printRef = useRef<TCommonPrintRef>(null);
-    // VATA INFORMATIONS
-    const { data: vata } = useGetVataInfoQuery(undefined)
+  const printRef = useRef<TCommonPrintRef>(null);
+  // VATA INFORMATIONS
+  const { data: vata } = useGetVataInfoQuery(undefined)
   const deliveries = data?.data?.data || [];
   const meta = data?.data?.meta as TMetaConfig;
   const items = deliveries?.map((delivery: TDeliveryResponse) => {
@@ -69,8 +70,8 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
         <CustomNewButton title="নতুন ডেলিভারি" onClick={() => setIsOpen(!isOpen)} />
         <div className="flex items-center gap-2 ">
           <CustomDatePickerState onChange={setDate} value={date} />
-           <CustomPrintButton 
-           onClick={() => printRef.current?.print()}
+          <CustomPrintButton
+            onClick={() => printRef.current?.print()}
           />
           <CustomReportButton onClick={() => setOpenDeliveryReport(true)} />
         </div>
@@ -126,7 +127,7 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
                     />
                     <TableData td={row?.class} />
                     <TableData td={toBanglaNumber(row?.quantity)} cls="hidden lg:table-cell" />
-                    <TableData td={toBanglaNumber(row?.lastDelivered??0)} cls="hidden lg:table-cell" />
+                    <TableData td={toBanglaNumber(row?.lastDelivered ?? 0)} cls="hidden lg:table-cell" />
                     <TableData td={toBanglaNumber(row?.deliveryReceived)} />
                     <TableData
                       td={toBanglaNumber(row?.deliveryRemaining)}
@@ -243,7 +244,7 @@ const TodaysDeliveryPage = ({ limit, page, }: TQuery) => {
           vataInformation={vata?.data}
         />
       </CommonPrint>
-      
+
     </div>
   );
 };

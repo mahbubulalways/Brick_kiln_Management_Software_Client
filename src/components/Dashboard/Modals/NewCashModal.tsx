@@ -227,7 +227,7 @@ const NewCashModal = ({ isOpen, onClose }: TCustomModal) => {
           <button
             disabled={isLoading}
             type="submit"
-            className={`px-6 py-2 cursor-pointer rounded-lg w-full text-sm font-medium text-white ${isIncome ? "bg-[#039A63]" : "bg-[#FF480D]"
+            className={`disabled:bg-gray-500 disabled:cursor-pointer px-6 py-2 cursor-pointer rounded-lg w-full text-sm font-medium text-white ${isIncome ? "bg-[#039A63]" : "bg-[#FF480D]"
               }`}
           >
             সেভ করুন

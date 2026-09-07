@@ -14,8 +14,6 @@ import CustomButtonFixed from "@/components/Reusable/CustomButtonFixed";
 import TableData from "@/components/Reusable/TableData";
 import CustomDropDownMenuItem from "@/components/Reusable/CustomDropDownMenuItem";
 import { useGetAllDueListQuery } from "@/redux/features/dueCollection.features";
-import { ICustomer } from "@/types/types";
-import moment from "moment";
 import CustomLoader from "@/components/Reusable/CustomLoader";
 import { TQuery } from "@/interface/query";
 import { TablePagination } from "@/components/Reusable/TablePagination";
@@ -30,6 +28,7 @@ import TodayWillPayPrintModal from "@/components/Dashboard/PrintModal/TodayWillP
 import AllDuePrintModal from "@/components/Dashboard/PrintModal/TodayWillPayPrint/AllDuePrintModal";
 import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 export interface IGetAllDueList {
   id: string;
@@ -58,7 +57,9 @@ const AllDueListPage = ({ limit, page, search }: TQuery) => {
   const [openDueModal, setOpenDueModal] = useState<boolean>(false);
   const [openPrintModal, setOpenPrintModal] = useState<boolean>(false);
   const [openDueCollectionModal, setOpenDueCollectionModal] = useState<boolean>(false);
-  const { data, isLoading, isError } = useGetAllDueListQuery({ date: dateRange, limit, page, search }, {
+  const { data, isLoading, isError } = useGetAllDueListQuery({
+    date: formatDateRange(dateRange), limit, page, search
+  }, {
     refetchOnMountOrArgChange: true,
   });
   const dues = data?.data?.data as IGetAllDueList[]

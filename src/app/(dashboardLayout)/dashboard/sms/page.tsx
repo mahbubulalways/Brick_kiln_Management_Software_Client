@@ -1,8 +1,8 @@
-import UnderConstruction from '@/components/Pages/UnderContructionPage'
-import React from 'react'
+import SmsPage from '@/components/Pages/SmsPage/SmsPage'
+import PrivateComponent from '@/components/Reusable/PrivateComponent'
 
 export default function page() {
   return (
-    <div><UnderConstruction/></div>
+    <PrivateComponent feature='SMS'><SmsPage/></PrivateComponent>
   )
 }

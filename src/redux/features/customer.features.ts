@@ -8,7 +8,7 @@ const roundApi = baseApi.injectEndpoints({
                 url: `/customer/all?page=${query.page}&limit=${query.limit}&search=${query.search}`,
 
             }),
-            providesTags: ["CUSTOMER"],
+            providesTags: ["CUSTOMER","SEASON"],
         }),
 
         // GET OLD

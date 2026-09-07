@@ -29,7 +29,6 @@ const ChalanDetailsModal = ({
   const invoice: IChallanForDataShow = data?.data || {};
   const vataInformation = vata?.data as TVataInformation
 
-  console.log(invoice)
   return (
     <CustomModalBottom
       isOpen={isOpen}

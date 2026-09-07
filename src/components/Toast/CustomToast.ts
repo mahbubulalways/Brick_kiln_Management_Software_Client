@@ -22,13 +22,14 @@ export const showToast = ({ title, type, options = {} }: TToast) => {
     description: options.description,
     icon: options.icon as ReactNode,
     duration: options.duration || 4000,
+    position: "top-center",
     style: {
       backgroundColor:
         type === "success"
           ? "#039A63"
           : type === "error"
-          ? "#ef4444"
-          : "#DA851D",
+            ? "#ef4444"
+            : "#DA851D",
       color: "white",
       padding: "14px 20px",
       borderRadius: "12px",

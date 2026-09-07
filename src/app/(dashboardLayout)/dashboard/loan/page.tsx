@@ -1,11 +1,12 @@
 import ReceivableAndPayablePage from "@/components/Pages/ReceivableAndPayablePage/ReceivableAndPayablePage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 
 
 const Page = () => {
   return (
-    <div>
+    <PrivateComponent feature="LOAN">
       <ReceivableAndPayablePage />
-    </div>
+    </PrivateComponent>
   );
 };
 

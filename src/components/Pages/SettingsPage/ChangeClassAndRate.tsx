@@ -1,28 +1,22 @@
 "use client";
-
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { Pencil, Trash2 } from "lucide-react";
 
 import NewClassModal from "@/components/Dashboard/Modals/NewClassModal";
 import EditClassAndRateModal from "@/components/Dashboard/Modals/EditModals/EditClassAndRateModal";
-
 import {
     useDeleteClassAndRateMutation,
     useGetAllClassAndRateQuery,
 } from "@/redux/features/classAndRate.features";
-
 import { TClassAndRate } from "@/types/types";
-
 import TableHead from "@/components/Reusable/TableHead";
 import TableData from "@/components/Reusable/TableData";
-import TableFooter from "@/components/Reusable/TableFooter";
 import CustomLoader from "@/components/Reusable/CustomLoader";
+import { TablePagination } from "@/components/Reusable/TablePagination";
+import { TQuery } from "@/interface/query";
 
-const ChangeClassAndRate = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(15);
-
+const ChangeClassAndRate = ({ limit, page }: TQuery) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [classId, setClassId] = useState<number>();
@@ -32,17 +26,12 @@ const ChangeClassAndRate = () => {
 
     // Get data
     const { isLoading, data: fetchedData } =
-        useGetAllClassAndRateQuery(undefined);
+        useGetAllClassAndRateQuery({ limit, page });
 
-    const classAndRates = fetchedData?.data || [];
+    const classAndRates = fetchedData?.data?.data || [];
+    const meta = fetchedData?.data?.meta
 
-    // Pagination
-    const startIndex = (currentPage - 1) * rowsPerPage;
 
-    const paginatedData = classAndRates.slice(
-        startIndex,
-        startIndex + rowsPerPage
-    );
 
     // Delete
     const handleDelete = async (id: number) => {
@@ -98,100 +87,99 @@ const ChangeClassAndRate = () => {
                 </button>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto rounded-t-md border">
-                <table className="min-w-full border-collapse">
-                    <thead>
-                        <tr className="bg-[#039A63] text-center text-white">
-                            <TableHead th="#" />
-                            <TableHead th="শ্রেণির নাম" />
-                            <TableHead th="শ্রেণির ধরণ" />
-                            <TableHead th="রেট" />
-                            <TableHead th="বাটন" />
-                        </tr>
-                    </thead>
+            <div className="bg-white border rounded-md">
+                <div className=" rounded-t-md ">
+                    <table className="min-w-full border-collapse overflow-x-auto">
+                        <thead>
+                            <tr className="bg-[#039A63] text-center text-white">
+                                <TableHead th="#" />
+                                <TableHead th="শ্রেণির নাম" />
+                                <TableHead th="শ্রেণির ধরণ" />
+                                <TableHead th="রেট" />
+                                <TableHead th="বাটন" />
+                            </tr>
+                        </thead>
 
-                    <tbody className="text-center">
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={5}>
-                                    <CustomLoader cls="h-[30vh]" />
-                                </td>
-                            </tr>
-                        ) : !paginatedData.length ? (
-                            <tr>
-                                <td
-                                    colSpan={5}
-                                    className="py-8 text-gray-600"
-                                >
-                                    কোনো শ্রেণি এবং রেটের ডাটা পাওয়া যায়নি
-                                </td>
-                            </tr>
-                        ) : (
-                            paginatedData.map(
-                                (row: TClassAndRate, index: number) => (
-                                    <tr
-                                        key={row.id}
-                                        className="transition-colors hover:bg-gray-50"
+                        <tbody className="text-center">
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={5}>
+                                        <CustomLoader cls="h-[30vh]" />
+                                    </td>
+                                </tr>
+                            ) : !classAndRates?.length ? (
+                                <tr>
+                                    <td
+                                        colSpan={5}
+                                        className="py-8 text-gray-600"
                                     >
-                                        <TableData
-                                            td={startIndex + index + 1}
-                                        />
+                                        কোনো শ্রেণি এবং রেটের ডাটা পাওয়া যায়নি
+                                    </td>
+                                </tr>
+                            ) : (
+                                classAndRates?.map(
+                                    (row: TClassAndRate, index: number) => (
+                                        <tr
+                                            key={row.id}
+                                            className="transition-colors hover:bg-gray-50"
+                                        >
+                                            <TableData
+                                                td={index + 1}
+                                            />
 
-                                        <TableData td={row.className} />
+                                            <TableData td={row.className} />
 
-                                        <TableData td={row.classType} />
+                                            <TableData td={row.classType} />
 
-                                        <TableData td={`৳ ${row.rate}`} />
+                                            <TableData td={`৳ ${row.rate}`} />
 
-                                        <td className="border p-2">
-                                            <div className="flex justify-center gap-3">
-                                                {/* Edit */}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setIsOpenEditModal(true);
-                                                        setClassId(
-                                                            row.id as number
-                                                        );
-                                                    }}
-                                                    className="text-blue-600 transition hover:text-blue-800"
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </button>
+                                            <td className="border p-2">
+                                                <div className="flex justify-center gap-3">
+                                                    {/* Edit */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setIsOpenEditModal(true);
+                                                            setClassId(
+                                                                row.id as number
+                                                            );
+                                                        }}
+                                                        className="text-blue-600 transition hover:text-blue-800"
+                                                    >
+                                                        <Pencil className="h-4 w-4" />
+                                                    </button>
 
-                                                {/* Delete */}
-                                                <button
-                                                    type="button"
-                                                    disabled={isDeleting}
-                                                    onClick={() =>
-                                                        handleDelete(
-                                                            row.id as number
-                                                        )
-                                                    }
-                                                    className="text-red-600 transition hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-50"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                    {/* Delete */}
+                                                    <button
+                                                        type="button"
+                                                        disabled={isDeleting}
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                row.id as number
+                                                            )
+                                                        }
+                                                        className="text-red-600 transition hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
                                 )
-                            )
-                        )}
-                    </tbody>
-                </table>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                <TablePagination
+                    page={meta?.page ?? 1}
+                    totalPages={meta?.totalPages ?? 1}
+                    dataLength={classAndRates?.length}
+                    title="শ্রেণি "
+                />
             </div>
 
-            {/* Footer */}
-            <TableFooter
-                currentPage={currentPage}
-                length={paginatedData.length}
-                rowsPerPage={rowsPerPage}
-                setCurrentPage={setCurrentPage}
-                setRowsPerPage={setRowsPerPage}
-                title="শ্রেণি"
-            />
+
 
             {/* Create Modal */}
             {isOpen && (

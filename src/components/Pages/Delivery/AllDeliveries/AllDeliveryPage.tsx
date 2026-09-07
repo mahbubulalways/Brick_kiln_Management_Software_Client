@@ -32,6 +32,7 @@ import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import CustomPrintButton from "@/components/Reusable/CustomPrintButton";
 import RemainingDeliveryPrint from "@/components/PrintComponent/RemainingDeliveryPrint";
 import Link from "next/link";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -45,7 +46,9 @@ const AllDeliveryPage = ({ limit, page, search }: TQuery) => {
   const [filterRange, setFilterRange] = useState("");
 
 
-  const { data, isLoading } = useGetAllDeliveryListQuery({ date: filterRange, limit, page, search }, {
+  const { data, isLoading } = useGetAllDeliveryListQuery({
+    date: formatDateRange(filterRange), limit, page, search
+  }, {
     refetchOnMountOrArgChange: true,
   });
   const printRef = useRef<TCommonPrintRef>(null);

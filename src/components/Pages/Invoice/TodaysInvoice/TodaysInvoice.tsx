@@ -49,6 +49,8 @@ import DailyChallanPrint from "@/components/PrintComponent/DailyChallanPrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
 import NewDueCollectionModalId from "@/components/Dashboard/Modals/NewDueCollectionModalId";
 import SendCustomerSmsModal from "@/components/Dashboard/Modals/SendCustomerSmsModal";
+import { formatDateRange } from "@/utils/formatDateRange";
+import { toBanglaNumber } from "@/utils/toBanglaNumber";
 
 const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   const [searchItems, setSearchItem] = useState("");
@@ -70,11 +72,13 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
   // VATA INFORMATIONS
   const { data: vata } = useGetVataInfoQuery(undefined)
   // FETCH ALL INVOICES
-  const formatDate = date?.toISOString() ?? ""
+  const formatDate = formatDateRange(String(date))
   const { isFetching: fetchInvoiceLoading, data: invoices } =
     useGetAllInvoicesQuery(
       { limit, page, search, date: formatDate }
       , { refetchOnMountOrArgChange: true });
+
+
   //  CALL DELETE INVOICE HOOK
   const [deleteInvoice] = useDeleteInvoiceMutation();
   const printRef = useRef<TCommonPrintRef>(null);
@@ -264,42 +268,42 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                       )}
 
                       <TableData td={item?.class} />
-                      <TableData td={item?.quantity?.toLocaleString()} />
-                      <TableData td={item?.rate} cls="hidden lg:table-cell" />
+                      <TableData td={toBanglaNumber(item?.quantity)} />
+                      <TableData td={toBanglaNumber(item?.rate)} cls="hidden lg:table-cell" />
                       <TableData
-                        td={`৳ ${item?.price?.toLocaleString()}`}
+                        td={`৳ ${toBanglaNumber(item?.price)}`}
                         cls="hidden lg:table-cell"
                       />
 
                       {index === 0 && (
                         <>
                           <TableData
-                            td={`৳ ${row?.productPrice}`}
+                            td={`৳ ${toBanglaNumber(row?.productPrice)}`}
                             cls="text-green-600 hidden lg:table-cell"
                             rowSpan={row?.items?.length}
                           />
                           <TableData
-                            td={`৳ ${row?.discount}`}
+                            td={`৳ ${toBanglaNumber(row?.discount)}`}
                             cls="text-orange-500 hidden lg:table-cell"
                             rowSpan={row?.items?.length}
                           />
                           <TableData
-                            td={`৳ ${row?.carRent}`}
+                            td={`৳ ${toBanglaNumber(row?.carRent)}`}
                             cls="text-blue-600 hidden lg:table-cell"
                             rowSpan={row?.items?.length}
                           />
                           <TableData
-                            td={`৳ ${row?.totalPrice}`}
+                            td={`৳ ${toBanglaNumber(row?.totalPrice)}`}
                             rowSpan={row?.items?.length}
                           />
 
                           <TableData
-                            td={`৳ ${row?.cash}`}
+                            td={`৳ ${toBanglaNumber(row?.cash)}`}
                             cls="text-green-600 hidden lg:table-cell"
                             rowSpan={row?.items?.length}
                           />
                           <TableData
-                            td={`৳ ${row?.due}`}
+                            td={`৳ ${toBanglaNumber(row?.due)}`}
                             cls={`border p-2 ${row?.due > 0 ? "text-red-500" : "text-green-600"
                               } hidden lg:table-cell`}
                             rowSpan={row?.items?.length}
@@ -380,6 +384,23 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                                     title="চালান বিস্তারিত"
                                   />
                                 </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleSendSms(row?.customer?.customerCode)}
+                                >
+                                  <CustomDropDownMenuItem
+                                    Icon={MessageSquare}
+                                    title="এসএমএস দিন"
+                                  />
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  onClick={() => handleDueCollection(row?.customer?.customerCode)}
+                                >
+                                  <CustomDropDownMenuItem
+                                    Icon={HandCoins}
+                                    title="বাকি জমা করুন"
+                                  />
+                                </DropdownMenuItem>
                                 <DropdownMenuItem>
                                   <CustomDropDownMenuItem
                                     Icon={User}
@@ -406,44 +427,70 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
                     key={row?.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    <TableData td={row.serial} />
-                    <TableData td={row?.customer?.name} />
+                    <TableData
+                      td={toBanglaNumber(row.serial)}
+                    />
+
+                    <TableData
+                      td={row?.customer?.name}
+                    />
+
                     <TableData
                       td={row?.customer?.address}
                       cls="hidden lg:table-cell"
                     />
-                    <TableData td={row.items[0]?.class} />
-                    <TableData td={row.items[0]?.quantity.toLocaleString()} />
+
                     <TableData
-                      td={row.items[0]?.rate}
-                      cls="hidden lg:table-cell"
+                      td={row.items[0]?.class}
                     />
+
                     <TableData
-                      td={`৳ ${row.items[0]?.price.toLocaleString()}`}
+                      td={toBanglaNumber(
+                        row.items[0]?.quantity?.toLocaleString(),
+                      )}
+                    />
+
+                    <TableData
+                      td={toBanglaNumber(row.items[0]?.rate)}
                       cls="hidden lg:table-cell"
                     />
 
                     <TableData
-                      td={`৳ ${row?.productPrice}`}
+                      td={`৳ ${toBanglaNumber(
+                        row.items[0]?.price?.toLocaleString(),
+                      )}`}
+                      cls="hidden lg:table-cell"
+                    />
+
+                    <TableData
+                      td={`৳ ${toBanglaNumber(row?.productPrice)}`}
                       cls="text-green-600 hidden lg:table-cell"
                     />
+
                     <TableData
-                      td={`৳ ${row?.discount}`}
+                      td={`৳ ${toBanglaNumber(row?.discount)}`}
                       cls="text-orange-500 hidden lg:table-cell"
                     />
-                    <TableData
-                      td={`৳ ${row?.carRent}`}
-                      cls="text-blue-600 hidden lg:table-cell"
-                    />
-                    <TableData td={`৳ ${row.totalPrice}`} />
 
                     <TableData
-                      td={`৳ ${row?.cash}`}
+                      td={`৳ ${toBanglaNumber(row?.carRent)}`}
+                      cls="text-blue-600 hidden lg:table-cell"
+                    />
+
+                    <TableData
+                      td={`৳ ${toBanglaNumber(row?.totalPrice)}`}
+                    />
+
+                    <TableData
+                      td={`৳ ${toBanglaNumber(row?.cash)}`}
                       cls="text-green-600 hidden lg:table-cell"
                     />
+
                     <TableData
-                      td={`৳ ${row?.due}`}
-                      cls={`border p-2 ${row.due > 0 ? "text-red-500" : "text-green-600"
+                      td={`৳ ${toBanglaNumber(row?.due)}`}
+                      cls={`border p-2 ${row.due > 0
+                        ? "text-red-500"
+                        : "text-green-600"
                         } hidden lg:table-cell`}
                     />
                     <td className="border p-2">
@@ -576,7 +623,8 @@ const TodaysInVoicePage = ({ limit, page, search }: TQuery) => {
         <SellingModal
           isOpen={openReportModal}
           onClose={() => setOpenReportModal(false)}
-          startDate={date ? date.toISOString() : ""}
+          date={date ? date.toISOString() : ""}
+          challanType="DAILY"
         />
       )}
       {openUpdateModal && (

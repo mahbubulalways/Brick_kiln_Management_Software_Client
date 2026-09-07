@@ -20,13 +20,13 @@ const paymentApi = baseApi.injectEndpoints({
         url: `/payment/all?page=${query.page}&limit=${query.limit}&search=${query.search}&date=${query.date}`,
         method: "GET",
       }),
-      providesTags: ["PAYMENT"],
+      providesTags: ["PAYMENT", "SEASON"],
     }),
 
     // GET PAYMENT REPORT
     getPaymentReport: builder.query({
       query: (date: string) => ({
-        url: `/payment/report/date=${date}`,
+        url: `/payment/report/${date}`,
         method: "GET",
       }),
       providesTags: ["PAYMENT"],
@@ -68,5 +68,5 @@ export const {
   useGetPaymentQuery,
   useGetPaymentReportQuery,
   useGetSinglePaymentReportQuery,
-  useUpdatePaymentMutation,useDeletePaymentMutation
+  useUpdatePaymentMutation, useDeletePaymentMutation
 } = paymentApi;

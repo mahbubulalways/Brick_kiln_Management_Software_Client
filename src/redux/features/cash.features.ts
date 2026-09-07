@@ -1,3 +1,4 @@
+import { TQuery } from "@/interface/query";
 import { baseApi } from "../baseApi";
 
 const cashApi = baseApi.injectEndpoints({
@@ -15,7 +16,18 @@ const cashApi = baseApi.injectEndpoints({
           date: query.date,
         },
       }),
-      providesTags: ["CASH"],
+      providesTags: ["CASH", "SEASON"],
+    }),
+
+
+    // GET REPORT
+    getCashReport: builder.query({
+      query: (query:TQuery) => ({
+        url: "/cash/report",
+        params: {
+          date: query.date,
+        },
+      }),
     }),
 
     // GET SINGLE CASH
@@ -64,4 +76,5 @@ export const {
   useCreateCashMutation,
   useUpdateCashMutation,
   useDeleteCashMutation,
+  useGetCashReportQuery
 } = cashApi;

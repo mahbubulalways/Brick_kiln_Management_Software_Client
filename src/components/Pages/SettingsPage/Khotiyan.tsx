@@ -127,8 +127,8 @@ const Khotiyan = ({
         </button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
-        <table className="min-w-full border-collapse">
+      <div className=" rounded-lg border border-gray-200">
+        <table className="min-w-full border-collapse overflow-x-auto">
           <thead>
             <tr className="bg-[#119f70] text-center text-white">
               <TableHead th="#" />

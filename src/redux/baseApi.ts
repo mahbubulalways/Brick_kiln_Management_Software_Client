@@ -40,7 +40,20 @@ export const baseApi = createApi({
     "CONTACT",
     "WEATHER",
     "SEASON",
-    "DRIVER"
+    "DRIVER",
+    "STOCK_BOOK",
+    "GOODS_CATEGORY",
+    "GOODS",
+    "GOOD_ISSUE",
+    "GOOD_ISSUE_REFUND",
+    "CAR",
+    "SMS",
+    "VATA_SMS_SITTINGS",
+
+    "SOFTWARE_PAYMENT", // both
+    // ADMIN
+    "ADMIN_VATA",
+    "SMS_RATE",
   ],
   endpoints: () => ({}),
 });

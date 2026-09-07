@@ -1,10 +1,11 @@
 import DashboardPage from "@/components/Pages/DashboardRootPage/DashboardPage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 
 const Dashboard = () => {
   return (
-    <div>
+    <PrivateComponent feature="DASHBOARD">
       <DashboardPage />
-    </div>
+    </PrivateComponent>
   );
 };
 

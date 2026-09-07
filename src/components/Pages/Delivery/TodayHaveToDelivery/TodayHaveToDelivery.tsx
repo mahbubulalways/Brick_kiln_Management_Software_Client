@@ -8,12 +8,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Calendar, MoreVertical, Truck, User } from "lucide-react";
-import CustomSearchInput from "@/components/Reusable/CustomSearchInput";
-import { DatePicker } from "@/components/Others/DatePicker";
 import CustomReportButton from "@/components/Reusable/CustomReportButton";
 import TableHead from "@/components/Reusable/TableHead";
 import NewDeliveryModal from "@/components/Dashboard/Modals/NewDeliveryModal";
-import TableFooter from "@/components/Reusable/TableFooter";
 import TableData from "@/components/Reusable/TableData";
 import { useGetDeliveryHaveTodayQuery } from "@/redux/features/delivery.features";
 import { IChallanItem, TTodaySDelivery } from "@/types/types";
@@ -29,6 +26,7 @@ import { TMetaConfig } from "@/interface/meta";
 import SearchBar from "@/components/Reusable/SearchBar";
 import { toBanglaNumber } from "@/utils/toBanglaNumber";
 import Link from "next/link";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -42,8 +40,8 @@ const TodaysHaveToDelivery = ({ limit, page, search }: TQuery) => {
     new Date()
   );
   const [openDeliveryReport, setOpenDeliveryReport] = useState<boolean>(false);
-  const isoDate = deliveryDate ? deliveryDate.toISOString() : "";
-  const { data, isLoading, isError, error } = useGetDeliveryHaveTodayQuery({ date: isoDate, limit, page, search }, {
+  const isoDate = formatDateRange(String(deliveryDate));
+  const { data, isLoading, } = useGetDeliveryHaveTodayQuery({ date: isoDate, limit, page, search }, {
     refetchOnMountOrArgChange: true,
   });
   const todaysDelivery = data?.data?.data || [];

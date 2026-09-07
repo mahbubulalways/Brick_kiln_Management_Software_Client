@@ -13,6 +13,7 @@ import {
   FiGrid,
   FiMessageCircle,
   FiSettings,
+  FiDownload,
 } from "react-icons/fi";
 
 const menuItems = [
@@ -43,29 +44,24 @@ const menuItems = [
   },
   {
     id: 6,
-    label: "ইউজার লিমিট",
-    icon: FiInfo,
-  },
-  {
-    id: 7,
     label: "ইউজার পারমিশন",
     icon: FiCheckSquare,
   },
   {
-    id: 8,
+    id: 7,
     label: "প্রিন্টার সেটিং",
     icon: FiPrinter,
   },
   {
-    id: 9,
-    label: "স্টক সেটিং",
-    icon: FiGrid,
-  },
-  {
-    id: 10,
+    id: 8,
     label: "এসএমএস সেটিং",
     icon: FiMessageCircle,
   },
+  {
+    id: 9,
+    label: "অ্যাপ ইনস্টল করুন",
+    icon: FiDownload,
+  }
 ];
 
 type TSidebarMenu = {

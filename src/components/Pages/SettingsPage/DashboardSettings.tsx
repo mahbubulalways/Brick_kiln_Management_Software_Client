@@ -14,6 +14,8 @@ import UserLimit from "./UserLimit";
 
 import { useTitleStore } from "@/zustand/store/titleStore";
 import { TQuery } from "@/interface/query";
+import DownloadAppPage from "../DownloadAppPage/DownloadAppPage";
+import SmsSettings from "./SmsSettings";
 
 const DashboardSettings = ({
     limit,
@@ -34,7 +36,10 @@ const DashboardSettings = ({
                 return <VataInformation />;
 
             case 2:
-                return <ChangeClassAndRate />;
+                return <ChangeClassAndRate
+                    page={pagination}
+                    limit={limit}
+                />;
 
             case 3:
                 return (
@@ -51,15 +56,20 @@ const DashboardSettings = ({
             case 5:
                 return <PasswordChange />;
 
-            case 6:
-                return <UserLimit />;
 
-            case 7:
+            case 6:
                 return (
                     <div className="rounded-lg border border-gray-200 bg-white p-5">
                         ইউজার অ্যাক্সেস
                     </div>
                 );
+
+            case 7:
+                return "HELLLLLLLLL";
+
+            case 8: return <SmsSettings />
+
+            case 9: return <DownloadAppPage />
 
             default:
                 return <VataInformation />;
@@ -68,10 +78,6 @@ const DashboardSettings = ({
 
     return (
         <div className="min-h-[90vh] w-full rounded-md bg-white p-2 sm:p-3">
-
-            {/* =========================================
-                LARGE DEVICE
-                ========================================= */}
             <div className="hidden md:block">
                 <div
                     className="
@@ -81,10 +87,7 @@ const DashboardSettings = ({
                         gap-5
                     "
                 >
-                    {/* Sidebar */}
                     <SidebarMenu setPage={setPage} />
-
-                    {/* Content */}
                     <main
                         className="
                             min-w-0
@@ -98,13 +101,8 @@ const DashboardSettings = ({
                     </main>
                 </div>
             </div>
-
-
-            {/* =========================================
-                SMALL DEVICE
-                ========================================= */}
             <div className="block md:hidden">
-                <SettingsMenu  />
+                <SettingsMenu />
             </div>
 
         </div>

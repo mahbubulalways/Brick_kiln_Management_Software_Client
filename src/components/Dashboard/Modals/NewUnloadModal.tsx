@@ -8,30 +8,23 @@ import { showToast } from "@/components/Toast/CustomToast";
 import CustomSelect from "@/components/Reusable/CustomSelect";
 import CustomDatePicker from "@/components/Reusable/CustomDatePicker";
 import { SERVER_ERROR_MESSAGE } from "@/constant";
-
-import { useGetAllClassAndRateQuery } from "@/redux/features/classAndRate.features";
+import { useGetAllClassAndRateOptionsQuery } from "@/redux/features/classAndRate.features";
 import { TClassAndRate } from "@/types/types";
-
 import { useGetAllRoundQuery } from "@/redux/features/round.features";
-
 import {
   useCreateUnloadInfoMutation,
   useGetAllUnloadInfoQuery,
+  useGetAllUnloadReportQuery,
 } from "@/redux/features/unload.features";
 import { TUnloadItem, TUnloadResponse } from "@/interface/unload";
 import CustomStatus from "@/components/Reusable/CustomStatus";
+import { fi } from "date-fns/locale";
 
-// =========================
-// MODAL TYPE
-// =========================
 type TCustomModal = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-// =========================
-// FORM TYPE
-// =========================
 export interface TLoadInfo {
   date: Date;
   round: string;
@@ -43,9 +36,6 @@ const NewUnloadModal = ({
   isOpen,
   onClose,
 }: TCustomModal) => {
-  // =========================
-  // ROUND
-  // =========================
   const {
     data: roundData,
     isError: roundError,
@@ -60,53 +50,38 @@ const NewUnloadModal = ({
       })
     ) || [];
 
-  // =========================
-  // CLASS
-  // =========================
   const {
     isLoading: classLoading,
-    data: fetchedData,
+    data: classData,
     isError: classError,
-  } = useGetAllClassAndRateQuery(undefined);
+  } = useGetAllClassAndRateOptionsQuery(undefined);
 
   const formatClassLabelValue =
-    fetchedData?.data
-      ?.filter(
-        (dt: TClassAndRate) =>
-          dt.classType !== "অন্যান্য"
-      )
-      ?.map((dt: TClassAndRate) => ({
+    classData?.data?.map(
+      (dt: TClassAndRate) => ({
         label: dt.className,
         value: dt.className,
-      })) || [];
+      })
+    ) || [];
 
-  // =========================
-  // GET UNLOAD DATA
-  // =========================
   const {
     data: unloadData,
     isLoading: unloadLoading,
-  } = useGetAllUnloadInfoQuery(
-    {
-      limit: 1000,
-      page: 1,
-    },
+  } = useGetAllUnloadReportQuery(
+    undefined,
     {
       skip: !isOpen,
     }
   );
 
-  const unloads = unloadData?.data?.data ?? [];
+  const unloads =
+    unloadData?.data as TUnloadResponse[] ?? [];
 
-  // =========================
-  // CREATE UNLOAD
-  // =========================
-  const [mutateAsync, { isLoading }] =
-    useCreateUnloadInfoMutation();
+  const [
+    mutateAsync,
+    { isLoading },
+  ] = useCreateUnloadInfoMutation();
 
-  // =========================
-  // FORM
-  // =========================
   const {
     register,
     handleSubmit,
@@ -114,7 +89,7 @@ const NewUnloadModal = ({
     reset,
     control,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<TLoadInfo>({
     defaultValues: {
       date: new Date(),
@@ -124,75 +99,69 @@ const NewUnloadModal = ({
     },
   });
 
-  // =========================
-  // WATCH FORM VALUES
-  // =========================
   const selectedRound = watch("round");
   const selectedClass = watch("className");
   const selectedDate = watch("date");
 
-  // =========================
-  // FIND EXISTING QUANTITY
-  // =========================
   const existingQuantity = React.useMemo(() => {
-    if (
-      !selectedRound ||
-      !selectedClass ||
-      !selectedDate
-    ) {
+    if (!selectedDate || !selectedRound || !selectedClass) {
       return 0;
     }
 
-    // Selected date -> YYYY-MM-DD
-    const selectedDateKey = new Date(selectedDate)
-      .toISOString()
-      .split("T")[0];
+    const getDateOnly = (date: Date | string) => {
+      const d = new Date(date);
 
-    // =========================
-    // FIND SAME ROUND + DATE
-    // =========================
-    const roundData = unloads.find((item: TUnloadResponse) => {
-      if (!item.date || !item.round) {
-        return false;
-      }
+      return `${d.getFullYear()}-${String(
+        d.getMonth() + 1
+      ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
 
-      const itemDateKey = new Date(item.date)
-        .toISOString()
-        .split("T")[0];
+    const selectedDateKey = getDateOnly(selectedDate);
 
-      return (
-        item.round.name === selectedRound &&
-        itemDateKey === selectedDateKey
-      );
-    });
+    return unloads.reduce(
+      (total: number, unload: TUnloadResponse) => {
+        if (!unload.date || !unload.round) {
+          return total;
+        }
 
-    // Round + Date না থাকলে
-    if (!roundData) {
-      return 0;
-    }
+        const unloadDateKey = getDateOnly(unload.date);
 
-    // =========================
-    // FIND SAME CLASS
-    // =========================
-    const classData =
-      roundData.unloadItems?.find(
-        (item: TUnloadItem) =>
-          item.classType?.className ===
-          selectedClass
-      );
+        if (
+          unloadDateKey !== selectedDateKey ||
+          unload.round.name !== selectedRound
+        ) {
+          return total;
+        }
 
-    // Class না থাকলে 0
-    return classData?.quantity ?? 0;
+        const classQuantity =
+          unload.items?.reduce(
+            (sum: number, item: TUnloadItem) => {
+              if (
+                item.class?.className ===
+                selectedClass
+              ) {
+                return (
+                  sum +
+                  Number(item.quantity ?? 0)
+                );
+              }
+
+              return sum;
+            },
+            0
+          ) ?? 0;
+
+        return total + classQuantity;
+      },
+      0
+    );
   }, [
     unloads,
+    selectedDate,
     selectedRound,
     selectedClass,
-    selectedDate,
   ]);
 
-  // =========================
-  // AUTO SET QUANTITY
-  // =========================
   React.useEffect(() => {
     setValue(
       "quantity",
@@ -203,14 +172,13 @@ const NewUnloadModal = ({
     setValue,
   ]);
 
-  // =========================
-  // SUBMIT
-  // =========================
   const onSubmit: SubmitHandler<TLoadInfo> =
     async (data) => {
       try {
         const result =
-          await mutateAsync(data).unwrap();
+          await mutateAsync(
+            data
+          ).unwrap();
 
         showToast({
           title: result?.message,
@@ -219,7 +187,6 @@ const NewUnloadModal = ({
 
         onClose();
 
-        // Optional reset
         reset({
           date: new Date(),
           round: "",
@@ -236,9 +203,6 @@ const NewUnloadModal = ({
       }
     };
 
-  // =========================
-  // CLEAR FORM
-  // =========================
   const handleClear = () => {
     reset({
       date: new Date(),
@@ -248,14 +212,22 @@ const NewUnloadModal = ({
     });
   };
 
+  const isInitialLoading =
+    classLoading || roundLoading;
+
   return (
     <CustomModal
       isOpen={isOpen}
       onClose={onClose}
       title="নতুন আনলোড"
-    >{
-        classLoading && roundLoading ? <CustomStatus type="loading" /> : <form
-          onSubmit={handleSubmit(onSubmit)}
+    >
+      {isInitialLoading ? (
+        <CustomStatus type="loading" />
+      ) : (
+        <form
+          onSubmit={handleSubmit(
+            onSubmit
+          )}
         >
           <div className="grid grid-cols-2 gap-2">
             <CustomSelect
@@ -263,85 +235,113 @@ const NewUnloadModal = ({
               label="রাউন্ড"
               placeholder="রাউন্ড"
               control={control}
-              options={formatRoundLabelValue}
-              isError={roundError}
-              isLoading={roundLoading}
-              error={errors.round}
+              options={
+                formatRoundLabelValue
+              }
+              isError={
+                roundError
+              }
+              isLoading={
+                roundLoading
+              }
+              error={
+                errors.round
+              }
               rules={{
-                required: "রাউন্ড নির্বাচন করুন",
+                required:
+                  "রাউন্ড নির্বাচন করুন",
               }}
             />
+
             <CustomDatePicker
               control={control}
               name="date"
               label="আনলোডের তারিখ"
-              error={errors.date}
+              error={
+                errors.date
+              }
               rules={{
-                required: "আনলোডের তারিখ নির্বাচন করুন",
+                required:
+                  "আনলোডের তারিখ নির্বাচন করুন",
               }}
             />
+
             <CustomSelect
               name="className"
               label="শ্রেণি"
               placeholder="শ্রেণি"
               control={control}
-              options={formatClassLabelValue}
-              error={errors.className}
-              isError={classError}
-              isLoading={classLoading}
+              options={
+                formatClassLabelValue
+              }
+              error={
+                errors.className
+              }
+              isError={
+                classError
+              }
+              isLoading={
+                classLoading
+              }
               rules={{
-                required: "শ্রেণি নির্বাচন করুন",
+                required:
+                  "শ্রেণি নির্বাচন করুন",
               }}
             />
+
             <CustomInput
               name="quantity"
               label="পরিমাণ"
               placeholder="পরিমাণ"
               register={register}
-              type="text"
-              error={errors.quantity}
+              type="number"
+              error={
+                errors.quantity
+              }
               rules={{
-                required: "পরিমাণ লিখুন",
+                required:
+                  "পরিমাণ লিখুন",
+                min: {
+                  value: 1,
+                  message:
+                    "পরিমাণ ১ এর কম হতে পারবে না",
+                },
               }}
             />
           </div>
+
+          {selectedRound &&
+            selectedClass &&
+            selectedDate &&
+            existingQuantity > 0 && (
+              <div className="mt-2 rounded bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+                এই রাউন্ড, তারিখ ও
+                শ্রেণির পূর্বের
+                আনলোড পরিমাণ:{" "}
+                <span className="font-semibold">
+                  {existingQuantity}
+                </span>
+              </div>
+            )}
+
           <div className="flex items-center justify-between pt-5">
-            <div
-              onClick={handleClear}
-              className="
-              text-[14px]
-              border
-              border-gray-300
-              bg-white
-              hover:border-[#039A63]
-              px-10
-              py-1.5
-              text-gray-500
-              duration-500
-              hover:text-[#039A63]
-              font-medium
-              rounded
-              cursor-pointer
-            "
+            <button
+              type="button"
+              onClick={
+                handleClear
+              }
+              className="rounded border border-gray-300 bg-white px-10 py-1.5 text-[14px] font-medium text-gray-500 duration-500 hover:border-[#039A63] hover:text-[#039A63]"
             >
               ক্লিয়ার
-            </div>
+            </button>
+
             <button
               type="submit"
-              className="
-              text-[14px]
-              bg-[#039A63]
-              px-8
-              py-1.5
-              text-gray-100
-              font-medium
-              rounded
-              cursor-pointer
-              disabled:opacity-50
-            "
               disabled={
-                isLoading
+                isLoading ||
+                unloadLoading
               }
+              className="cursor-pointer rounded bg-[#039A63] px-8 py-1.5 text-[14px] font-medium text-gray-100 disabled:opacity-50"
             >
               {isLoading
                 ? "অ্যাড হচ্ছে..."
@@ -349,9 +349,7 @@ const NewUnloadModal = ({
             </button>
           </div>
         </form>
-      }
-
-
+      )}
     </CustomModal>
   );
 };

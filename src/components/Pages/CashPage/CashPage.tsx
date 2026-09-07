@@ -27,16 +27,18 @@ import { formatBanglaDate } from "@/utils/formatBanglaDate";
 import CustomDatePickerState from "@/components/Reusable/CustomDatePickerState";
 import UpdateCashModal from "@/components/Dashboard/Modals/EditModals/UpdateCashModal";
 import Swal from "sweetalert2";
-import { useReactToPrint } from "react-to-print";
 import CommonPrint, { TCommonPrintRef } from "@/components/Reusable/CommonPrint";
 import CashPagePrint from "./CashPagePrint";
 import { useGetVataInfoQuery } from "@/redux/features/vata.features";
+import CashReportModal from "@/components/Dashboard/Modals/ReportModal/CashReportModal";
+import { formatDateRange } from "@/utils/formatDateRange";
 
 const CashPage = ({ limit, page, search }: TQuery) => {
   const [searchItem, setSearchItem] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const printRef = useRef<TCommonPrintRef>(null);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const [openCashModal, setOpenCashModal] = useState(false);
   const [cashId, setCashId] = useState<number | undefined>(undefined);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const {
@@ -47,7 +49,7 @@ const CashPage = ({ limit, page, search }: TQuery) => {
     page,
     limit,
     search: search || undefined,
-    date: date ? date.toISOString() : undefined,
+    date: formatDateRange(String(date)) ,
   });
   const [deleteCash, { isLoading: isDeleting }] =
     useDeleteCashMutation();
@@ -137,7 +139,9 @@ const CashPage = ({ limit, page, search }: TQuery) => {
             <CustomPrintButton
               onClick={() => printRef.current?.print()}
             />
-            <CustomReportButton />
+            <CustomReportButton
+              onClick={() => setOpenCashModal(true)}
+            />
           </div>
         </div>
       </div>
@@ -165,7 +169,9 @@ const CashPage = ({ limit, page, search }: TQuery) => {
           </div>
 
           <div className="min-w-0 flex-1">
-            <CustomReportButton className="w-full" />
+            <CustomReportButton className="w-full"
+              onClick={() => setOpenCashModal(true)}
+            />
           </div>
         </div>
         <div className="flex items-center gap-2 pt-3">
@@ -291,6 +297,14 @@ const CashPage = ({ limit, page, search }: TQuery) => {
 
       {
         <UpdateCashModal id={cashId} setId={setCashId} isOpen={openUpdateModal} onClose={() => setOpenUpdateModal(false)} />
+      }
+      {
+        openCashModal &&
+        <CashReportModal
+          isOpen={openCashModal}
+          onClose={() => setOpenCashModal(false)}
+          date={date?.toISOString()!}
+        />
       }
     </div>
   );

@@ -66,7 +66,7 @@ const UnloadReportModal = ({
         const classTotals = classes.reduce<Record<number, number>>(
             (acc, classItem) => {
                 acc[classItem?.id!] = reportData.reduce((sum, row) => {
-                    const classData = row.unloadItems?.find(
+                    const classData = row.items?.find(
                         (item) => item.classId === classItem.id
                     );
 
@@ -81,7 +81,7 @@ const UnloadReportModal = ({
         const grandTotal = reportData.reduce((sum, row) => {
             return (
                 sum +
-                (row.unloadItems?.reduce(
+                (row.items?.reduce(
                     (itemSum, item) =>
                         itemSum + Number(item.quantity ?? 0),
                     0
@@ -144,7 +144,7 @@ const UnloadReportModal = ({
                             <>
                                 {reportData.map((row) => {
                                     const total =
-                                        row.unloadItems?.reduce(
+                                        row.items?.reduce(
                                             (sum, item) =>
                                                 sum +
                                                 Number(item.quantity ?? 0),
@@ -174,7 +174,7 @@ const UnloadReportModal = ({
                                             {classes?.map(
                                                 (ft: TClassAndRate) => {
                                                     const classData =
-                                                        row.unloadItems?.find(
+                                                        row.items?.find(
                                                             (item) =>
                                                                 item.classId ===
                                                                 ft.id
@@ -240,7 +240,7 @@ const UnloadReportModal = ({
     const renderPercentageReport = () => {
         const getRowTotal = (row: TUnloadResponse) => {
             return (
-                row.unloadItems?.reduce(
+                row.items?.reduce(
                     (sum, item) => sum + Number(item.quantity ?? 0),
                     0
                 ) ?? 0
@@ -254,7 +254,7 @@ const UnloadReportModal = ({
 
         const getClassTotal = (classId: number) => {
             return reportData.reduce((total, row) => {
-                const item = row.unloadItems?.find(
+                const item = row.items?.find(
                     (item) => item.classId === classId
                 );
 
@@ -306,7 +306,7 @@ const UnloadReportModal = ({
 
                                     {classes.map((classItem) => {
                                         const classData =
-                                            row.unloadItems?.find(
+                                            row.items?.find(
                                                 (item) =>
                                                     item.classId === classItem.id
                                             );
@@ -382,17 +382,17 @@ const UnloadReportModal = ({
 
     const renderBrickReport = () => {
         const getRowData = (row: TUnloadResponse) => {
-            const brick = row.unloadItems?.reduce(
+            const brick = row.items?.reduce(
                 (sum, item) =>
-                    item.classType?.classType === "ইট"
+                    item.class?.classType === "ইট"
                         ? sum + Number(item.quantity ?? 0)
                         : sum,
                 0
             ) ?? 0;
 
-            const adhar = row.unloadItems?.reduce(
+            const adhar = row.items?.reduce(
                 (sum, item) =>
-                    item.classType?.classType === "আধলা"
+                    item.class?.classType === "আধলা"
                         ? sum + Number(item.quantity ?? 0)
                         : sum,
                 0

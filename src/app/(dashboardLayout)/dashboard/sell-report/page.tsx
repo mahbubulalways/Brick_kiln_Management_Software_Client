@@ -1,10 +1,11 @@
 import SellReportPage from "@/components/Pages/SellReportPage/SellReportPage";
+import PrivateComponent from "@/components/Reusable/PrivateComponent";
 
 const Page = () => {
   return (
-    <div>
+    <PrivateComponent feature="SELL_REPORT">
       <SellReportPage />
-    </div>
+    </PrivateComponent>
   );
 };
 
